@@ -1,0 +1,210 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f5fa;
+  overflow: hidden; /* Prevent extra scrollbars */
+}
+
+/* Scheduler Container */
+.scheduler-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background: linear-gradient(135deg, #f4f6ff, #e8ebf8);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Left Panel */
+.left-panel {
+  width: 30%;
+  background-color: white;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 3px 0 15px rgba(0, 0, 0, 0.05);
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Ensure the events list does not overflow */
+.events-list h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.events-list ul {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto; /* Scrollable events list */
+  padding-right: 10px; /* Avoid scrollbar overlap */
+}
+
+.events-list li {
+  background: #ffd3b6;
+  color: #5a5a5a;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.events-list li:hover {
+  transform: scale(1.05);
+}
+
+.small-calendar {
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Right Panel */
+.right-panel {
+  width: 70%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Month Header */
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.month-header h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #5a5a5a;
+}
+
+.month-header button {
+  padding: 8px 15px;
+  background-color: #8fd3f4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.month-header button:hover {
+  background-color: #4fa3d9;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
+  gap: 10px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  padding: 12px 0;
+  font-weight: 600;
+  color: #8a8a8a;
+  background-color: #f0f4f8; /* Optional background for better separation */
+  border-radius: 10px;
+}
+
+/* Calendar Weeks and Days */
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* Aligns each week’s days in a row */
+  gap: 10px;
+}
+
+.calendar-day {
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, transform 0.2s;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background-color: #e3f2fd;
+  transform: scale(1.03);
+}
+
+.selected {
+  background-color: #82cfff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.day-number {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.events {
+  margin-top: 10px;
+}
+
+.event {
+  background-color: #ffab91;
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  margin-top: 5px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Scrollbar for Events List */
+.events-list ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.events-list ul::-webkit-scrollbar-thumb {
+  background-color: #b2bec3;
+  border-radius: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .scheduler-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    height: 50vh; /* Adjust panels for small screens */
+  }
+
+  .right-panel {
+    margin-top: 10px;
+  }
+}
