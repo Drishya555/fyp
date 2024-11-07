@@ -27,15 +27,15 @@ body, html {
 .left-panel {
   width: 30%;
   background-color: white;
-  padding: 30px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 3px 0 15px rgba(0, 0, 0, 0.05);
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto;
 }
 
-/* Ensure the events list does not overflow */
+/* Events List */
 .events-list h3 {
   font-size: 1.5rem;
   color: #333;
@@ -45,8 +45,8 @@ body, html {
 .events-list ul {
   list-style: none;
   max-height: 300px;
-  overflow-y: auto; /* Scrollable events list */
-  padding-right: 10px; /* Avoid scrollbar overlap */
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .events-list li {
@@ -75,7 +75,7 @@ body, html {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto;
 }
 
 /* Month Header */
@@ -87,7 +87,7 @@ body, html {
 }
 
 .month-header h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 600;
   color: #5a5a5a;
 }
@@ -117,31 +117,30 @@ body, html {
 
 .calendar-days {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
 }
 
 .calendar-day-header {
   text-align: center;
-  padding: 12px 0;
+  padding: 8px 0;
   font-weight: 600;
   color: #8a8a8a;
-  background-color: #f0f4f8; /* Optional background for better separation */
+  background-color: #f0f4f8;
   border-radius: 10px;
 }
 
-/* Calendar Weeks and Days */
 .calendar-week {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Aligns each week’s days in a row */
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
 }
 
 .calendar-day {
   background-color: white;
   border-radius: 10px;
-  padding: 15px;
-  min-height: 130px;
+  padding: 10px;
+  min-height: 120px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -168,7 +167,7 @@ body, html {
 }
 
 .events {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .event {
@@ -176,12 +175,12 @@ body, html {
   color: white;
   padding: 5px;
   border-radius: 4px;
-  margin-top: 5px;
+  margin-top: 3px;
   font-size: 0.9rem;
   text-align: center;
 }
 
-/* Scrollbar for Events List */
+/* Scrollbar */
 .events-list ul::-webkit-scrollbar {
   width: 6px;
 }
@@ -192,7 +191,7 @@ body, html {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .scheduler-container {
     flex-direction: column;
     height: auto;
@@ -201,10 +200,67 @@ body, html {
   .left-panel,
   .right-panel {
     width: 100%;
-    height: 50vh; /* Adjust panels for small screens */
+    height: auto;
+    padding: 15px;
   }
 
-  .right-panel {
-    margin-top: 10px;
+  .month-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .calendar-day {
+    min-height: 100px;
   }
 }
+
+@media (max-width: 768px) {
+  .events-list h3 {
+    font-size: 1.2rem;
+  }
+
+  .month-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .month-header button {
+    font-size: 1rem;
+  }
+
+  .calendar-day {
+    padding: 8px;
+    min-height: 80px;
+  }
+
+  .day-number {
+    font-size: 1.2rem;
+  }
+
+  .right-panel, .left-panel {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .month-header button {
+    padding: 6px 10px;
+  }
+
+  .calendar-day {
+    padding: 6px;
+    min-height: 70px;
+  }
+
+  .day-number {
+    font-size: 1rem;
+  }
+
+  .event {
+    font-size: 0.8rem;
+  }
+}
+
+
