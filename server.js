@@ -9,7 +9,8 @@ import cald from './routes/AppointmentRoute.js'
 import roleroute from './routes/RoleRoute.js'
 import hospitalroute from './routes/hospitalRoute.js'
 import docroute from './routes/DoctorRoute.js'
-
+import nuroute from './routes/NurseRoute.js'
+import patroute from './routes/PatientRoute.js'
 import connectDB from './db/db.js';
 //rest object
 const app = express();
@@ -34,6 +35,9 @@ app.use('/api/fyp/appointment', cald);
 app.use('/api/fyp/role',roleroute)
 app.use('/api/fyp/hospital',hospitalroute)
 app.use('/api/fyp/doctor',docroute)
+app.use('/api/fyp/nurse',nuroute)
+app.use('/api/fyp/patient',patroute)
+
 
 
 

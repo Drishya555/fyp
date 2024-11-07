@@ -77,33 +77,33 @@ export const registerUser = async(name, address,email, hashedPassword, resetToke
 
 
 
-// export const getdaAppointment = async(date) =>{
-//     const client = createClient();
-//     await client.connect();
+export const getdaAppointment = async(date) =>{
+    const client = createClient();
+    await client.connect();
 
-//     try {
-//         const result = await client.query('SELECT * FROM schedules WHERE date = $1', [date]);
-//         return result.rows[0];
-//     } catch (err) {
-//         console.log("Error finding user: ", err.message);
-//     }finally{
-//         await client.end();
-//     }
-// }
+    try {
+        const result = await client.query('SELECT * FROM schedules WHERE date = $1', [date]);
+        return result.rows[0];
+    } catch (err) {
+        console.log("Error finding user: ", err.message);
+    }finally{
+        await client.end();
+    }
+}
 
 
-// export const postAppointment = async(date, event) =>{
-//     const client = createClient();
-//     await client.connect();
+export const postAppointment = async(date,docid, patid, purpose, time) =>{
+    const client = createClient();
+    await client.connect();
 
-//     try {
-//         const result = await client.query('INSERT INTO schedules (date, event) VALUES ($1, $2) RETURNING *', [date,event]);
-//         return result.rows[0];
-//     } catch (err) {
-//         console.log("Error in creating new appointment", err.message)
-//     }finally{
-//         await client.end();
-//     }
-// }
+    try {
+        const result = await client.query('INSERT INTO schedules (date ,docid, patid, purpose, time) VALUES ($1, $2, $3, $4, $5) RETURNING *', [date,docid, patid, purpose, time]);
+        return result.rows[0];
+    } catch (err) {
+        console.log("Error in creating new appointment", err.message)
+    }finally{
+        await client.end();
+    }
+}
 
 

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Calendar from 'react-calendar';
 import moment from 'moment';
-import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
 
 const Appointment = () => {
@@ -9,7 +7,6 @@ const Appointment = () => {
   const [selectedDate, setSelectedDate] = useState(moment());
   const [events, setEvents] = useState({});
 
-  // Get the start and end of the month including padding days for the week
   const startOfMonth = currentMonth.clone().startOf('month').startOf('week');
   const endOfMonth = currentMonth.clone().endOf('month').endOf('week');
 
@@ -36,17 +33,14 @@ const Appointment = () => {
   const renderEvents = (day) => {
     const formattedDate = moment(day).format('YYYY-MM-DD');
     return events[formattedDate]?.map((event, index) => (
-      <div key={index} className="event">
-        {event}
-      </div>
+      <div key={index} className="event">{event}</div>
     ));
   };
 
   return (
     <div className="scheduler-container">
-      {/* Left Side: Events and Small Calendar */}
+      {/* Left Side: Events and Modern Small Calendar */}
       <div className="left-panel">
-        {/* Display Events for Selected Date */}
         <div className="events-list">
           <h3>Events on {selectedDate.format('MMMM Do, YYYY')}</h3>
           <ul>
@@ -56,12 +50,33 @@ const Appointment = () => {
           </ul>
         </div>
 
-        {/* Small Calendar */}
+        {/* Small Calendar with Modern Design */}
         <div className="small-calendar">
-          <Calendar
-            onChange={(date) => setSelectedDate(moment(date))}
-            value={new Date(selectedDate)}
-          />
+          <div className="calendar-header">
+            <button onClick={() => setCurrentMonth(currentMonth.clone().subtract(1, 'month'))}>
+              {'<'}
+            </button>
+            <span>{currentMonth.format('MMMM YYYY')}</span>
+            <button onClick={() => setCurrentMonth(currentMonth.clone().add(1, 'month'))}>
+              {'>'}
+            </button>
+          </div>
+          <div className="calendar-grid">
+            {days.map((week, i) => (
+              <div key={i} className="calendar-week">
+                {week.map((day, idx) => (
+                  <div
+                    key={idx}
+                    className={`calendar-day ${day.isSame(selectedDate, 'day') ? 'selected' : ''} ${day.isSame(moment(), 'day') ? 'today' : ''}`}
+                    onClick={() => setSelectedDate(day)}
+                  >
+                    <div className="day-number">{day.format('D')}</div>
+                    <div className="events">{renderEvents(day)}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -76,13 +91,11 @@ const Appointment = () => {
             {'>'}
           </button>
         </header>
-              
+
         <div className="calendar-grid">
           <div className="calendar-days">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-              <div className="calendar-day-header" key={d}>
-                {d}
-              </div>
+              <div className="calendar-day-header" key={d}>{d}</div>
             ))}
           </div>
 

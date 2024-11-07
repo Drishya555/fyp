@@ -15,12 +15,8 @@ body, html {
 /* Scheduler Container */
 .scheduler-container {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
-  background: linear-gradient(135deg, #f4f6ff, #e8ebf8);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
-  overflow: hidden;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 /* Left Panel */
@@ -35,7 +31,33 @@ body, html {
   overflow-y: auto;
 }
 
-/* Events List */
+/* Small Calendar Styling */
+.small-calendar {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 250px;
+  font-size: 1rem;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Event List */
 .events-list h3 {
   font-size: 1.5rem;
   color: #333;
@@ -61,12 +83,6 @@ body, html {
 
 .events-list li:hover {
   transform: scale(1.05);
-}
-
-.small-calendar {
-  margin-top: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Right Panel */
@@ -262,5 +278,3 @@ body, html {
     font-size: 0.8rem;
   }
 }
-
-
