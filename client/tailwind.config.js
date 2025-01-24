@@ -18,6 +18,7 @@ export default {
         "forminside": "#3B364C",
         "textform": "#5D5A6D",
         "purplebutton": "#6E54B5",
+        "textcol": "#233182",
       },
     },
   },

@@ -91,3 +91,14 @@
     }
 
 }
+
+
+.customborr{
+    border-top-left-radius: 40px; 
+    outline: none;
+    border: none; 
+}
+
+.textshadow{
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
