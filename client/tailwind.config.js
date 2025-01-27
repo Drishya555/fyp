@@ -10,7 +10,7 @@ export default {
         customRgba: "0px 7px 29px 0px rgba(100, 100, 111, 0.2)",
       },
       fontFamily: {
-        sans: ['Merriweather', 'serif'], // Set Merriweather as the default serif font
+        sans: ['SF Pro Display', 'Arial', 'sans-serif'], // Use SF Pro Display as the primary font
       },
       colors: {
         "dark-gray": "#1E1E2C",

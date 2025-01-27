@@ -8,6 +8,7 @@
     .mainregistercard {
       height: 600px !important;
       margin-top: -20px !important;
+      padding-bottom: 10px;
     }
 
     .registerimg{
@@ -25,7 +26,8 @@
     }
   
     .formcontainerforcss {
-      margin-top: -40px !important;
+      margin-top: -140px !important;
+      padding-bottom: 40px;
     }
   }
 

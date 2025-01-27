@@ -1,161 +1,49 @@
-import { TextField, InputAdornment, IconButton, Checkbox, FormControlLabel } from "@mui/material";
-import EmailIcon from '@mui/icons-material/Email';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LockIcon from '@mui/icons-material/Lock';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useState } from "react";
-import Header from '../Layout/Header';
-import hosp from '../assets/register.jpg';
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-
-const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
-
-  const controls = useAnimation();
-  const [ref, inView] = useInView();
-
-  if (inView) {
-    controls.start({ opacity: 1, y: 0 });
-  }
-
+import bg from '../assets/login.jpg'
+const register = () => {
   return (
-    <>
-      <div className="flex pt-[70px] items-center justify-center bg-grey-100">
-        <div className="bg-pink-200 w-[70%] h-[700px] flex shadow-lg rounded-2xl overflow-hidden">
-          <motion.div
-            className="hidden md:block w-1/2 bg-white-50 relative"
-            initial={{ opacity: 0, x: -50 }}
-            animate={controls}
-            transition={{ duration: 0.6 }}
-          >
-            <img
-              src={hosp}
-              alt="Decode"
-              className="w-[85%] h-[97%] mt-[1.5%] ml-[9%] rounded-2xl object-cover"
-            />
-          </motion.div>
-
-          <motion.div
-            className="w-full md:w-1/2 p-8"
-            initial={{ opacity: 0, y: 50 }}
-            animate={controls}
-            transition={{ duration: 0.6 }}
-            ref={ref}
-          >
-            <div className="text-center mb-8">
-              <motion.h1
-                className="text-3xl font-bold mb-2 text-gray-800"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-              >
-                Create an Account
-              </motion.h1>
-              <motion.p
-                className="text-gray-600"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-              >
-                Already have an account? <a href="#" className="text-blue-500 hover:underline">Log in</a>
-              </motion.p>
+    <div>
+      <section className="h-[100vh] bg-gray-50 dark:bg-white" style={{ backgroundImage: `url(${bg})`, backgroundPosition: 'center'}}>
+  <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    
+    <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+          Create an account
+        </h1>
+        <form className="space-y-4 md:space-y-6" action="#">
+        <div>
+            <label htmlFor="text" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your name</label>
+            <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John Snow" required />
+          </div>
+          <div>
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+            <input type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@email.com" required />
+          </div>
+          <div>
+            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+            <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+          </div>
+          
+          <div className="flex items-start">
+            <div className="flex items-center h-5">
+              <input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required />
             </div>
-
-            <form className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <TextField
-                  id="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  className="w-1/2"
-                  placeholder="Drishya"
-                />
-                <TextField
-                  id="lastName"
-                  label="Last Name"
-                  variant="outlined"
-                  className="w-1/2"
-                  placeholder="Last Name"
-                />
-              </div>
-
-              <TextField
-                id="email"
-                label="Email"
-                variant="outlined"
-                className="w-full"
-                type="email"
-                placeholder="Your email here"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <TextField
-                id="password"
-                label="Password"
-                variant="outlined"
-                className="w-full"
-                type={showPassword ? "text" : "password"}
-                placeholder="password"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClickShowPassword} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <FormControlLabel
-                control={<Checkbox />}
-                label="I agree to the Terms & Conditions"
-                className="mt-2"
-              />
-
-              <motion.button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 mt-4"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Register
-              </motion.button>
-            </form>
-          </motion.div>
-        </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label>
+            </div>
+          </div>
+          <button type="submit" className="w-full border-2 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
+          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+            Already have an account? <a href="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+          </p>
+        </form>
       </div>
+    </div>
+  </div>
+</section>
 
-      <style>
-        {`
-          .MuiInputAdornment-root svg {
-            transition: color 0.3s ease-in-out;
-          }
+    </div>
+  )
+}
 
-          .Mui-focused .MuiInputAdornment-root svg {
-            color: #3f51b5; /* Focus color */
-          }
-        `}
-      </style>
-    </>
-  );
-};
-
-export default Register;
+export default register
