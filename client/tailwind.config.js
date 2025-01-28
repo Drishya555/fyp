@@ -19,6 +19,7 @@ export default {
         "textform": "#5D5A6D",
         "purplebutton": "#6E54B5",
         "textcol": "#233182",
+        "login": "#e8e8e8",
       },
     },
   },

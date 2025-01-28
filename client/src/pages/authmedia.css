@@ -104,3 +104,48 @@
 .textshadow{
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+@media screen and (max-width: 1500px){
+    .leftsidelogin{
+        width: 60% !important;
+    }
+    .rightsidelogin{
+        width: 40% !important;
+    }
+}
+
+
+@media screen and (max-width: 1050px){
+    .logincontainer{
+        flex-direction: column;
+    }
+    .leftsidelogin{
+        display: none;
+    }
+
+    .rightsidelogin{
+        width: 80% !important;
+        margin-left: 10% !important;
+    }
+}
+
+@media screen and (max-width: 535px){
+    .rightsidelogin{
+        width: 100% !important;
+        margin-left: 0% !important;
+    }
+
+    .textinlogin{
+        margin-left: 0 !important;
+    }
+
+    .formcontainerlogin{
+        width: 80% !important;
+        margin-left: 10% !important;
+    }
+
+    .buttoncontainerlogin{
+        width: 85% !important;
+        margin-left: 8% !important;
+    }
+}
