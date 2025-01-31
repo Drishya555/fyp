@@ -4,10 +4,16 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import { FcGoogle } from "react-icons/fc";
 import './authmedia.css'
+import {motion} from 'framer-motion';
 
 const Login = () => {
   return (
     <>
+    <motion.div 
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    exit={{opacity: 0}}
+    transition={{duration:0.5}}>
     <div className='logincontainer w-[full] h-auto min-h-[100vh] bg-login flex'>
       <div className='leftsidelogin w-[70%] h-full '>
         <img src={left} className='h-full'/>
@@ -17,8 +23,8 @@ const Login = () => {
           <img src={logo} className='w-[200px]'></img>
         </div>
 
-      <div className='flex flex-col w-full justify-center  mt-[-20px] text-center '>
-        <h1 className='textinlogin text-[40px] font-semibold ml-9'>Welcome Back!</h1>
+      <div className='flex flex-col w-full justify-center  mt-[-40px] text-center '>
+        <h1 className='textinlogin text-[40px] font-semibold'>Join Us!</h1>
         <p className='text-gray-500 mt-[-5px]'>Please Enter your details</p>
       </div>
 
@@ -51,6 +57,7 @@ const Login = () => {
       </div>
       </div>
     </div>
+    </motion.div>
     </>
   )
 }

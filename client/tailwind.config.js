@@ -20,6 +20,11 @@ export default {
         "purplebutton": "#6E54B5",
         "textcol": "#233182",
         "login": "#e8e8e8",
+        "homegrey": "#F2F4F4",
+        "lightpurple": "#3c096c",
+        "homegreen": "#1D7713",
+        "homered": "#7E1814",
+        "homepurple": "#592474"
       },
     },
   },

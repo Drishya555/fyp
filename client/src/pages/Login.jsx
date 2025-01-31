@@ -4,10 +4,16 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import { FcGoogle } from "react-icons/fc";
 import './authmedia.css'
+import {motion} from 'framer-motion';
 
 const Login = () => {
   return (
     <>
+    <motion.div 
+    initial={{opacity: 0}}
+    animate={{opacity: 1}}
+    exit={{opacity: 0}}
+    transition={{duration:0.5}}>
     <div className='logincontainer w-[full] h-[100vh] bg-login flex'>
       <div className='leftsidelogin w-[70%] h-full '>
         <img src={left} className='h-full'/>
@@ -25,19 +31,14 @@ const Login = () => {
 
       <div className='formcontainerlogin w-[60%] ml-[20%] mt-[40px]'>
         <form className='flex flex-col gap-[20px]'>
-        <TextField id="standard-basic" label="Email" variant="standard" />
-        <TextField id="standard-basic" label="Password" variant="standard" />
-        <div className='flex items-center gap-[25px] mt-[15px]'>
-          <div className='w-[5%] '>
-            <Checkbox/>
-          </div>
-          I agree to the terms of MediAid
-        </div>
+        <TextField id="standard-basic" label="Email" variant="standard" type='email'/>
+        <TextField id="standard-basic" label="Password" variant="standard" type='password'/>
+        
         </form>
       </div>
 
 
-      <div className='buttoncontainerlogin w-[60%] ml-[20%] mt-[20px]'>
+      <div className='buttoncontainerlogin w-[60%] ml-[20%] mt-[40px]'>
         <button className='loginbtn w-full bg-black text-white h-[50px] rounded-3xl transition-[0.5s] hover:bg-gray-900'>Login</button>
         <button className="loginbtn w-full bg-gray-200 mt-[10px] text-black h-[50px] rounded-3xl transition-[0.5s] hover:bg-gray-100 flex items-center justify-center">
         <FcGoogle className=" h-6 w-6 mr-2" /> 
@@ -50,6 +51,8 @@ const Login = () => {
       </div>
       </div>
     </div>
+    </motion.div>
+
     </>
   )
 }
