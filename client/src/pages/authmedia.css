@@ -149,3 +149,10 @@
         margin-left: 8% !important;
     }
 }
+
+
+@media screen and (max-width: 789px){
+    .docgrid{
+        grid-template-columns: repeat(1,1fr) !important;
+    }
+}

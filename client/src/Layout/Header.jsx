@@ -135,7 +135,7 @@ export default function Header() {
     </AnimatePresence>
   </div>
 
-          <a href="#" className="text-lg/6 font-regular text-gray-900">
+          <a href="/hospitals" className="text-lg/6 font-regular text-gray-900">
             <motion.span
               whileHover={{ scale: 1.05 }} // Text hover animation
               transition={{ type: 'spring', stiffness: 300 }}
@@ -143,7 +143,7 @@ export default function Header() {
               Hospitals
             </motion.span>
           </a>
-          <a href="#" className="text-lg/6 font-regular text-gray-900">
+          <a href="/doctors" className="text-lg/6 font-regular text-gray-900">
             <motion.span
               whileHover={{ scale: 1.05 }} // Text hover animation
               transition={{ type: 'spring', stiffness: 300 }}
