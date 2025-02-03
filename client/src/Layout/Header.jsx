@@ -1,29 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogPanel,
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
-  Popover,
-  PopoverButton,
   PopoverGroup,
-  PopoverPanel,
 } from '@headlessui/react'
 import {
-  ArrowPathIcon,
   Bars3Icon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import logo from '../assets/mediaid.png'
 import { motion, AnimatePresence } from 'framer-motion' // Import Framer Motion
+import AuthStore from '../hooks/authStore.js'
 
 import { CalendarIcon, DocumentTextIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
 
@@ -31,7 +24,7 @@ const products = [
   { 
     name: 'Appointment Booking', 
     description: 'Schedule and manage your appointments with ease', 
-    href: '#', 
+    href: '/appointment-dashboard', 
     icon: CalendarIcon // Correct icon for Heroicons v2
   },
   { 
@@ -54,6 +47,17 @@ const callsToAction = [
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isServicesHovered, setIsServicesHovered] = useState(false);
+  const [user, setUser] = useState(AuthStore.getUser());
+
+  useEffect(() => {
+    setUser(AuthStore.getUser());
+  }, []);
+
+  const handleLogout = () => {
+    AuthStore.removeUser();
+    setUser(null);
+  };
+
 
   return (
     <header className="bg-white">
@@ -174,7 +178,11 @@ export default function Header() {
               whileHover={{ scale: 1.05 }} // Text hover animation
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <button className='w-full p-3 hover:text-[#5770ff] transition-[0.3s]'>Log in <span aria-hidden="true">&rarr;</span></button>
+              {user?(
+              <button className='w-full p-3 hover:text-[#5770ff] transition-[0.3s]' onClick={handleLogout}>Log out <span aria-hidden="true">&rarr;</span></button>
+              ):(
+                <button className='w-full p-3 hover:text-[#5770ff] transition-[0.3s]'>Log In <span aria-hidden="true">&rarr;</span></button>
+              )}
             </motion.span>
           </a>
         </div>
