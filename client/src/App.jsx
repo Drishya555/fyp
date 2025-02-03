@@ -7,6 +7,7 @@ import Doctors from './pages/Doctors.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import AppDashboard from './pages/appointments/AppDashboard.jsx';
 import BookAppointment from './pages/appointments/BookAppointment.jsx';
+import Pharmacy from './pages/pharmacy/Pharmacy.jsx';
 const App = () => {
   return (
     <>
@@ -19,6 +20,7 @@ const App = () => {
       <Route path='/test' element={<Sidebar/>}></Route>
       <Route path='/appointment-dashboard' element={<AppDashboard/>}></Route>
       <Route path='/book-appointment' element={<BookAppointment/>}></Route>
+      <Route path='/pharmacy' element={<Pharmacy/>}></Route>
 
       </Routes>
     </>

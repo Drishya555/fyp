@@ -36,7 +36,7 @@ const products = [
   { 
     name: 'Pharmacy', 
     description: 'Order and manage your prescriptions online', 
-    href: '#', 
+    href: '/pharmacy', 
     icon: ShoppingCartIcon // Correct icon for Heroicons v2
   }
 ];
