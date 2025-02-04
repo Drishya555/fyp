@@ -24,7 +24,9 @@ export default {
         "lightpurple": "#3c096c",
         "homegreen": "#1D7713",
         "homered": "#7E1814",
-        "homepurple": "#592474"
+        "homepurple": "#592474",
+        "pharmadark": "#163300",
+        "pharmalight": "#a5e677"
       },
     },
   },

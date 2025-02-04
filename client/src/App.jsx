@@ -8,6 +8,8 @@ import Sidebar from './components/Sidebar.jsx';
 import AppDashboard from './pages/appointments/AppDashboard.jsx';
 import BookAppointment from './pages/appointments/BookAppointment.jsx';
 import Pharmacy from './pages/pharmacy/Pharmacy.jsx';
+import Ptest from './pages/pharmacy/ptest.jsx';
+
 const App = () => {
   return (
     <>
@@ -17,7 +19,7 @@ const App = () => {
       <Route path='/login' element={<Login/>}></Route>
       <Route path='/hospitals' element={<Hospitals/>}></Route>
       <Route path='/doctors' element={<Doctors/>}></Route>
-      <Route path='/test' element={<Sidebar/>}></Route>
+      <Route path='/test' element={<Ptest/>}></Route>
       <Route path='/appointment-dashboard' element={<AppDashboard/>}></Route>
       <Route path='/book-appointment' element={<BookAppointment/>}></Route>
       <Route path='/pharmacy' element={<Pharmacy/>}></Route>

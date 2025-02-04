@@ -1,0 +1,38 @@
+@media screen and (max-width: 1600px){
+    .pharmamedgrid{
+        grid-template-columns: repeat(3,1fr) !important;
+    }
+}
+
+
+@media screen and (max-width: 1250px){
+    .pharmamedgrid{
+        grid-template-columns: repeat(2,1fr) !important;
+    }
+}
+
+
+@media screen and (max-width:800px){
+    .pharmacardprice{
+        flex-direction: column !important;
+    }
+}
+
+
+@media screen and (max-width: 580px){
+    .pharmamedgrid{
+        grid-template-columns: repeat(1,1fr) !important;
+    }
+
+    .pharmacardprice{
+        flex-direction: row !important;
+    }
+}
+
+@media screen and (max-width: 385px){
+    .pharmacardprice{
+        flex-direction: column !important;
+        gap: 10px;
+    }
+}
+
