@@ -1,8 +1,8 @@
 import header from '../../assets/realphar.png';
-import p1 from '../../assets/p1.png'
-import p2 from '../../assets/p2.png'
-import p3 from '../../assets/p3.png'
-import p4 from '../../assets/p4.png'
+// import p1 from '../../assets/p1.png'
+// import p2 from '../../assets/p2.png'
+// import p3 from '../../assets/p3.png'
+// import p4 from '../../assets/p4.png'
 
 import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css';
@@ -15,7 +15,7 @@ const Pharmacy = () => {
       <img src={header} className='w-full h-full' ></img>
     </div>
 
-  <div className="flex justify-center items-center">
+  {/* <div className="flex justify-center items-center">
   <div className="flex flex-wrap justify-center gap-5 w-[95%]  p-5 rounded-2xl">
     {[
       { src: p1, label: "Respiratory Care" },
@@ -31,13 +31,13 @@ const Pharmacy = () => {
       </div>
     ))}
   </div>
-</div>
+</div> */}
 
 
-<div className='w-[90%] ml-[5%] mt-[100px]'>
+<div className='w-[90%] ml-[5%]'>
   <div className='flex items-center justify-between'>
   <h1 className='text-[30px] md:text-[40px] font-bold'>Trending Products <br/> for you</h1>
-  <p className='transition-[0.3s] hidden md:block hover:cursor-pointer hover:underline '>View All Products</p>
+  <p className='transition-[0.3s] hidden md:block hover:cursor-pointer hover:underline '><a href="/allmedicines">View All Products</a></p>
   </div>
 <div className='pharmamedgrid  grid grid-cols-4 gap-5'>
       <div className='min-h-[400px] shadow-sm rounded-xl'>
