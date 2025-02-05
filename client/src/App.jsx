@@ -9,6 +9,7 @@ import BookAppointment from './pages/appointments/BookAppointment.jsx';
 import Pharmacy from './pages/pharmacy/Pharmacy.jsx';
 import Ptest from './pages/pharmacy/ptest.jsx';
 import AllMedicines from './pages/pharmacy/AllMedicines.jsx';
+import SingleMedicine from './pages/pharmacy/SingleMedicine.jsx';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
       <Route path='/book-appointment' element={<BookAppointment/>}></Route>
       <Route path='/pharmacy' element={<Pharmacy/>}></Route>
       <Route path='/allmedicines' element={<AllMedicines/>}></Route>
+      <Route path='/singlemedicine' element={<SingleMedicine/>}></Route>
 
       </Routes>
     </>

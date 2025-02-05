@@ -36,3 +36,35 @@
     }
 }
 
+
+@media screen and (max-width:1570px){
+    .singleimg{
+        width: 40% !important;
+    }
+}
+
+
+@media screen and (max-width:1242px){
+    .singleimg{
+        width: 50% !important;
+    }
+}
+
+@media screen and (max-width:650px){
+    .singleimg{
+        width: 100% !important;
+    }
+}
+
+
+@media screen and (max-width:1174px){
+    .singlecontainerpharma{
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .pharmadescription{
+        width: 90% !important;
+    }
+}

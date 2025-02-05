@@ -1,5 +1,6 @@
 import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css';
+import { useState } from "react";
 
 const products = [
   {
@@ -27,7 +28,7 @@ const products = [
     image: "https://www.healme.com.np/storage/Product/PR-1718627783-4149982.webp",
     rating: 4.3,
     oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
+    newPrice: "Rs.2299/-",
   },
   {
     id: 4,
@@ -38,7 +39,7 @@ const products = [
     oldPrice: "Rs.3400/-",
     newPrice: "Rs.2199/-",
   },{
-    id: 4,
+    id: 5,
     category: "SkinCare",
     name: "Ordinary Skincare Solutions",
     image: "https://m.media-amazon.com/images/I/61+VhI+do6L.jpg",
@@ -46,32 +47,7 @@ const products = [
     oldPrice: "Rs.3400/-",
     newPrice: "Rs.2199/-",
   },{
-    id: 4,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://www.rbnainfo.com/ppmsds_uploaddata/images/productline/RB_Dettol_Bottle_16.9floz_RBL2114485_3224889_FRONT_v1.jpg",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },{
-    id: 4,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://img.drz.lazcdn.com/static/np/p/db769293573ab7b05a825f1a0106a947.jpg_720x720q80.jpg",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },{
-    id: 4,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://www.nepal.ubuy.com/productimg/?image=aHR0cHM6Ly9tLm1lZGlhLWFtYXpvbi5jb20vaW1hZ2VzL0kvODFjVmI5T0VDdUwuX0FDX1NMMTUwMF8uanBn.jpg",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },
-  {
-    id: 4,
+    id: 6,
     category: "SkinCare",
     name: "Ordinary Skincare Solutions",
     image: "https://m.media-amazon.com/images/I/61DkqFJIXBL._SL1500_.jpg",
@@ -82,16 +58,65 @@ const products = [
 ];
 
 const AllMedicines = () => {
+  const [sortedProducts, setSortedProducts] = useState(products);
+  const [sortOption, setSortOption] = useState('Select Option');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleSort = (option) => {
+    setSortOption(option);
+    setDropdownOpen(false); // Close dropdown after selection
+
+    let sortedData;
+    if (option === 'Price' || option === 'Ascending') {
+      sortedData = [...products].sort((a, b) => {
+        const priceA = parseFloat(a.newPrice.replace('Rs.', '').replace('/-', ''));
+        const priceB = parseFloat(b.newPrice.replace('Rs.', '').replace('/-', ''));
+        return priceA - priceB;
+      });
+    } else if (option === 'Rating') {
+      sortedData = [...products].sort((a, b) => b.rating - a.rating);
+    } else if (option === 'Descending') {
+      sortedData = [...products].sort((a, b) => {
+        const priceA = parseFloat(a.newPrice.replace('Rs.', '').replace('/-', ''));
+        const priceB = parseFloat(b.newPrice.replace('Rs.', '').replace('/-', ''));
+        return priceB - priceA;
+      });
+    }
+
+    setSortedProducts(sortedData);
+  };
+
   return (
     <div className='w-[90%] ml-[5%]'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-[30px] md:text-[40px] font-bold'>
-          All Products
-        </h1>
+        <h1 className='text-[30px] md:text-[40px] font-bold'>All Products</h1>
+
+        <div className="flex items-center gap-3">
+          <div className="relative w-56">
+            <button 
+              onClick={() => setDropdownOpen(!dropdownOpen)} 
+              className="flex w-full cursor-pointer select-none rounded-lg border p-2 px-3 text-sm text-gray-700"
+            >
+              {sortOption}
+              <svg xmlns="http://www.w3.org/2000/svg" className={`ml-auto h-4 text-gray-600 transition ${dropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {dropdownOpen && (
+              <ul className="absolute left-0 mt-1 w-full bg-white border rounded-lg shadow-lg">
+                <li onClick={() => handleSort('Price')} className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">Price</li>
+                <li onClick={() => handleSort('Rating')} className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">Rating</li>
+                <li onClick={() => handleSort('Ascending')} className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">Ascending</li>
+                <li onClick={() => handleSort('Descending')} className="cursor-pointer px-3 py-2 text-sm text-gray-500 hover:bg-blue-500 hover:text-white">Descending</li>
+              </ul>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className='pharmamedgrid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
-        {products.map((product) => (
+        {sortedProducts.map((product) => (
           <div key={product.id} className='min-h-[400px] shadow-sm rounded-xl'>
             <div className='w-[80%] h-auto ml-[10%]'>
               <img src={product.image} alt={product.name} className='w-full h-full' />
