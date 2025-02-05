@@ -1,5 +1,43 @@
 import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css'
+
+
+const products = [
+  {
+    id: 3,
+    category: "SkinCare",
+    name: "The Purest Healthy Skin",
+    image: "https://www.healme.com.np/storage/Product/PR-1718627783-4149982.webp",
+    rating: 4.3,
+    oldPrice: "Rs.3400/-",
+    newPrice: "Rs.2299/-",
+  },
+  {
+    id: 4,
+    category: "SkinCare",
+    name: "Ordinary Skincare Solutions",
+    image: "https://detailorientedbeauty.com/wp-content/uploads/2017/06/img_9024.jpg?w=640",
+    rating: 4.3,
+    oldPrice: "Rs.3400/-",
+    newPrice: "Rs.2199/-",
+  },{
+    id: 5,
+    category: "SkinCare",
+    name: "Ordinary Skincare Solutions",
+    image: "https://m.media-amazon.com/images/I/61+VhI+do6L.jpg",
+    rating: 4.3,
+    oldPrice: "Rs.3400/-",
+    newPrice: "Rs.2199/-",
+  },{
+    id: 6,
+    category: "SkinCare",
+    name: "Ordinary Skincare Solutions",
+    image: "https://m.media-amazon.com/images/I/61DkqFJIXBL._SL1500_.jpg",
+    rating: 4.3,
+    oldPrice: "Rs.3400/-",
+    newPrice: "Rs.2199/-",
+  }
+]
 const SingleMedicine = () => {
   return (
     <>
@@ -48,6 +86,40 @@ const SingleMedicine = () => {
             <button className="w-[100%] sm:w-[400px] h-[40px] border-2 border-black transition-[0.3s] hover:scale-[1.02] hover:bg-black hover:text-white">Add to Cart</button>
           </div>
         </div>
+      </div>
+
+
+
+      <h1 className="w-[80%] ml-[10%] text-[35px] font-medium mt-[80px]">Similar Products</h1>
+      <div className='w-[80%] ml-[10%] pharmamedgrid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
+        {products.map((product) => (
+          <div key={product.id} className='min-h-[400px] shadow-sm rounded-xl'>
+            <div className='w-[80%] h-auto ml-[10%]'>
+              <img src={product.image} alt={product.name} className='w-full h-full' />
+            </div>
+
+            <div className="p-5 mt-[10px]">
+              <div className="w-full flex justify-between">
+                <p className="text-gray-500 text-[15px]">{product.category}</p>
+                <p className="flex items-center text-gray-500">
+                  ({product.rating}) <AiFillStar color="#FFD700" size={22} />
+                </p>
+              </div>
+
+              <h1 className="text-[20px] w-[200px]">{product.name}</h1>
+
+              <div className="pharmacardprice flex items-center justify-between">
+                <button className="border-2 border-black p-1.5 rounded-[50px] pl-5 pr-5 mt-[20px] transition-[0.3s] hover:scale-[1.02]">
+                  + Add to Cart
+                </button>
+                <div className="flex items-center gap-2">
+                  <p className="line-through text-[14px] text-gray-500">{product.oldPrice}</p>
+                  <p className="font-bold text-[18px]">{product.newPrice}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   )
