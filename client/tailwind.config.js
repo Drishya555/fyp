@@ -8,6 +8,7 @@ export default {
     extend: {
       boxShadow: {
         customRgba: "0px 7px 29px 0px rgba(100, 100, 111, 0.2)",
+        doc:"rgba(149, 157, 165, 0.2) 0px 8px 24px;"
       },
       fontFamily: {
         sans: ['SF Pro Display', 'Arial', 'sans-serif'], // Use SF Pro Display as the primary font
@@ -26,7 +27,9 @@ export default {
         "homered": "#7E1814",
         "homepurple": "#592474",
         "pharmadark": "#163300",
-        "pharmalight": "#a5e677"
+        "pharmalight": "#a5e677",
+        "docblue": "#3445FB",
+        "lightblue": "#EBF2FF"
       },
     },
   },

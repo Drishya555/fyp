@@ -156,3 +156,17 @@
         grid-template-columns: repeat(1,1fr) !important;
     }
 }
+
+
+
+/* 
+doctorpage */
+@media screen and (max-width:1300px){
+    .doctorrightside{
+        display: none;
+    }
+
+    .doctorsmid{
+        width: 97% !important; 
+    }
+}

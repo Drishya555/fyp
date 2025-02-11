@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import Modal from "react-modal";
@@ -7,9 +7,13 @@ import Sidebar from "../../components/Sidebar";
 
 const localizer = momentLocalizer(moment);
 
-const BookAppointment = () => {
+const CalendarComponent = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([
+    { title: "Olivia Wild - Visit", start: new Date("2022-06-10T12:00:00"), end: new Date("2022-06-10T12:45:00"), color: "#f87171" },
+    { title: "Osip Mandelstam - Visit", start: new Date("2022-06-10T14:00:00"), end: new Date("2022-06-10T14:45:00"), color: "#f87171" },
+    { title: "Jennifer Parkins - Visit", start: new Date("2022-06-10T15:00:00"), end: new Date("2022-06-10T15:45:00"), color: "#f87171" },
+  ]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [appointmentTitle, setAppointmentTitle] = useState("");
 
@@ -29,6 +33,7 @@ const BookAppointment = () => {
         title: appointmentTitle,
         start: selectedSlot.start,
         end: selectedSlot.end,
+        color: "#60a5fa",
       };
       setEvents([...events, newEvent]);
       setSelectedSlot(null);
@@ -38,40 +43,34 @@ const BookAppointment = () => {
   };
 
   return (
-    <>
-      <div className="flex">
-        <div className="h-screen fixed z-10 w-[250px]">
-          <Sidebar />
-        </div>
-
-        {/* Main Section */}
-        <section className="flex-1 sm:ml-[70px] lg:ml-[256px] ml-0 p-6 bg-white">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Book Appointment</h1>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              selectable
-              onSelectSlot={handleSelectSlot}
-              defaultView="week"
-              views={["month", "week", "day"]}
-              style={{ height: 600 }}
-              eventPropGetter={(event) => ({
-                style: {
-                  backgroundColor: "#5770ff", // Purple accents
-                  color: "white",
-                  borderRadius: "5px",
-                  padding: "5px",
-                },
-              })}
-            />
-          </div>
-        </section>
+    <div className="flex">
+      <div className="h-screen fixed z-10 w-[250px]">
+        <Sidebar />
       </div>
-
-      {/* Modal for entering appointment title */}
+      <section className="flex-1 sm:ml-[70px] lg:ml-[256px] ml-0 p-6 bg-white">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Book Appointment</h1>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            onSelectSlot={handleSelectSlot}
+            defaultView="week"
+            views={["month", "week", "day"]}
+            style={{ height: 600 }}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: event.color || "#5770ff",
+                color: "white",
+                borderRadius: "5px",
+                padding: "5px",
+              },
+            })}
+          />
+        </div>
+      </section>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
@@ -104,8 +103,8 @@ const BookAppointment = () => {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 
-export default BookAppointment;
+export default CalendarComponent;
