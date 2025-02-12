@@ -14,62 +14,17 @@ import { CiStar } from "react-icons/ci";
 import axios from 'axios';
 
 
-// const doctors = [
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://online-learning-college.com/wp-content/uploads/2023/01/Qualifications-to-Become-a-Doctor--scaled.jpg"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/p7ykgzou3hjxhvepevcq.jpg"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://plus.unsplash.com/premium_photo-1661723509913-785dde4f4d69?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmxhY2slMjBkb2N0b3J8ZW58MHx8MHx8fDA%3D"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://plus.unsplash.com/premium_photo-1658506671316-0b293df7c72b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8ZG9jdG9yfGVufDB8fDB8fHww"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://familydoctor.org/wp-content/uploads/2018/02/41808433_l.jpg"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://cdn.prod.website-files.com/62d4f06f9c1357a606c3b7ef/65ddf3cdf19abaf5688af2f8_shutterstock_1933145801%20(1).jpg"
-//   },
-//   {
-//     name: "Dr. Walter Hartwell White",
-//     specialty: "Orthopedic",
-//     price: "Rs. 570/hr",
-//     image: "https://snibbs.co/cdn/shop/articles/What_are_the_Challenges_of_Being_a_Doctor.jpg?v=1684314843"
-//   }
-// ];
-
 const Doctors = () => {
 
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [activeTab, setActiveTab] = useState("About");
   const [doctors, setDoctors] = useState([])
-  const [error, setError] = useState(null);
+  const [setError] = useState(null);
 
 
   const tabs = ["About", "Schedule", "Ratings"];
   const tabContent = {
-    About: <div><p className="text-normal">As a doctor, my days are filled with both challenges and moments of profound fulfillment. Every morning, I walk into the hospital with a sense of purpose, knowing that I have the opportunity to make a difference in someone’s life. Whether it’s diagnosing a complex condition, comforting a worried family, or performing a life-saving procedure, I’m constantly reminded of the trust my patients place in me. <br/> There are times when the weight of responsibility feels heavy, especially when outcomes aren’t what I hope for, but those moments only drive me to learn and grow. At the end of the day, it’s the gratitude in a patient’s eyes or the simple thankyou that reminds me why I chose this path—it’s not just a job, it’s a calling. </p>       <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">Book</button>
+    About: <div><p className="text-normal">{selectedDoctor.about}</p>       <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">Book</button>
 </div>,
     Schedule: <div>
       <h1>This Week&apos;s Schedule</h1>
@@ -189,17 +144,18 @@ const Doctors = () => {
               <div
                 key={index}
                 className="h-[350px] w-full shadow-doc rounded-lg hover:cursor-pointer transition-[0.3s] hover:scale-[1.02]"
+                onClick={() => setSelectedDoctor(doctor)}
               >
                 <div className="w-[95%] ml-[2.5%] h-[60%]">
                   <div
                     className="w-full h-full rounded-lg mt-[10px] bg-cover bg-center"
-                    style={{ backgroundImage: `url('${doctor.image}')` }}
+                    style={{ backgroundImage: `url('${doctor.user.bgimage}')` }}
                   ></div>
                 </div>
 
                 <div className="p-4">
-                  <h1 className="text-[18px] font-bold">{doctor.user.name}</h1>
-                  <p className="text-gray-400 text-[15px]">{doctor.specialization.specialization}</p>
+                  <h1 className="text-[18px] font-bold">{doctor?.user?.name}</h1>
+                  <p className="text-gray-400 text-[15px]">{doctor?.specialization?.specialization}</p>
 
                   <div className="flex mt-[30px] justify-between">
                     <span className="text-docblue font-bold">Rs.{doctor.hourlyPrice}/-</span>
@@ -223,13 +179,13 @@ const Doctors = () => {
           {selectedDoctor ? (
             <div>
               <img
-                src={selectedDoctor.image}
-                alt={selectedDoctor.name}
+                src={selectedDoctor.user.bgimage}
+                alt={selectedDoctor.user.name}
                 className="w-full h-[250px] object-cover rounded-xl mt-4"
               />
               <div className="flex items-center justify-between mt-[10px]">
                 <div>
-                <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
+                <h1 className="text-[24px] font-bold">{selectedDoctor.user.name}</h1>
                 <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
                 </div>
                 <p className="text-docblue text-[18px] font-bold mt-4">{selectedDoctor.price}</p>
@@ -240,7 +196,7 @@ const Doctors = () => {
                 <div>
                   <div className="flex gap-2">
                     <PiPersonSimpleWalk size={25} className="text-purple-600"/>
-                    <h1 className="font-bold text-[18px]">5 years</h1>
+                    <h1 className="font-bold text-[18px]">{selectedDoctor.experience}</h1>
                   </div>
                   <p className="text-gray-600 mt-[5px]">Experience</p>
                 </div>
@@ -248,7 +204,7 @@ const Doctors = () => {
                 <div>
                   <div className="flex gap-2">
                     <MdPeopleOutline size={24} className="text-green-500"/>
-                    <h1 className="font-bold text-[18px]">1000</h1>
+                    <h1 className="font-bold text-[18px]">{selectedDoctor.totalPatients}</h1>
 
                   </div>
                   <p className="text-gray-600 mt-[5px]">Total Patients</p>
@@ -259,7 +215,7 @@ const Doctors = () => {
                 <div>
                   <div className="flex gap-2">
                     <CiStar size={26} className="text-yellow-400"/>
-                    <h1 className="font-bold text-[18px]">20</h1>
+                    <h1 className="font-bold text-[18px]">{selectedDoctor.rating}</h1>
                   </div>
                   <p className="text-gray-600 mt-[5px]">Ratings</p>
                 </div>

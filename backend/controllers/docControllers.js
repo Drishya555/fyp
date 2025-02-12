@@ -1,13 +1,14 @@
 import userModel from '../models/userModel.js';
 import doctorModel from '../models/doctorModel.js';
 import specializationModel from '../models/specializationModel.js';
+import cloudinary from '../config/cloudinary.js'
 
 export const getAllDoctors = async (req, res) => {
     try {
         const doctors = await doctorModel
             .find()
             .populate("specialization", "specialization") // Get specialization name
-            .populate("user", "name email role"); // Get user details
+            .populate("user", "name email role image bgimage"); // Get user details
 
         res.status(200).json({
             success: true,
@@ -28,7 +29,6 @@ export const getAllDoctors = async (req, res) => {
 export const addDoctors = async (req, res) => {
     try {
         const { user, specialization, licenceNo, rating, about, experience, totalPatients, hourlyPrice } = req.body;
-
         // Check if a doctor already exists for the given user ID
         let doctor = await doctorModel.findOne({ user });
 

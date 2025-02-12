@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema(
     BMI:{
       type: String
     },
+    image:{
+      type:String,
+    },
+    bgimage:{
+      type: String
+    },
     resetToken: {
       type: String,
     },

@@ -42,6 +42,9 @@ const doctorSchema = new mongoose.Schema(
     },
     hourlyPrice:{
       type: String,
+    },
+    bgimage:{
+      type:String,
     }
   },
   { timestamps: true }

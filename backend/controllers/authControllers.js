@@ -2,6 +2,7 @@ import userModel from '../models/userModel.js'
 import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
 import crypto from 'crypto';
 import JWT from 'jsonwebtoken';
+import cloudinary from '../config/cloudinary.js'
 
 export const registerController = async(req,res) =>{
     try {
@@ -83,5 +84,50 @@ export const loginController = async (req, res) => {
       message: "Error in login",
       error,
     });
+  }
+};
+
+
+
+export const updateImage = async (req, res) => {
+  const { id } = req.params;
+  const { image, bgimage } = req.files;
+
+  const user = await userModel.findById(id);
+
+  let imageUrl;
+  let bgimageUrl;
+  try {
+    if (image) {
+      const result = await cloudinary.uploader.upload(image.path, {
+        folder: "mediaid",
+      });
+      imageUrl = result.secure_url;
+    }
+
+    if (bgimage) {
+      const result = await cloudinary.uploader.upload(bgimage.path, {
+        folder: "mediaid",
+      });
+      bgimageUrl = result.secure_url;
+    }
+
+    const updatedImage = await userModel.findByIdAndUpdate(
+      id,
+      {
+        image: imageUrl,
+        bgimage: bgimageUrl
+      },
+      { new: true }
+    );
+
+    if (!updatedImage) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(updatedImage);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
