@@ -2,7 +2,7 @@
 const DocSidebar = () => {
   return (
     <>
-      <aside className="flex flex-col items-center w-16 h-screen py-8 overflow-y-auto bg-white border-r rtl:border-l rtl:border-r-0 ">
+      <aside className="hidden sm:flex flex-col items-center w-16 h-screen py-8 overflow-y-auto bg-white border-r rtl:border-l rtl:border-r-0 ">
   <nav className="flex flex-col flex-1 space-y-6">
    
     <a href="#" className="p-1.5 text-gray-700 focus:outline-nones transition-colors duration-200 rounded-lg  hover:bg-gray-100">

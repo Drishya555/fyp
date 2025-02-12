@@ -170,3 +170,38 @@ doctorpage */
         width: 97% !important; 
     }
 }
+
+
+
+@media screen and (max-width: 950px){
+    .doclist{
+        grid-template-columns: repeat(2,1fr) !important;
+    }
+}
+
+
+
+@media screen and (max-width: 658px){
+    .doclist{
+        grid-template-columns: repeat(1,1fr) !important;
+    }
+}
+
+
+@media screen and (max-width: 1000px){
+    .doccategorygrid{
+        grid-template-columns: repeat(3,1fr) !important;
+    }
+}
+
+@media screen and (max-width: 500px){
+    .doccategorygrid{
+        grid-template-columns: repeat(2,1fr) !important;
+    }
+}
+
+@media screen and (max-width: 640px){
+    .doctorsmid{
+        width: 100% !important;
+    }
+}

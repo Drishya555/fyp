@@ -24,7 +24,7 @@ const Doctors = () => {
 
   const tabs = ["About", "Schedule", "Ratings"];
   const tabContent = {
-    About: <div><p className="text-normal">{selectedDoctor.about}</p>       <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">Book</button>
+    About: <div><p className="text-normal">{selectedDoctor?.about}</p>       <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">Book</button>
 </div>,
     Schedule: <div>
       <h1>This Week&apos;s Schedule</h1>
@@ -95,7 +95,7 @@ const Doctors = () => {
 
 
           {/*  types of doc */}
-          <div className="grid grid-cols-6 h-[184px] mt-[30px] gap-7">
+          <div className="doccategorygrid grid grid-cols-6 h-auto mt-[30px] gap-7">
             <div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue">
               <div className="h-[60%] w-full flex justify-center">
                 <img src={a}></img>
@@ -139,7 +139,7 @@ const Doctors = () => {
               Recommended Orthopedic <span className="text-docblue">(20)</span>
             </h1>
 
-            <div className="grid grid-cols-3 mt-[10px] gap-[20px]">
+            <div className="doclist grid grid-cols-3 mt-[10px] gap-[20px]">
             {doctors.map((doctor, index) => (
               <div
                 key={index}
