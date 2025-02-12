@@ -4,11 +4,11 @@ const doctorSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.ObjectId,
-      ref: "users"
+      ref: "User"
     },
     specialization: {
-      type: String,
-      required: true,
+      type: mongoose.ObjectId,
+      ref: "Specialization",
     },
     licenseNo: {
       type: String,
@@ -17,9 +17,32 @@ const doctorSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref:"Hospitals"
     },
+    reviews:[
+      {
+        user:{
+          type:mongoose.ObjectId,
+          ref:"users",
+        },
+        review:{
+          type:String,
+        }
+      }
+    ],
     rating: {
       type: Number,
     },
+    about:{
+      type: String,
+    },
+    experience:{
+      type: String
+    },
+    totalPatients:{
+      type:String
+    },
+    hourlyPrice:{
+      type: String,
+    }
   },
   { timestamps: true }
 );

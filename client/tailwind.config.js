@@ -29,7 +29,8 @@ export default {
         "pharmadark": "#163300",
         "pharmalight": "#a5e677",
         "docblue": "#3445FB",
-        "lightblue": "#EBF2FF"
+        "lightblue": "#EBF2FF",
+        "buttonblue": "#2B51FC",
       },
     },
   },
