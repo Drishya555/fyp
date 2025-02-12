@@ -8,6 +8,10 @@ import c from '../assets/bone.png'
 import d from '../assets/tooth.png'
 import e from '../assets/neuro.png'
 import f from '../assets/brain.png'
+import { PiPersonSimpleWalk } from "react-icons/pi";
+import { MdPeopleOutline } from "react-icons/md";
+import { CiStar } from "react-icons/ci";
+
 
 
 const doctors = [
@@ -58,7 +62,16 @@ const doctors = [
 const Doctors = () => {
 
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  
+  const [activeTab, setActiveTab] = useState("About");
+
+  const tabs = ["About", "Schedule", "Ratings"];
+  const tabContent = {
+    About: <div><p>AOSHHHHssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssH</p></div>,
+    Schedule: <div><p>Here you can update your settings and preferences.</p></div>,
+    Ratings: <div><p>View all your past and current orders here.</p></div>,
+  };
+
+
   return (
     <>
       <div className="flex gap-5 mt-[10px]">
@@ -164,22 +177,79 @@ const Doctors = () => {
         <div className="doctorrightside w-[30%] rounded-2xl shadow-doc p-6 sticky top-0 h-screen overflow-y-auto">
           {selectedDoctor ? (
             <div>
-              <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
-              <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
               <img
                 src={selectedDoctor.image}
                 alt={selectedDoctor.name}
                 className="w-full h-[250px] object-cover rounded-xl mt-4"
               />
-              <p className="mt-4">{selectedDoctor.description}</p>
-              <p className="text-docblue font-bold mt-4">{selectedDoctor.price}</p>
+              <div className="flex items-center justify-between mt-[10px]">
+                <div>
+                <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
+                <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
+                </div>
+                <p className="text-docblue text-[18px] font-bold mt-4">{selectedDoctor.price}</p>
+              </div>
+
+
+              <div className="flex border-2 rounded-lg border-gray-100  w-full p-4 h-[90px] mt-[20px] justify-between">
+                <div>
+                  <div className="flex gap-2">
+                    <PiPersonSimpleWalk size={25} className="text-purple-600"/>
+                    <h1 className="font-bold text-[18px]">5 years</h1>
+                  </div>
+                  <p className="text-gray-600 mt-[5px]">Experience</p>
+                </div>
+                <div className="h-full w-[1px] bg-slate-300"></div>
+                <div>
+                  <div className="flex gap-2">
+                    <MdPeopleOutline size={24} className="text-green-500"/>
+                    <h1 className="font-bold text-[18px]">1000</h1>
+
+                  </div>
+                  <p className="text-gray-600 mt-[5px]">Total Patients</p>
+
+                </div>
+                <div className="h-full w-[1px] bg-slate-300"></div>
+
+                <div>
+                  <div className="flex gap-2">
+                    <CiStar size={26} className="text-yellow-400"/>
+                    <h1 className="font-bold text-[18px]">20</h1>
+                  </div>
+                  <p className="text-gray-600 mt-[5px]">Ratings</p>
+                </div>
+              </div>
+              
             </div>
           ) : (
             <p className="text-gray-400 text-[18px] text-center mt-20">
               Select a doctor to see details
             </p>
           )}
-        </div>
+
+
+
+
+<div className="max-w-screen-md mx-auto">
+      <div className="bg-white py-2 px-3">
+        <nav className="flex flex-wrap gap-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`inline-flex whitespace-nowrap border-b-2 py-2 px-3 text-sm font-medium transition-all duration-200 ease-in-out 
+                ${activeTab === tab ? "border-b-purple-600 text-purple-600 font-semibold" : "border-transparent text-gray-600 hover:border-b-purple-600 hover:text-purple-600"}`}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+      </div>
+      <div className="mt-[-10px] p-4 rounded-md overflow-auto break-words">
+        {tabContent[activeTab]}
+      </div>
+    </div>
+      </div>
 
       </div>
     </>
