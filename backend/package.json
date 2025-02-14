@@ -28,6 +28,7 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "react-appointment-picker": "^3.2.1",
-    "react-hot-toast": "^2.5.1"
+    "react-hot-toast": "^2.5.1",
+    "slugify": "^1.6.6"
   }
 }

@@ -1,6 +1,7 @@
 import cloudinary from '../config/cloudinary.js'
 import medicineModel from '../models/medicineModel.js'
 import medicineCategoryModel from '../models/medicineCategoryModel.js';
+import slugify from 'slugify';
 
 export const addNewMedicineCategory = async(req,res) =>{
     try {
@@ -64,6 +65,7 @@ export const addMedicineController = async(req,res) =>{
 
         const newmedicine = await new medicineModel({
             name, 
+            slug:slugify(name, { lower: true }),
             category, 
             price, 
             discountprice,
@@ -89,3 +91,35 @@ export const addMedicineController = async(req,res) =>{
         })
     }
 }
+
+
+export const getMedicineBySlug = async (req,res) =>{
+    try {
+        const product = await medicineModel.findOne({ slug: req.params.slug }).populate("category", "categoryName") 
+        ;
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found' });
+        }
+        res.json({ product });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Server error' });
+      }
+}
+
+
+export const getRandomProducts = async (req, res) => {
+    try {
+      const products = await medicineModel.find().limit(4).populate("category", "categoryName");
+  
+      if (!products || products.length === 0) {
+        return res.status(404).json({ message: 'No products found' });
+      }
+  
+      res.json({ products });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  

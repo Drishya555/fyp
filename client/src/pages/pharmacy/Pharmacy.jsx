@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css';
+import { Link } from 'react-router-dom';
+import {motion} from 'framer-motion';
 
 const Pharmacy = () => {
     const [medicines, setMedicines] = useState([]);
@@ -23,7 +25,11 @@ const Pharmacy = () => {
 
   
   return (
-    <>
+    <motion.div
+    initial={{opacity:0}}
+    animate={{opacity:1}}
+    exit={{opacity:0}}
+    transition={{duration:0.9}}>
     <div className="relative w-[96%] h-auto mt-[10px] ml-[2%] rounded-3xl overflow-hidden">
       <img src={header} className='w-full h-full' ></img>
     </div>
@@ -38,7 +44,9 @@ const Pharmacy = () => {
   </div>
   <div className='pharmamedgrid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-[50px]'>
         {medicines.map((product) => (
-          <div key={product.id} className='min-h-[400px] shadow-sm rounded-xl'>
+          <div key={product.id} className='min-h-[400px] shadow-sm rounded-xl transition-[0.3s] hover:scale-[1.015] hover:shadow-md hover:cursor-pointer'>
+          <Link to={`/pharmacy/${product.slug}`}>
+
             <div className='w-[80%] min-h-[60%] h-[auto] ml-[10%]'>
               <img src={product.medicineimg} alt={product.name} className='w-full h-full' />
             </div>
@@ -63,13 +71,14 @@ const Pharmacy = () => {
                 </div>
               </div>
             </div>
+            </Link>
           </div>
         ))}
       </div>
     </div>
 
 
-    </>
+    </motion.div>
   );
 };
 

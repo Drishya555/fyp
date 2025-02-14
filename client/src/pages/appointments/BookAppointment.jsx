@@ -13,6 +13,7 @@ import "./appcss.css";
 import Sidebar from "../../components/Sidebar";
 
 const BookAppointment = () => {
+  // eslint-disable-next-line no-unused-vars
   const [calendar, setCalendar] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

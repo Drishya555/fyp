@@ -5,6 +5,9 @@ const medicineSchema = new mongoose.Schema(
     name: {
         type: String,
     },
+    slug:{
+      type:String
+    },
     category: {
       type:mongoose.ObjectId,
       ref:"medicinecategories"
