@@ -16,3 +16,18 @@
         grid-template-columns: repeat(1,1fr) !important;
     }
 }
+
+/* Change calendar date background to light purple on hover */
+.sx-day:hover {
+    background-color: #e6e6fa !important; /* Light purple */
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  
+  .sx-react-calendar-wrapper {
+    width: 100%;
+    height: 800px;
+    max-height: 90vh;
+  }
+
+  
