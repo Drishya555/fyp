@@ -1,110 +1,85 @@
-import React, { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-import Modal from "react-modal";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import Sidebar from "../../components/Sidebar";
+import { useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import Sidebar from '../../components/Sidebar'; // Import Sidebar component
+import './appcss.css';
 
-const localizer = momentLocalizer(moment);
+const events = [
+  { title: "Meeting", start: new Date(), id: "1" },
+  { title: "Doctor Appointment", start: new Date(new Date().setDate(new Date().getDate() + 1)), id: "2" },
+  { title: "Lunch with John", start: new Date(new Date().setDate(new Date().getDate() + 2)), id: "3" },
+];
 
-const CalendarComponent = () => {
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [events, setEvents] = useState([
-    { title: "Olivia Wild - Visit", start: new Date("2022-06-10T12:00:00"), end: new Date("2022-06-10T12:45:00"), color: "#f87171" },
-    { title: "Osip Mandelstam - Visit", start: new Date("2022-06-10T14:00:00"), end: new Date("2022-06-10T14:45:00"), color: "#f87171" },
-    { title: "Jennifer Parkins - Visit", start: new Date("2022-06-10T15:00:00"), end: new Date("2022-06-10T15:45:00"), color: "#f87171" },
-  ]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [appointmentTitle, setAppointmentTitle] = useState("");
+const BookAppointment = () => {
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // Handle slot selection
-  const handleSelectSlot = (slotInfo) => {
-    setSelectedSlot({
-      start: new Date(slotInfo.start),
-      end: new Date(slotInfo.end),
-    });
-    setModalIsOpen(true);
-  };
-
-  // Handle booking an appointment
-  const handleBookAppointment = () => {
-    if (selectedSlot && appointmentTitle.trim() !== "") {
-      const newEvent = {
-        title: appointmentTitle,
-        start: selectedSlot.start,
-        end: selectedSlot.end,
-        color: "#60a5fa",
-      };
-      setEvents([...events, newEvent]);
-      setSelectedSlot(null);
-      setModalIsOpen(false);
-      setAppointmentTitle("");
-    }
+  const handleEventClick = (clickInfo) => {
+    setSelectedEvent(clickInfo.event);
   };
 
   return (
-    <div className="flex">
-      <div className="h-screen fixed z-10 w-[250px]">
+    <div className="flex h-screen">
+      {/* Sidebar Component */}
+      <div className='h-screen w-[250px] fixed z-10'>
         <Sidebar />
       </div>
-      <section className="flex-1 sm:ml-[70px] lg:ml-[256px] ml-0 p-6 bg-white">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Book Appointment</h1>
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <Calendar
-            localizer={localizer}
+      
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4">
+        <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-4">
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+            initialView="dayGridMonth"
             events={events}
-            startAccessor="start"
-            endAccessor="end"
-            selectable
-            onSelectSlot={handleSelectSlot}
-            defaultView="week"
-            views={["month", "week", "day"]}
-            style={{ height: 600 }}
-            eventPropGetter={(event) => ({
-              style: {
-                backgroundColor: event.color || "#5770ff",
-                color: "white",
-                borderRadius: "5px",
-                padding: "5px",
-              },
-            })}
+            eventClick={handleEventClick}
+            height="auto"
           />
         </div>
-      </section>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
-        ariaHideApp={false}
-      >
-        <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative z-50">
-          <h2 className="text-xl font-medium text-gray-800 mb-4">Enter Appointment Name</h2>
-          <input
-            type="text"
-            value={appointmentTitle}
-            onChange={(e) => setAppointmentTitle(e.target.value)}
-            placeholder="Enter appointment title"
-            className="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <div className="flex justify-end gap-4">
-            <button
-              onClick={handleBookAppointment}
-              className="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition duration-200"
-            >
-              Book Appointment
-            </button>
-            <button
-              onClick={() => setModalIsOpen(false)}
-              className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition duration-200"
-            >
+        {selectedEvent && (
+          <div  className="relative flex justify-center">
+  <button  className="px-6 py-2 mx-auto tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
+    Open Modal
+  </button>
+  <div  className="fixed inset-0 z-10 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">as​</span>
+      <div className="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+        <div>
+          <div className="flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+          </div>
+          <div className="mt-2 text-center">
+            <h3 className="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Archive Project</h3>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Lorem, ipsum dolor sit amet consectetur
+              adipisicing elit. Aspernatur dolorum aliquam ea, ratione deleniti porro officia? Explicabo
+              maiores suscipit.
+            </p>
+          </div>
+        </div>
+        <div className="mt-5 sm:flex sm:items-center sm:justify-between">
+          <a href="#" className="text-sm text-blue-500 hover:underline">Learn more</a>
+          <div className="sm:flex sm:items-center ">
+            <button  className="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
               Cancel
+            </button>
+            <button className="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md sm:w-auto sm:mt-0 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+              Archive
             </button>
           </div>
         </div>
-      </Modal>
+      </div>
+    </div>
+  </div>
+</div>
+
+        )}
+      </div>
     </div>
   );
 };
 
-export default CalendarComponent;
+export default BookAppointment;

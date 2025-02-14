@@ -215,7 +215,7 @@ const Doctors = () => {
                 <div>
                   <div className="flex gap-2">
                     <CiStar size={26} className="text-yellow-400"/>
-                    <h1 className="font-bold text-[18px]">{selectedDoctor.rating}</h1>
+                    <h1 className="font-bold text-[18px]">{selectedDoctor.rating} star</h1>
                   </div>
                   <p className="text-gray-600 mt-[5px]">Ratings</p>
                 </div>

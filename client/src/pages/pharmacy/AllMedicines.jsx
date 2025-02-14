@@ -1,97 +1,90 @@
 import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
-const products = [
-  {
-    id: 1,
-    category: "SkinCare",
-    name: "CeraVe Hydrating Facial Cleanser",
-    image: "https://images.squarespace-cdn.com/content/v1/5cc8a2c6a9ab954d24d1a2b0/1602686558297-VRZ963EGDWW34ZZ6FA9C/CeraVe+Hydrating+Facial+Cleanser-3.png?format=1000w",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },
-  {
-    id: 2,
-    category: "ChildCare",
-    name: "Nestle Cerelac Wheat Infant",
-    image: "https://adora.baby/wp-content/uploads/2023/12/2.png",
-    rating: 4.8,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },
-  {
-    id: 3,
-    category: "SkinCare",
-    name: "The Purest Healthy Skin",
-    image: "https://www.healme.com.np/storage/Product/PR-1718627783-4149982.webp",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2299/-",
-  },
-  {
-    id: 4,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://detailorientedbeauty.com/wp-content/uploads/2017/06/img_9024.jpg?w=640",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },{
-    id: 5,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://m.media-amazon.com/images/I/61+VhI+do6L.jpg",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  },{
-    id: 6,
-    category: "SkinCare",
-    name: "Ordinary Skincare Solutions",
-    image: "https://m.media-amazon.com/images/I/61DkqFJIXBL._SL1500_.jpg",
-    rating: 4.3,
-    oldPrice: "Rs.3400/-",
-    newPrice: "Rs.2199/-",
-  }
-];
+// const products = [
+//   {
+//     id: 1,
+//     category: "SkinCare",
+//     name: "CeraVe Hydrating Facial Cleanser",
+//     image: "https://images.squarespace-cdn.com/content/v1/5cc8a2c6a9ab954d24d1a2b0/1602686558297-VRZ963EGDWW34ZZ6FA9C/CeraVe+Hydrating+Facial+Cleanser-3.png?format=1000w",
+//     rating: 4.3,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2199/-",
+//   },
+//   {
+//     id: 2,
+//     category: "ChildCare",
+//     name: "Nestle Cerelac Wheat Infant",
+//     image: "https://adora.baby/wp-content/uploads/2023/12/2.png",
+//     rating: 4.8,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2199/-",
+//   },
+//   {
+//     id: 3,
+//     category: "SkinCare",
+//     name: "The Purest Healthy Skin",
+//     image: "https://www.healme.com.np/storage/Product/PR-1718627783-4149982.webp",
+//     rating: 4.3,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2299/-",
+//   },
+//   {
+//     id: 4,
+//     category: "SkinCare",
+//     name: "Ordinary Skincare Solutions",
+//     image: "https://detailorientedbeauty.com/wp-content/uploads/2017/06/img_9024.jpg?w=640",
+//     rating: 4.3,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2199/-",
+//   },{
+//     id: 5,
+//     category: "SkinCare",
+//     name: "Ordinary Skincare Solutions",
+//     image: "https://m.media-amazon.com/images/I/61+VhI+do6L.jpg",
+//     rating: 4.3,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2199/-",
+//   },{
+//     id: 6,
+//     category: "SkinCare",
+//     name: "Ordinary Skincare Solutions",
+//     image: "https://m.media-amazon.com/images/I/61DkqFJIXBL._SL1500_.jpg",
+//     rating: 4.3,
+//     oldPrice: "Rs.3400/-",
+//     newPrice: "Rs.2199/-",
+//   }
+// ];
 
 const AllMedicines = () => {
-  const [sortedProducts, setSortedProducts] = useState(products);
-  const [sortOption, setSortOption] = useState('Select Option');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [medicines, setMedicines] = useState([]);
 
-  const handleSort = (option) => {
-    setSortOption(option);
-    setDropdownOpen(false); // Close dropdown after selection
+  
 
-    let sortedData;
-    if (option === 'Price' || option === 'Ascending') {
-      sortedData = [...products].sort((a, b) => {
-        const priceA = parseFloat(a.newPrice.replace('Rs.', '').replace('/-', ''));
-        const priceB = parseFloat(b.newPrice.replace('Rs.', '').replace('/-', ''));
-        return priceA - priceB;
-      });
-    } else if (option === 'Rating') {
-      sortedData = [...products].sort((a, b) => b.rating - a.rating);
-    } else if (option === 'Descending') {
-      sortedData = [...products].sort((a, b) => {
-        const priceA = parseFloat(a.newPrice.replace('Rs.', '').replace('/-', ''));
-        const priceB = parseFloat(b.newPrice.replace('Rs.', '').replace('/-', ''));
-        return priceB - priceA;
-      });
-    }
 
-    setSortedProducts(sortedData);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/pharmacy/getallmedicines");
+        setMedicines(response.data.medicines);
+      } catch (err) {
+        console.log(`Error in fetching ${err} `)
+      }
+    };
+
+    fetchData();
+  }, []); // Runs once when component mounts
+
+
 
   return (
     <div className='w-[90%] ml-[5%]'>
       <div className='flex items-center justify-between'>
         <h1 className='text-[30px] md:text-[40px] font-bold'>All Products</h1>
 
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <div className="relative w-56">
             <button 
               onClick={() => setDropdownOpen(!dropdownOpen)} 
@@ -112,19 +105,19 @@ const AllMedicines = () => {
               </ul>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <div className='pharmamedgrid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
-        {sortedProducts.map((product) => (
+      <div className='pharmamedgrid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-[50px]'>
+        {medicines.map((product) => (
           <div key={product.id} className='min-h-[400px] shadow-sm rounded-xl'>
-            <div className='w-[80%] h-auto ml-[10%]'>
-              <img src={product.image} alt={product.name} className='w-full h-full' />
+            <div className='w-[80%] min-h-[60%] h-[auto] ml-[10%]'>
+              <img src={product.medicineimg} alt={product.name} className='w-full h-full' />
             </div>
 
             <div className="p-5 mt-[10px]">
               <div className="w-full flex justify-between">
-                <p className="text-gray-500 text-[15px]">{product.category}</p>
+                <p className="text-gray-500 text-[15px]">{product.category.categoryName}</p>
                 <p className="flex items-center text-gray-500">
                   ({product.rating}) <AiFillStar color="#FFD700" size={22} />
                 </p>
@@ -137,8 +130,8 @@ const AllMedicines = () => {
                   + Add to Cart
                 </button>
                 <div className="flex items-center gap-2">
-                  <p className="line-through text-[14px] text-gray-500">{product.oldPrice}</p>
-                  <p className="font-bold text-[18px]">{product.newPrice}</p>
+                  <p className="line-through text-[14px] text-gray-500">Rs.{product.price}/-</p>
+                  <p className="font-bold text-[18px]">Rs.{product.discountprice}/-</p>
                 </div>
               </div>
             </div>

@@ -4,25 +4,36 @@ const medicineSchema = new mongoose.Schema(
   {
     name: {
         type: String,
-        required: true,
+    },
+    category: {
+      type:mongoose.ObjectId,
+      ref:"medicinecategories"
     },
     price: {
       type: Number,
-      required: true,
+    },
+    discountprice:{
+      type:Number,
+    },
+    rating:{
+      type: Number
+    },
+    description:{
+      type: String
     },
     strength:{
         type: String,
-        required:true,
     },
     manufacturer:{
         type: String,
-        required:true,
     },
     stock:{
         type: Number,
-        required: true,
+    },
+    medicineimg:{
+      type:String,
     }
-    
+
   },
   { timestamps: true }
 );
