@@ -20,6 +20,22 @@ const Doctors = () => {
   const [activeTab, setActiveTab] = useState("About");
   const [doctors, setDoctors] = useState([])
   const [setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+
+  const filteredDoctors = selectedCategory
+  ? doctors.filter((doctor) => doctor.specialization.specialization === selectedCategory)
+  : doctors; // Show all if no category is selected
+
+
+  const categories = [
+    { name: "General", img: a },
+    { name: "Cardiologist", img: b },
+    { name: "Orthopedic", img: c },
+    { name: "Dentist", img: d },
+    { name: "Neurologist", img: e },
+    { name: "Psychiatrists", img: f },
+  ];
 
 
   const tabs = ["About", "Schedule", "Ratings"];
@@ -96,38 +112,20 @@ const Doctors = () => {
 
           {/*  types of doc */}
           <div className="doccategorygrid grid grid-cols-6 h-auto mt-[30px] gap-7">
-            <div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={a}></img>
+            {categories.map((category, index) => (
+              <div
+                key={index}
+                className={`shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] cursor-pointer ${
+                  selectedCategory === category.name ? "bg-lightblue text-blue-400" : "hover:bg-lightblue hover:text-blue-400"
+                }`}
+                onClick={() => setSelectedCategory(category.name === selectedCategory ? null : category.name)}
+              >
+                <div className="h-[60%] w-full flex justify-center">
+                  <img src={category.img} alt={category.name} />
+                </div>
+                {category.name}
               </div>
-              General
-            </div>
-            <div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue cursor-pointer">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={b}></img>
-              </div>
-              Cardiologist
-            </div><div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue cursor-pointer">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={c}></img>
-              </div>
-              Orthopedic
-            </div><div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue cursor-pointer">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={d}></img>
-              </div>
-              Dentist
-            </div><div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue cursor-pointer">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={e}></img>
-              </div>
-              Neurologist
-            </div><div className="shadow-doc rounded-xl p-2 flex flex-col justify-center items-center text-center transition-[0.3s] hover:bg-lightblue cursor-pointer">
-              <div className="h-[60%] w-full flex justify-center">
-                <img src={f}></img>
-              </div>
-              Psychiatrists
-            </div>
+            ))}
           </div>
 
 
@@ -140,33 +138,30 @@ const Doctors = () => {
             </h1>
 
             <div className="doclist grid grid-cols-3 mt-[10px] gap-[20px]">
-            {doctors.map((doctor, index) => (
-              <div
-                key={index}
-                className="h-[350px] w-full shadow-doc rounded-lg hover:cursor-pointer transition-[0.3s] hover:scale-[1.02]"
-                onClick={() => setSelectedDoctor(doctor)}
-              >
-                <div className="w-[95%] ml-[2.5%] h-[60%]">
-                  <div
-                    className="w-full h-full rounded-lg mt-[10px] bg-cover bg-center"
-                    style={{ backgroundImage: `url('${doctor.user.bgimage}')` }}
-                  ></div>
-                </div>
-
-                <div className="p-4">
-                  <h1 className="text-[18px] font-bold">{doctor?.user?.name}</h1>
-                  <p className="text-gray-400 text-[15px]">{doctor?.specialization?.specialization}</p>
-
-                  <div className="flex mt-[30px] justify-between">
-                    <span className="text-docblue font-bold">Rs.{doctor.hourlyPrice}/-</span>
-                    <span className="transition-[0.4s] hover:underline cursor-pointer">
-                      View Details
-                    </span>
+              {filteredDoctors.map((doctor, index) => (
+                <div
+                  key={index}
+                  className="h-[350px] w-full shadow-doc rounded-lg hover:cursor-pointer transition-[0.3s] hover:scale-[1.02]"
+                  onClick={() => setSelectedDoctor(doctor)}
+                >
+                  <div className="w-[95%] ml-[2.5%] h-[60%]">
+                    <div
+                      className="w-full h-full rounded-lg mt-[10px] bg-cover bg-center"
+                      style={{ backgroundImage: `url('${doctor.user.bgimage}')` }}
+                    ></div>
+                  </div>
+                  <div className="p-4">
+                    <h1 className="text-[18px] font-bold">{doctor?.user?.name}</h1>
+                    <p className="text-gray-400 text-[15px]">{doctor?.specialization?.specialization}</p>
+                    <div className="flex mt-[30px] justify-between">
+                      <span className="text-docblue font-bold">Rs.{doctor.hourlyPrice}/-</span>
+                      <span className="transition-[0.4s] hover:underline cursor-pointer">View Details</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+
           </div>
 
 

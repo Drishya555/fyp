@@ -70,6 +70,7 @@ export const loginController = async (req, res) => {
       success: true,
       message: "Login successful",
       user: {
+        userid: user._id,
         name: user.name,
         email: user.email,   // Include email
         address: user.address || "",  // Include address

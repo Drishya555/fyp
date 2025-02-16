@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import authRoute from './routes/AuthRoute.js'
 import docRoute from './routes/DocRoutes.js'
 import pharmaRoute from './routes/PharmacyRoutes.js'
+import cartRoute from './routes/cartRoute.js'
 import connectDB from './config/db.js';
 
 const app = express();
@@ -22,6 +23,8 @@ app.use(morgan('dev'));
 app.use('/api/auth',authRoute)
 app.use('/api/doctors',docRoute)
 app.use('/api/pharmacy', pharmaRoute)
+app.use('/api/cart', cartRoute)
+
 
 const PORT = 8000;
 

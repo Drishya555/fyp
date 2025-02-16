@@ -99,3 +99,44 @@ export const addSpecialization = async(req,res) =>{
         })
     }
 }
+
+
+
+export const changeSpecialization = async (req, res) => {
+    try {
+        const { id, specialization } = req.body;
+
+        if (!id || !specialization) {
+            return res.status(400).send({
+                success: false,
+                message: "Doctor ID and specialization are required",
+            });
+        }
+
+        const updatedDoctor = await doctorModel.findByIdAndUpdate(
+            id,
+            { specialization },
+            { new: true }
+        );
+
+        if (!updatedDoctor) {
+            return res.status(404).send({
+                success: false,
+                message: "Doctor not found",
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Doctor specialization updated successfully",
+            data: updatedDoctor,
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Failed to update specialization",
+            error: error.message,
+        });
+    }
+};

@@ -29,12 +29,13 @@ const Login = () => {
   
       if (data.success) {
         AuthStore.setUser({
+          userid: data.user.userid,
           name: data.user.name,
           email: data.user.email,
-          address: data.user.address || "",  // Ensure address is included
-          role: data.user.role,   // Ensure role is included
+          address: data.user.address || "",  
+          role: data.user.role, 
         });
-  
+        
         console.log("Stored User:", AuthStore.getUser()); // Debugging line
   
         navigate("/");
