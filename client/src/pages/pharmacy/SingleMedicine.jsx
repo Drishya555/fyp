@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import {motion} from 'framer-motion';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import AuthStore from "../../hooks/authStore"; // Import the AuthStore
 
 const SingleMedicine = () => {
   const {slug} = useParams();
@@ -43,6 +44,38 @@ const SingleMedicine = () => {
 
     fetchProductData();
   }, [slug]);
+
+
+
+  const addtocart = async (productid, quantity = 1) => {
+    try {
+        const userid = AuthStore.getUser()?.userid || null;
+        if (!userid) {
+            console.error("User not authenticated");
+            return;
+        }
+
+        const response = await fetch("http://localhost:8000/api/cart/addtocart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user: userid,
+                products: [{ product: productid, quantity }],
+            }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            console.log("Cart updated successfully", data.cart);
+        } else {
+            console.error("Error updating cart", data.message);
+        }
+    } catch (error) {
+        console.error("Error adding to cart", error);
+    }
+};
 
 
   if (loading) {
@@ -112,7 +145,7 @@ const SingleMedicine = () => {
 
 
           <div className="mt-[30px]">
-            <button className="w-[100%] sm:w-[400px] h-[40px] border-2 border-black transition-[0.3s] hover:scale-[1.02] hover:bg-black hover:text-white">Add to Cart</button>
+            <button onClick={()=>addtocart(product._id)} className="z-[10] w-[100%] sm:w-[400px] h-[40px] border-2 border-black transition-[0.3s] hover:scale-[1.02] hover:bg-black hover:text-white">Add to Cart</button>
           </div>
         </div>
       </div>

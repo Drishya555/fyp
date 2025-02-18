@@ -103,8 +103,8 @@ const Doctors = () => {
             
             <button className="group flex gap-2 rounded-[50px] border border-gray-400 p-2 pl-4 pr-4 items-center transition-[0.4s] hover:bg-docblue hover:text-white hover:border-none">
               <IoCalendarOutline size={19} className="text-docblue group-hover:text-white" />
-              <p className="text-[15px]">February 9, 2025</p> 
-          </button>
+              <p className="text-[15px]">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              </button>
           </div>
 
 
