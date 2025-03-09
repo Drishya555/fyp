@@ -11,6 +11,8 @@ import Pharmacy from './pages/pharmacy/Pharmacy.jsx';
 import AllMedicines from './pages/pharmacy/AllMedicines.jsx';
 import SingleMedicine from './pages/pharmacy/SingleMedicine.jsx';
 import Cart from './pages/cart.jsx'
+import Docdashboard from './pages/doctors/docDashboard.jsx'
+import Docnewsidebar from './pages/doctors/docSidebar.jsx'
 const App = () => {
   return (
     <>
@@ -27,6 +29,11 @@ const App = () => {
       <Route path='/allmedicines' element={<AllMedicines/>}></Route>
       <Route path="/pharmacy/:slug" element={<SingleMedicine />} />
       <Route path='/cart' element={<Cart/>}></Route>
+
+
+      {/* doctor routes */}
+      <Route path='/dashboardfordoc' element={<Docdashboard/>}></Route>
+      <Route path='/docdashboard' element={<Docnewsidebar/>}></Route>
 
       </Routes>
     </>
