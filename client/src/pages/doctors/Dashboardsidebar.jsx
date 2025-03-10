@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { User, Settings, Monitor, Bell } from "lucide-react";
-import DocPage from "./components/docDashboard";
+import DocPage from "./components/personalDashboard";
+import DocAppointments from "./components/docAppointments";
+import ImgDetection from "./components/imageDetection";
 
 const menuItems = [
-  { id: 1, name: "Profile", icon: <User size={20} />, component: <DocPage /> },
-  { id: 2, name: "Account", icon: <Settings size={20} />, component: <div>Account Page</div> },
-  { id: 3, name: "Appearance", icon: <Monitor size={20} />, component: <div>Appearance Page</div> },
-  { id: 4, name: "Notification", icon: <Bell size={20} />, component: <div>Notification Page</div> },
+  { id: 1, name: "Dashboard", icon: <User size={20} />, component: <DocPage /> },
+  { id: 2, name: "Appointments", icon: <Settings size={20} />, component: <DocAppointments/> },
+  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <ImgDetection/> },
+  { id: 4, name: "Ai Disease Detection", icon: <Bell size={20} />, component: <div>Notification Page</div> },
+
 ];
 
 export default function ResponsiveSidebar() {
@@ -24,7 +27,7 @@ export default function ResponsiveSidebar() {
               className={`flex items-center gap-3 p-4 cursor-pointer transition-all duration-300 ${
                 active === item.id
                   ? "text-black border-r-4 border-blue-500 bg-gray-100"
-                  : "text-gray-500 hover:text-black hover:bg-gray-50"
+                  : "text-gray-500 hover:text-black hover:bg-hoverblue"
               }`}
               onClick={() => setActive(item.id)}
             >
@@ -36,7 +39,7 @@ export default function ResponsiveSidebar() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-0 md:p-6 overflow-auto">
+      <div className="flex-1 p-0 md:p-0 overflow-auto">
         {menuItems.find((item) => item.id === active)?.component}
       </div>
 

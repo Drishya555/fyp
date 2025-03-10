@@ -11,12 +11,14 @@ import Pharmacy from './pages/pharmacy/Pharmacy.jsx';
 import AllMedicines from './pages/pharmacy/AllMedicines.jsx';
 import SingleMedicine from './pages/pharmacy/SingleMedicine.jsx';
 import Cart from './pages/cart.jsx'
-import Docdashboard from './pages/doctors/docDashboard.jsx'
+import Dashboardsidebar from './pages/doctors/Dashboardsidebar.jsx'
 import Docnewsidebar from './pages/doctors/docSidebar.jsx'
+import Table from './pages/doctors/components/tablecomponent.jsx';
 const App = () => {
   return (
     <>
       <Routes>
+        {/* All user view */}
       <Route path='/' element={<Homepage/>}></Route>
       <Route path='/register' element={<Register/>}></Route>
       <Route path='/login' element={<Login/>}></Route>
@@ -31,9 +33,10 @@ const App = () => {
       <Route path='/cart' element={<Cart/>}></Route>
 
 
-      {/* doctor routes */}
-      <Route path='/dashboardfordoc' element={<Docdashboard/>}></Route>
-      <Route path='/docdashboard' element={<Docnewsidebar/>}></Route>
+      {/* doctor view */}
+      <Route path='/profile' element={<Docnewsidebar/>}></Route>
+      <Route path='/doctor-dashboard' element={<Dashboardsidebar/>}></Route>
+      <Route path='/table' element={<Table/>}></Route>
 
       </Routes>
     </>

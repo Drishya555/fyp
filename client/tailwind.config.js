@@ -31,6 +31,7 @@ export default {
         "docblue": "#3445FB",
         "lightblue": "#EBF2FF",
         "buttonblue": "#2B51FC",
+        "hoverblue": "#F5F9FF",
       },
     },
   },
