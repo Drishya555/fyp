@@ -26,7 +26,7 @@ const Docdashboard = () => {
 
     return (
       <div className="w-full p-6 font-normal text-gray-800">
-        {/* Background Banner */}
+        {/* Background Banner */} 
         <div
           className="relative w-full h-[30vh] rounded-xl overflow-hidden"
           style={{
@@ -81,6 +81,13 @@ const Docdashboard = () => {
             ))}
           </div>
           <p className="mt-4 text-gray-700 leading-relaxed">{tabContent[activeTab]}</p>
+        </div>
+
+
+
+        <div className="mt-8 p-6">
+          <div className=""></div>
+          <div></div>
         </div>
 
         {/* Modal */}

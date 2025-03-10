@@ -23,11 +23,6 @@ const Doctors = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
 
-  const filteredDoctors = selectedCategory
-  ? doctors.filter((doctor) => doctor.specialization.specialization === selectedCategory)
-  : doctors; // Show all if no category is selected
-
-
   const categories = [
     { name: "General", img: a },
     { name: "Cardiologist", img: b },
@@ -87,7 +82,12 @@ const Doctors = () => {
     fetchData();
   }, []); // Runs once when component mounts
 
-
+  const filteredDoctors = doctors.filter(
+    (doctor) =>
+      !selectedCategory || doctor?.specialization?.specialization === selectedCategory
+  );
+  
+  
 
   return (
     <>

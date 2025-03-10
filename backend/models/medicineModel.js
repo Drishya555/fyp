@@ -41,4 +41,4 @@ const medicineSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("products", medicineSchema);
+export default mongoose.model("medicines", medicineSchema);
