@@ -1,6 +1,11 @@
 import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { useState } from "react";
 import { X } from "lucide-react";
+import { PiPersonSimpleWalk } from "react-icons/pi";
+import { MdPeopleOutline } from "react-icons/md";
+import { CiStar } from "react-icons/ci";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+
 
 const Docdashboard = () => {
     const [activeTab, setActiveTab] = useState("About");
@@ -10,6 +15,14 @@ const Docdashboard = () => {
         patients: "14,000+",
         experience: "30+ years"
     });
+
+    const data = [
+      { name: "Alice", value: 40, color: "#3b82f6" },
+      { name: "Bob", value: 30, color: "#86efac" },
+      { name: "Charlie", value: 20, color: "#fcd34d" },
+      { name: "David", value: 10, color: "#f87171" }
+    ];
+    
 
     const bgurl = 'https://images.unsplash.com/photo-1524721696987-b9527df9e512?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cmVkJTIwYWJzdHJhY3R8ZW58MHx8MHx8fDA%3D';
     const profileImage = "https://media.gettyimages.com/id/1591832777/video/doctor-woman-and-checklist-for-healthcare-advice-consulting-and-medical-support-test-and.jpg?s=640x640&k=20&c=cf3M9rNJ2343wiXxvfc-qnO2wsUdGg4VlXVJDeCnOhg=";
@@ -85,11 +98,55 @@ const Docdashboard = () => {
 
 
 
-        <div className="mt-8 p-6">
-          <div className=""></div>
-          <div></div>
+        <div className="flex flex-col md:flex-row  md:justify-between w-full p-6 gap-6">
+      <div className="flex flex-col md:flex-row md:w-[40%] border-2 rounded-lg border-gray-100 p-4 h-auto md:h-[90px] justify-between">
+        <div className="text-center md:text-left">
+          <div className="flex gap-2 justify-center md:justify-start">
+            <PiPersonSimpleWalk size={25} className="text-purple-600" />
+            <h1 className="font-bold text-[18px]">21 Years</h1>
+          </div>
+          <p className="text-gray-600 mt-[5px]">Experience</p>
         </div>
-
+        <div className="hidden md:block h-full w-[1px] bg-slate-300"></div>
+        <div className="text-center md:text-left">
+          <div className="flex gap-2 justify-center md:justify-start">
+            <MdPeopleOutline size={24} className="text-green-500" />
+            <h1 className="font-bold text-[18px]">220</h1>
+          </div>
+          <p className="text-gray-600 mt-[5px]">Total Patients</p>
+        </div>
+        <div className="hidden md:block h-full w-[1px] bg-slate-300"></div>
+        <div className="text-center md:text-left">
+          <div className="flex gap-2 justify-center md:justify-start">
+            <CiStar size={26} className="text-yellow-400" />
+            <h1 className="font-bold text-[18px]">5 star</h1>
+          </div>
+          <p className="text-gray-600 mt-[5px]">Ratings</p>
+        </div>
+      </div>
+      <div className="w-full md:w-1/2 flex items-center justify-center mt-[-50px]">
+        <div className="w-full max-w-md">
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie data={data} cx="50%" cy="50%" innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value">
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="flex flex-wrap justify-center mt-4 gap-4">
+            {data.map((entry, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <span className="w-4 h-4 block rounded-full" style={{ backgroundColor: entry.color }}></span>
+                <span className="text-gray-700 text-sm">{entry.name} ({entry.value}%)</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
         {/* Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
