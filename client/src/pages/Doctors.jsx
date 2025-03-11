@@ -147,11 +147,11 @@ const Doctors = () => {
                   <div className="w-[95%] ml-[2.5%] h-[60%]">
                     <div
                       className="w-full h-full rounded-lg mt-[10px] bg-cover bg-center"
-                      style={{ backgroundImage: `url('${doctor.user.bgimage}')` }}
+                      style={{ backgroundImage: `url('${doctor.image}')` }}
                     ></div>
                   </div>
                   <div className="p-4">
-                    <h1 className="text-[18px] font-bold">{doctor?.user?.name}</h1>
+                    <h1 className="text-[18px] font-bold">{doctor?.name}</h1>
                     <p className="text-gray-400 text-[15px]">{doctor?.specialization?.specialization}</p>
                     <div className="flex mt-[30px] justify-between">
                       <span className="text-docblue font-bold">Rs.{doctor.hourlyPrice}/-</span>
@@ -174,13 +174,13 @@ const Doctors = () => {
           {selectedDoctor ? (
             <div>
               <img
-                src={selectedDoctor.user.bgimage}
-                alt={selectedDoctor.user.name}
+                src={selectedDoctor.image}
+                alt={selectedDoctor.name}
                 className="w-full h-[250px] object-cover rounded-xl mt-4"
               />
               <div className="flex items-center justify-between mt-[10px]">
                 <div>
-                <h1 className="text-[24px] font-bold">{selectedDoctor.user.name}</h1>
+                <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
                 <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
                 </div>
                 <p className="text-docblue text-[18px] font-bold mt-4">{selectedDoctor.price}</p>

@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginController, registerController,updateImage } from '../controllers/authControllers.js';
+import { loginController, registerController,updateImage } from '../controllers/userController.js';
 import formidable from "express-formidable";
 
 const router = express.Router();

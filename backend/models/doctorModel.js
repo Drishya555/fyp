@@ -1,10 +1,26 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const doctorSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.ObjectId,
-      ref: "User"
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+    },
+    phone:{
+      type:String
     },
     specialization: {
       type: mongoose.ObjectId,
@@ -43,11 +59,28 @@ const doctorSchema = new mongoose.Schema(
     hourlyPrice:{
       type: String,
     },
+    image:{
+      type:String,
+    },
     bgimage:{
       type:String,
-    }
+    },
+    role:{
+      type: String,
+      default: "doctor",
+    },
+    verified:{
+      type:Boolean,
+      default:false
+    },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExpires: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("doctors", doctorSchema);
+export default mongoose.model("Doctor", doctorSchema);

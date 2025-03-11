@@ -1,14 +1,16 @@
-import userModel from '../models/userModel.js';
 import doctorModel from '../models/doctorModel.js';
 import specializationModel from '../models/specializationModel.js';
 import cloudinary from '../config/cloudinary.js'
+import docmodel from '../models/doctorModel.js'
+import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
+import crypto from 'crypto';
+import JWT from 'jsonwebtoken';
 
 export const getAllDoctors = async (req, res) => {
     try {
         const doctors = await doctorModel
             .find()
-            .populate("specialization", "specialization") // Get specialization name
-            .populate("user", "name email role image bgimage"); // Get user details
+            .populate("specialization", "specialization") 
 
         res.status(200).json({
             success: true,
@@ -23,60 +25,6 @@ export const getAllDoctors = async (req, res) => {
         });
     }
 };
-
-
-
-export const addDoctors = async (req, res) => {
-    try {
-        const { user, specialization, licenceNo, rating, about, experience, totalPatients, hourlyPrice } = req.body;
-        // Check if a doctor already exists for the given user ID
-        let doctor = await doctorModel.findOne({ user });
-
-        if (doctor) {
-            // Update existing doctor details
-            doctor.specialization = specialization;
-            doctor.licenceNo = licenceNo;
-            doctor.rating = rating;
-            doctor.about = about;
-            doctor.experience = experience;
-            doctor.totalPatients = totalPatients;
-            doctor.hourlyPrice = hourlyPrice;
-
-            await doctor.save();
-
-            return res.status(200).send({
-                success: true,
-                message: "Doctor details updated",
-                doctor
-            });
-        } else {
-            // Create a new doctor entry
-            doctor = await new doctorModel({
-                user,
-                specialization,
-                licenceNo,
-                rating,
-                about,
-                experience,
-                totalPatients,
-                hourlyPrice
-            }).save();
-
-            return res.status(201).send({
-                success: true,
-                message: "Doctor details added",
-                doctor
-            });
-        }
-    } catch (error) {
-        res.status(500).send({
-            success: false,
-            message: "Doctor details failed to add or update",
-            error: error.message
-        });
-    }
-};
-
 
 
 export const addSpecialization = async(req,res) =>{
@@ -101,42 +49,183 @@ export const addSpecialization = async(req,res) =>{
 }
 
 
-
-export const changeSpecialization = async (req, res) => {
+export const updatedocController = async (req, res) => {
     try {
-        const { id, specialization } = req.body;
+        const { id } = req.params; 
+        const updateData = req.body;
 
-        if (!id || !specialization) {
-            return res.status(400).send({
-                success: false,
-                message: "Doctor ID and specialization are required",
-            });
-        }
-
-        const updatedDoctor = await doctorModel.findByIdAndUpdate(
-            id,
-            { specialization },
-            { new: true }
-        );
-
-        if (!updatedDoctor) {
+        const existingDoctor = await docmodel.findById(id);
+        if (!existingDoctor) {
             return res.status(404).send({
                 success: false,
                 message: "Doctor not found",
             });
         }
 
-        res.status(200).send({
-            success: true,
-            message: "Doctor specialization updated successfully",
-            data: updatedDoctor,
+        const updatedDoctor = await docmodel.findByIdAndUpdate(id, updateData, {
+            new: true, 
+            runValidators: true, 
         });
 
-    } catch (error) {
+        res.status(200).send({
+            success: true,
+            message: "Doctor updated successfully",
+            doctor: updatedDoctor,
+        });
+    } catch (err) {
+        console.error("Error updating doctor:", err);
         res.status(500).send({
             success: false,
-            message: "Failed to update specialization",
-            error: error.message,
+            message: "Failed to update doctor",
+            error: err.message,
         });
     }
+};
+
+
+
+
+
+export const registerDocController = async(req,res) =>{
+    try {
+        const {name, email, password, phone,licenseNo} = req.fields;
+        const {image} = req.files;
+
+        let imageurl;
+
+         if (image) {
+              const result = await cloudinary.uploader.upload(image.path, {
+                folder: "mediaid",
+              });
+              imageurl = result.secure_url;
+            }
+        
+
+    const existingUser = await docmodel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).send({
+        success: false,
+        message: "Email is already taken",
+      });
+    }
+    const hashedPassword = await hashPassword(password);
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const user = await new docmodel({
+        name,
+        email,
+        password: hashedPassword,
+        resetToken,
+        phone:phone,
+        licenseNo:licenseNo,
+        image:imageurl,
+    }).save();
+
+    res.status(201).send({
+        success: true,
+        message: "Doctor registered successfully",
+        user,
+      });
+    } catch (error) {
+        console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in registration",
+      error,
+    });
+    }
+
+}
+
+export const loginDocController = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await docmodel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "Email is not registered",
+      });
+    }
+
+    const match = await comparePassword(password, user.password);
+    if (!match) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "Login successful",
+      user: {
+        doctorid: user._id,
+        name: user.name,
+        email: user.email,   // Include email
+        address: user.address || "",  // Include address
+        role: user.role || "user",    // Include role
+        verified: user.verified || false,
+      },
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in login",
+      error,
+    });
+  }
+};
+
+
+
+export const updateImage = async (req, res) => {
+  const { id } = req.params;
+  const { image, bgimage } = req.files;
+
+  const user = await docmodel.findById(id);
+
+  let imageUrl;
+  let bgimageUrl;
+  try {
+    if (image) {
+      const result = await cloudinary.uploader.upload(image.path, {
+        folder: "mediaid",
+      });
+      imageUrl = result.secure_url;
+    }
+
+    if (bgimage) {
+      const result = await cloudinary.uploader.upload(bgimage.path, {
+        folder: "mediaid",
+      });
+      bgimageUrl = result.secure_url;
+    }
+
+    const updatedImage = await docmodel.findByIdAndUpdate(
+      id,
+      {
+        image: imageUrl,
+        bgimage: bgimageUrl
+      },
+      { new: true }
+    );
+
+    if (!updatedImage) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(updatedImage);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };

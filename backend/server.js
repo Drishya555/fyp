@@ -3,7 +3,7 @@ import cors from 'cors';
 import colors from 'colors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import authRoute from './routes/AuthRoute.js'
+import authRoute from './routes/UserRoute.js'
 import docRoute from './routes/DocRoutes.js'
 import pharmaRoute from './routes/PharmacyRoutes.js'
 import cartRoute from './routes/cartRoute.js'
