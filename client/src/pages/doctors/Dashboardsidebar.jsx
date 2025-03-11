@@ -7,8 +7,8 @@ import ImgDetection from "./components/imageDetection";
 const menuItems = [
   { id: 1, name: "Dashboard", icon: <User size={20} />, component: <DocPage /> },
   { id: 2, name: "Appointments", icon: <Settings size={20} />, component: <DocAppointments/> },
-  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <ImgDetection/> },
-  { id: 4, name: "Ai Disease Detection", icon: <Bell size={20} />, component: <div>Notification Page</div> },
+  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <div>Add medical record</div> },
+  { id: 4, name: "Ai Disease Detection", icon: <Bell size={20} />, component: <ImgDetection/> },
 
 ];
 

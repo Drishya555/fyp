@@ -14,6 +14,7 @@ import Cart from './pages/cart.jsx'
 import Dashboardsidebar from './pages/doctors/Dashboardsidebar.jsx'
 import Docnewsidebar from './pages/doctors/docSidebar.jsx'
 import Table from './pages/doctors/components/tablecomponent.jsx';
+import MedicalRecord from './pages/medicalRecord.jsx'
 const App = () => {
   return (
     <>
@@ -31,6 +32,7 @@ const App = () => {
       <Route path='/allmedicines' element={<AllMedicines/>}></Route>
       <Route path="/pharmacy/:slug" element={<SingleMedicine />} />
       <Route path='/cart' element={<Cart/>}></Route>
+      <Route path='/medical-record/:id' element={<MedicalRecord/>}></Route>
 
 
       {/* doctor view */}

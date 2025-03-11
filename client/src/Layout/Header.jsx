@@ -30,7 +30,7 @@ const products = [
   { 
     name: 'Medical Record', 
     description: 'Access and manage your medical records securely', 
-    href: '#', 
+    href: '/medical-record', 
     icon: DocumentTextIcon // Correct icon for Heroicons v2
   },
   { 

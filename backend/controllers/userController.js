@@ -3,6 +3,7 @@ import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
 import crypto from 'crypto';
 import JWT from 'jsonwebtoken';
 import cloudinary from '../config/cloudinary.js'
+import docmodel from '../models/doctorModel.js';
 
 export const registerController = async(req,res) =>{
     try {
@@ -45,16 +46,24 @@ export const registerController = async(req,res) =>{
 export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
 
-    if (!user) {
+    // Check if the email exists in either user or doctor collection
+    const user = await userModel.findOne({ email });
+    const doctor = await docmodel.findOne({ email });
+
+    // If neither user nor doctor exists
+    if (!user && !doctor) {
       return res.status(404).send({
         success: false,
         message: "Email is not registered",
       });
     }
 
-    const match = await comparePassword(password, user.password);
+    // Determine if the login is for a user or a doctor
+    const account = user || doctor;
+
+    // Compare passwords
+    const match = await comparePassword(password, account.password);
     if (!match) {
       return res.status(400).send({
         success: false,
@@ -62,22 +71,27 @@ export const loginController = async (req, res) => {
       });
     }
 
-    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    // Generate JWT token
+    const token = await JWT.sign({ _id: account._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    res.status(200).send({
+    // Send response based on account type
+    const responseData = {
       success: true,
       message: "Login successful",
       user: {
-        userid: user._id,
-        name: user.name,
-        email: user.email,   // Include email
-        address: user.address || "",  // Include address
-        role: user.role || "user",    // Include role
+        userid: account._id,
+        name: account.name,
+        email: account.email,
+        address: account.address || "",
+        role: account.role || (user ? "user" : "doctor"), // Set role based on account type
+        ...(doctor && { licenseNo: doctor.licenseNo, image: doctor.image }), // Include doctor-specific fields
       },
       token,
-    });
+    };
+
+    res.status(200).send(responseData);
   } catch (error) {
     console.log(error);
     res.status(500).send({

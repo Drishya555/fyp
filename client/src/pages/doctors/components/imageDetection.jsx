@@ -41,21 +41,6 @@ const ImageUploader = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
  
 
-  const simulateUpload = () => {
-    let interval = setInterval(() => {
-      if (!paused) {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setLoading(false);
-            setCompleted(true);
-            return 100;
-          }
-          return prev + 5;
-        });
-      }
-    }, 200);
-  };
 
   
 
@@ -101,7 +86,7 @@ const ImageUploader = () => {
           </h1>
 
           <p className="text-lg text-gray-600">
-            From early detection to accurate diagnoses, Mediaid's pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better respiratory health.
+            From early detection to accurate diagnoses, Mediaid&apos;s pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better respiratory health.
           </p>
 
           <div className="flex gap-4">
@@ -298,6 +283,17 @@ const ImageUploader = () => {
                 <p className="text-gray-700">{image.name}</p>
               )}
             </div>
+
+            {image && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-4">Uploaded Image:</h3>
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt="Uploaded"
+                  className="w-full rounded-lg shadow-lg"
+                />
+              </div>
+            )}
 
             {loading && (
               <motion.div
