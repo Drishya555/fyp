@@ -26,6 +26,33 @@ export const getAllDoctors = async (req, res) => {
     }
 };
 
+export const getSelectedDocController = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const doctor = await doctorModel.findById(id);
+    if (!doctor) {
+      return res.status(404).send({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+      res.status(200).json({
+          success: true,
+          message: "Doctors fetched successfully",
+          doctor,
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          message: "Error fetching doctors",
+          error: error.message,
+      });
+  }
+};
+
+
+
 
 export const addSpecialization = async(req,res) =>{
     try {

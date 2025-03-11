@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { type } from "os";
 
 const doctorSchema = new mongoose.Schema(
   {
@@ -41,6 +40,20 @@ const doctorSchema = new mongoose.Schema(
         },
         review:{
           type:String,
+        }
+      }
+    ],
+    freeslots:[
+      {
+        day:{
+          type:String,
+        },
+        time:{
+          type:String,
+        },
+        status:{
+          type:String,
+          default: "available",
         }
       }
     ],

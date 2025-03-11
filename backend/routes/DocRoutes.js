@@ -9,5 +9,6 @@ router.post('/logindoctor',loginDocController);
 router.get('/getalldoctors', getAllDoctors);
 router.post('/addnewspecialization',addSpecialization);
 router.put('/updatedocdetails/:id',updatedocController);
+router.get('/getselecteddoc/:id',updatedocController);
 
 export default router;
