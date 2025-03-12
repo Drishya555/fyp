@@ -6,7 +6,7 @@ const appointmentSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "users"
     },
-    doctors: {
+    doctor: {
       type: mongoose.ObjectId,
       ref: "doctors",
     },
@@ -27,4 +27,4 @@ const appointmentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("appointment", appointmentSchema);
+export default mongoose.model("Appointment", appointmentSchema);

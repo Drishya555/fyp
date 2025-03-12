@@ -16,6 +16,7 @@ import Docnewsidebar from './pages/doctors/docSidebar.jsx'
 import Table from './pages/doctors/components/tablecomponent.jsx';
 import MedicalRecord from './pages/medicalRecord.jsx'
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
+import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
 const App = () => {
   return (
     <>
@@ -41,6 +42,7 @@ const App = () => {
       <Route path='/doctor-dashboard' element={<Dashboardsidebar/>}></Route>
       <Route path='/table' element={<Table/>}></Route>
       <Route path='/changeschedule' element={<AddSchedule/>}></Route>
+      <Route path='/bb' element={<BookAppointmentTesting/>}></Route>
 
       </Routes>
     </>
