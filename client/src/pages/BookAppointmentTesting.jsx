@@ -5,7 +5,9 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [slots, setSlots] = useState([]);
   const [schedule, setSchedule] = useState([]);
-  const [newSlot, setNewSlot] = useState({ day: "", time: "" }); // State for the new slot form
+  const [newSlot, setNewSlot] = useState({ day: "", time: "" });
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [purpose, setPurpose] = useState("");
 
   // Map short day names to full day names
   const dayMap = {
@@ -22,7 +24,7 @@ const Schedule = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/doctors/getselecteddoc/67cfd188ccd43f0f0cca9280');
-        console.log(response.data.doctor.freeslots); // Log the freeslots array
+        console.log(response.data.doctor.freeslots);
         setSchedule(response.data.doctor.freeslots);
       } catch (error) {
         console.log(error);
@@ -33,7 +35,7 @@ const Schedule = () => {
 
   // Function to filter slots based on the selected day
   const filterSlotsByDay = (day) => {
-    const fullDayName = dayMap[day]; // Get the full day name from the map
+    const fullDayName = dayMap[day];
     const filteredSlots = schedule.filter((slot) => slot.day.toLowerCase() === fullDayName.toLowerCase());
     return filteredSlots.map((slot) => `${slot.time} (${slot.status})`);
   };
@@ -41,8 +43,15 @@ const Schedule = () => {
   const handleDayClick = (day) => {
     setSelectedDay(day);
     const filteredSlots = filterSlotsByDay(day);
-    console.log(`Selected Day: ${day}, Full Day Name: ${dayMap[day]}, Filtered Slots:`, filteredSlots); // Log the selected day and filtered slots
+    console.log(`Selected Day: ${day}, Full Day Name: ${dayMap[day]}, Filtered Slots:`, filteredSlots);
     setSlots(filteredSlots);
+    setSelectedSlot(null);
+  };
+
+  // Handle slot click
+  const handleSlotClick = (slot) => {
+    setSelectedSlot(slot);
+    console.log("Selected Slot:", slot);
   };
 
   // Handle form input changes
@@ -55,22 +64,55 @@ const Schedule = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create the updated freeslots array
     const updatedSlots = [...schedule, { day: newSlot.day.toLowerCase(), time: newSlot.time }];
 
     try {
-      // Send a PUT request to update the doctor's schedule
       const response = await axios.put(
         'http://localhost:8000/api/doctors/updatedocdetails/67cfd188ccd43f0f0cca9280',
         { freeslots: updatedSlots }
       );
-      console.log("Update Response:", response.data); // Log the response
-      setSchedule(updatedSlots); // Update the local state with the new schedule
-      setNewSlot({ day: "", time: "" }); // Reset the form
+      console.log("Update Response:", response.data);
+      setSchedule(updatedSlots);
+      setNewSlot({ day: "", time: "" });
       alert("Schedule updated successfully!");
     } catch (error) {
       console.error("Error updating schedule:", error);
       alert("Failed to update schedule. Please try again.");
+    }
+  };
+
+  // Handle appointment creation
+  const handleCreateAppointment = async () => {
+    if (!selectedSlot || !purpose) {
+      alert("Please select a slot and provide a purpose.");
+      return;
+    }
+
+    // Calculate the actual date for the selected day
+    const today = new Date();
+    const selectedDate = new Date(today);
+    selectedDate.setDate(today.getDate() + (Object.keys(dayMap).indexOf(selectedDay) - today.getDay() + 7) % 7);
+
+    const appointmentData = {
+      user: "67d14359c267fa1fb4eb6e51", // Hardcoded user ID
+      doctor: "67cfd188ccd43f0f0cca9280", // Hardcoded doctor ID
+      date: selectedDate.toISOString().split("T")[0], // Format as YYYY-MM-DD
+      purpose: purpose,
+      time: selectedSlot.split(" (")[0], // Extract time from the selected slot
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/appointment/createappointment",
+        appointmentData
+      );
+      console.log("Appointment Creation Response:", response.data);
+      alert("Appointment created successfully!");
+      setSelectedSlot(null);
+      setPurpose("");
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      alert("Failed to create appointment. Please try again.");
     }
   };
 
@@ -82,7 +124,7 @@ const Schedule = () => {
           <div key={day}>
             <div
               className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center"
-              onClick={() => handleDayClick(day)} // Pass the short day name (e.g., "Mon")
+              onClick={() => handleDayClick(day)}
             >
               {day}
             </div>
@@ -94,18 +136,20 @@ const Schedule = () => {
         <div className="mt-4 p-4 bg-white rounded shadow-sm">
           <h2 className="text-lg font-bold">{selectedDay}&apos;s Available Slots</h2>
           {slots.length > 0 ? (
-            // <ul className="list-disc ml-5">
-            //   {slots.map((slot, index) => (
-            //     <li key={index}>{slot}</li>
-            //   ))}
-            // </ul>
-
             <div className="flex flex-wrap gap-2 mt-2">
               {slots.map((slot, index) => (
-                <div key={index} className="p-2 bg-gray-100 rounded-md">
+                <div
+                  key={index}
+                  className={`p-2 rounded-md cursor-pointer ${
+                    selectedSlot === slot
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                  onClick={() => handleSlotClick(slot)}
+                >
                   {slot}
                 </div>
-               ))}
+              ))}
             </div>
           ) : (
             <p>No slots available.</p>
@@ -113,7 +157,38 @@ const Schedule = () => {
         </div>
       )}
 
-      {/* Form to add new slots */}
+      {selectedSlot && (
+        <div className="mt-4 p-4 bg-gray-100 rounded shadow-md">
+          <h2 className="text-lg font-bold">Selected Slot</h2>
+          <p>
+            <strong>Time:</strong> {selectedSlot.split(" (")[0]}
+          </p>
+          <p>
+            <strong>Status:</strong> {selectedSlot.split(" (")[1].replace(")", "")}
+          </p>
+          <div className="mt-4">
+            <label htmlFor="purpose" className="block text-sm font-medium text-gray-700">
+              Purpose of Appointment
+            </label>
+            <input
+              type="text"
+              id="purpose"
+              value={purpose}
+              onChange={(e) => setPurpose(e.target.value)}
+              placeholder="Enter purpose"
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+              required
+            />
+          </div>
+          <button
+            onClick={handleCreateAppointment}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Confirm Appointment
+          </button>
+        </div>
+      )}
+
       <div className="mt-8 p-4 bg-gray-100 rounded shadow-md">
         <h2 className="text-lg font-bold mb-4">Add New Slot</h2>
         <form onSubmit={handleSubmit}>

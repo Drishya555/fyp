@@ -17,6 +17,7 @@ const Shop = () => {
   const [products, setProducts] = useState(initialProducts);
   const [sortOrder, setSortOrder] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const handleSort = (order) => {
     let sortedProducts = [...products];
@@ -29,16 +30,26 @@ const Shop = () => {
     setSortOrder(order);
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleCategoryFilter = (category) => {
+    setCategoryFilter(category);
+  };
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (categoryFilter ? product.category.includes(categoryFilter) : true)
   );
+
+  const uniqueCategories = [
+    ...new Set(initialProducts.map((product) => product.category)),
+  ];
 
   return (
     <div className="w-[90%] mx-auto mt-10">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-3xl font-bold">All Hospitals</h2>
-        <div className="flex items-center gap-4">
+
+        <div className="flex flex-col md:flex-row items-center gap-4">
           {/* Search Bar */}
           <input
             type="text"
@@ -47,18 +58,31 @@ const Shop = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
           {/* Sort Dropdown */}
-          <div className="relative">
-            <select
-              className="border border-gray-300 px-4 py-2 rounded-md bg-white shadow-md text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition cursor-pointer"
-              value={sortOrder}
-              onChange={(e) => handleSort(e.target.value)}
-            >
-              <option value="">Sort By</option>
-              <option value="asc">Name: A to Z</option>
-              <option value="desc">Name: Z to A</option>
-            </select>
-          </div>
+          <select
+            className="border border-gray-300 px-4 py-2 rounded-md bg-white shadow-md text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition cursor-pointer"
+            value={sortOrder}
+            onChange={(e) => handleSort(e.target.value)}
+          >
+            <option value="">Sort By</option>
+            <option value="asc">Name: A to Z</option>
+            <option value="desc">Name: Z to A</option>
+          </select>
+
+          {/* Category Filter */}
+          <select
+            className="border border-gray-300 px-4 py-2 rounded-md bg-white shadow-md text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition cursor-pointer"
+            value={categoryFilter}
+            onChange={(e) => handleCategoryFilter(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {uniqueCategories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -70,7 +94,7 @@ const Shop = () => {
             className="w-full shadow-sm rounded-lg overflow-hidden hover:scale-101 hover:cursor-pointer transition-transform duration-300"
           >
             {/* Image */}
-            <div className="w-full h-[600px] sm:h-[450px]">
+            <div className="w-full h-[400px] sm:h-[350px]">
               <img
                 src={product.img}
                 alt={product.name}
