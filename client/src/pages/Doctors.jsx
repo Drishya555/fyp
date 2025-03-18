@@ -1,27 +1,24 @@
-
-import DocSidebar from "../components/DocSidebar"
+import DocSidebar from "../components/DocSidebar";
 import { useState, useEffect } from "react";
 import { IoCalendarOutline } from "react-icons/io5";
-import a from '../assets/gm.png'
-import b from '../assets/cardio.png'
-import c from '../assets/bone.png'
-import d from '../assets/tooth.png'
-import e from '../assets/neuro.png'
-import f from '../assets/brain.png'
+import a from '../assets/gm.png';
+import b from '../assets/cardio.png';
+import c from '../assets/bone.png';
+import d from '../assets/tooth.png';
+import e from '../assets/neuro.png';
+import f from '../assets/brain.png';
 import { PiPersonSimpleWalk } from "react-icons/pi";
 import { MdPeopleOutline } from "react-icons/md";
 import { CiStar } from "react-icons/ci";
 import axios from 'axios';
-
+import BookAppointmentTesting from "./BookAppointmentTesting.jsx";
 
 const Doctors = () => {
-
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [activeTab, setActiveTab] = useState("About");
-  const [doctors, setDoctors] = useState([])
-  const [setError] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [, setError] = useState(null); // Fixed: Added error state variable
   const [selectedCategory, setSelectedCategory] = useState(null);
-
 
   const categories = [
     { name: "General", img: a },
@@ -32,42 +29,28 @@ const Doctors = () => {
     { name: "Psychiatrists", img: f },
   ];
 
-
   const tabs = ["About", "Schedule", "Ratings"];
   const tabContent = {
-    About: <div><p className="text-normal">{selectedDoctor?.about}</p>       <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">Book</button>
-</div>,
-    Schedule: <div>
-      <h1>This Week&apos;s Schedule</h1>
-      <div className="flex gap-2 mt-[20px]">
-        <div>
-        <div className="w-[50px] h-[50px] transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 bg-white shadow-doc  hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Sun</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Mon</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Tue</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Wed</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px]  bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Thurs</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Fri</div>
-        </div>
-        <div>
-        <div className="w-[50px] h-[50px] bg-white shadow-doc transition-[0.3s] border-b-2 border-transparent hover:border-blue-500 hover:bg-gray-100 hover:cursor-pointer flex items-center justify-center">Sat</div>
-        </div>
-        
+    About: (
+      <div>
+        <p className="text-normal">{selectedDoctor?.about}</p>
+        <button className="w-full rounded-lg h-[50px] mt-[20px] text-[20px] bg-buttonblue text-white transition-[0.4s] hover:bg-blue-600">
+          Book
+        </button>
       </div>
-
-    </div>,
+    ),
+    Schedule: (
+      <div>
+        <h1>This Week&apos;s Schedule</h1>
+        {selectedDoctor ? (
+          <BookAppointmentTesting docid={selectedDoctor._id} />
+        ) : (
+          <p>Please select a doctor to view their schedule.</p>
+        )}
+      </div>
+    ),
     Ratings: <div><p>View all your past and current orders here.</p></div>,
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,13 +69,11 @@ const Doctors = () => {
     (doctor) =>
       !selectedCategory || doctor?.specialization?.specialization === selectedCategory
   );
-  
-  
 
   return (
     <>
       <div className="flex gap-5 mt-[10px]">
-        <DocSidebar/>
+        <DocSidebar />
 
         <div className="doctorsmid w-[70%] h-auto rounded-2xl shadow-doc p-8">
           <div className="flex items-center justify-between">
@@ -100,17 +81,13 @@ const Doctors = () => {
               <h1 className="text-[36px]">Hello Drishya,</h1>
               <p className="text-gray-400 text-[15px] mt-[-5px]">Welcome to MediAid’s Doctor Selection!</p>
             </div>
-            
             <button className="group flex gap-2 rounded-[50px] border border-gray-400 p-2 pl-4 pr-4 items-center transition-[0.4s] hover:bg-docblue hover:text-white hover:border-none">
               <IoCalendarOutline size={19} className="text-docblue group-hover:text-white" />
               <p className="text-[15px]">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              </button>
+            </button>
           </div>
 
-
-
-
-          {/*  types of doc */}
+          {/* Categories */}
           <div className="doccategorygrid grid grid-cols-6 h-auto mt-[30px] gap-7">
             {categories.map((category, index) => (
               <div
@@ -128,10 +105,7 @@ const Doctors = () => {
             ))}
           </div>
 
-
-
-
-          {/* Selected Doctors */}
+          {/* Doctors List */}
           <div className="mt-[30px]">
             <h1 className="text-[20px]">
               Recommended Orthopedic <span className="text-docblue">(20)</span>
@@ -161,15 +135,10 @@ const Doctors = () => {
                 </div>
               ))}
             </div>
-
           </div>
-
-
-
-
         </div>
 
-
+        {/* Right Sidebar */}
         <div className="doctorrightside w-[30%] rounded-2xl shadow-doc p-6 sticky top-0 h-screen overflow-y-auto">
           {selectedDoctor ? (
             <div>
@@ -180,17 +149,16 @@ const Doctors = () => {
               />
               <div className="flex items-center justify-between mt-[10px]">
                 <div>
-                <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
-                <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
+                  <h1 className="text-[24px] font-bold">{selectedDoctor.name}</h1>
+                  <p className="text-gray-400 text-[18px]">{selectedDoctor.specialty}</p>
                 </div>
                 <p className="text-docblue text-[18px] font-bold mt-4">{selectedDoctor.price}</p>
               </div>
 
-
-              <div className="flex border-2 rounded-lg border-gray-100  w-full p-4 h-[90px] mt-[20px] justify-between">
+              <div className="flex border-2 rounded-lg border-gray-100 w-full p-4 h-[90px] mt-[20px] justify-between">
                 <div>
                   <div className="flex gap-2">
-                    <PiPersonSimpleWalk size={25} className="text-purple-600"/>
+                    <PiPersonSimpleWalk size={25} className="text-purple-600" />
                     <h1 className="font-bold text-[18px]">{selectedDoctor.experience}</h1>
                   </div>
                   <p className="text-gray-600 mt-[5px]">Experience</p>
@@ -198,24 +166,20 @@ const Doctors = () => {
                 <div className="h-full w-[1px] bg-slate-300"></div>
                 <div>
                   <div className="flex gap-2">
-                    <MdPeopleOutline size={24} className="text-green-500"/>
+                    <MdPeopleOutline size={24} className="text-green-500" />
                     <h1 className="font-bold text-[18px]">{selectedDoctor.totalPatients}</h1>
-
                   </div>
                   <p className="text-gray-600 mt-[5px]">Total Patients</p>
-
                 </div>
                 <div className="h-full w-[1px] bg-slate-300"></div>
-
                 <div>
                   <div className="flex gap-2">
-                    <CiStar size={26} className="text-yellow-400"/>
+                    <CiStar size={26} className="text-yellow-400" />
                     <h1 className="font-bold text-[18px]">{selectedDoctor.rating} star</h1>
                   </div>
                   <p className="text-gray-600 mt-[5px]">Ratings</p>
                 </div>
               </div>
-              
             </div>
           ) : (
             <p className="text-gray-400 text-[18px] text-center mt-20">
@@ -223,37 +187,30 @@ const Doctors = () => {
             </p>
           )}
 
-
-
-
-<div className="max-w-screen-md mx-auto">
-      <div className="bg-white py-2 px-3">
-        <nav className="flex flex-wrap gap-4">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`inline-flex whitespace-nowrap border-b-2 py-2 px-3 text-sm font-medium transition-all duration-200 ease-in-out 
-                ${activeTab === tab ? "border-b-docblue text-docblue font-semibold" : "border-transparent text-gray-600 hover:border-b-docblue hover:text-docblue"}`}
-            >
-              {tab}
-            </button>
-          ))}
-        </nav>
-      </div>
-      <div className="mt-[-10px] p-4 rounded-md overflow-auto break-words">
-        {tabContent[activeTab]}
-      </div>
-
-    </div>
-
-      </div>
-
-
-
+          {/* Tabs */}
+          <div className="max-w-screen-md mx-auto">
+            <div className="bg-white py-2 px-3">
+              <nav className="flex flex-wrap gap-4">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`inline-flex whitespace-nowrap border-b-2 py-2 px-3 text-sm font-medium transition-all duration-200 ease-in-out 
+                      ${activeTab === tab ? "border-b-docblue text-docblue font-semibold" : "border-transparent text-gray-600 hover:border-b-docblue hover:text-docblue"}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            <div className="mt-[-10px] p-4 rounded-md overflow-auto break-words">
+              {tabContent[activeTab]}
+            </div>
+          </div>
+        </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Doctors
+export default Doctors;
