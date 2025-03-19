@@ -5,7 +5,7 @@ import { PiPersonSimpleWalk } from "react-icons/pi";
 import { MdPeopleOutline } from "react-icons/md";
 import { CiStar } from "react-icons/ci";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
-
+import BookAppointmentTesting from '../../BookAppointmentTesting.jsx'
 
 
 const Docdashboard = () => {
@@ -33,7 +33,7 @@ const Docdashboard = () => {
       He completed his medical education at Kharkiv Medical Institute in Ukraine in 1989 and pursued post-graduate training in cardiothoracic surgery at the National 
       Institute of Cardiovascular Diseases, Dhaka University, Bangladesh, in 1994. In 1997, Dr. Koirala led a team of Nepalese surgeons in performing the country's first open-heart 
       surgery at Tribhuvan University Teaching Hospital, marking a significant milestone in Nepal's medical history.`,
-      "Schedule": "Dr. Koirala is available for consultations on weekdays from 9 AM to 5 PM. Appointments can be booked online or via phone.",
+      "Schedule": <BookAppointmentTesting/>,
       "Experience": "With over 30 years of experience, Dr. Koirala has performed 14,000+ cardiovascular surgeries and trained numerous medical professionals.",
       "Reviews": "Patients appreciate Dr. Koirala's expertise, compassionate care, and commitment to advancing cardiothoracic surgery in Nepal."
     };

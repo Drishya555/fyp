@@ -20,6 +20,9 @@ const hospitalSchema = new mongoose.Schema(
     },
     rating: {
       type: Number,
+    },
+    image:{
+      type: String,
     }
   },
   { timestamps: true }

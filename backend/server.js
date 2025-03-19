@@ -9,6 +9,8 @@ import pharmaRoute from './routes/PharmacyRoutes.js'
 import cartRoute from './routes/cartRoute.js'
 import connectDB from './config/db.js';
 import appointmentRoute from './routes/AppointmentRoute.js'
+import hospitalRoute from './routes/HospitalRoute.js'
+
 const app = express();
 
 dotenv.config();
@@ -25,6 +27,7 @@ app.use('/api/doctors',docRoute)
 app.use('/api/pharmacy', pharmaRoute)
 app.use('/api/cart', cartRoute)
 app.use('/api/appointment', appointmentRoute)
+app.use('/api/hospital', hospitalRoute)
 
 
 const PORT = 8000;

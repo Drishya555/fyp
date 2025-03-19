@@ -75,41 +75,66 @@ export const addSpecialization = async(req,res) =>{
     }
 }
 
-
 export const updatedocController = async (req, res) => {
-    try {
-        const { id } = req.params; 
-        const updateData = req.body;
+  try {
+      const { id } = req.params; // Doctor ID
+      const updateData = req.body;
 
-        const existingDoctor = await docmodel.findById(id);
-        if (!existingDoctor) {
-            return res.status(404).send({
-                success: false,
-                message: "Doctor not found",
-            });
-        }
+      const existingDoctor = await docmodel.findById(id);
+      if (!existingDoctor) {
+          return res.status(404).send({
+              success: false,
+              message: "Doctor not found",
+          });
+      }
 
-        const updatedDoctor = await docmodel.findByIdAndUpdate(id, updateData, {
-            new: true, 
-            runValidators: true, 
-        });
+      // Check if the request is to update a slot's status
+      if (updateData.slotId && updateData.status) {
+          // Find the slot in the freeslots array
+          const slotIndex = existingDoctor.freeslots.findIndex(
+              (slot) => slot._id.toString() === updateData.slotId
+          );
 
-        res.status(200).send({
-            success: true,
-            message: "Doctor updated successfully",
-            doctor: updatedDoctor,
-        });
-    } catch (err) {
-        console.error("Error updating doctor:", err);
-        res.status(500).send({
-            success: false,
-            message: "Failed to update doctor",
-            error: err.message,
-        });
-    }
+          if (slotIndex === -1) {
+              return res.status(404).send({
+                  success: false,
+                  message: "Slot not found",
+              });
+          }
+
+          // Update the status of the specific slot
+          existingDoctor.freeslots[slotIndex].status = updateData.status;
+
+          // Save the updated doctor document
+          const updatedDoctor = await existingDoctor.save();
+
+          return res.status(200).send({
+              success: true,
+              message: "Slot status updated successfully",
+              doctor: updatedDoctor,
+          });
+      }
+
+      // Otherwise, proceed with the general update
+      const updatedDoctor = await docmodel.findByIdAndUpdate(id, updateData, {
+          new: true,
+          runValidators: true,
+      });
+
+      res.status(200).send({
+          success: true,
+          message: "Doctor updated successfully",
+          doctor: updatedDoctor,
+      });
+  } catch (err) {
+      console.error("Error updating doctor:", err);
+      res.status(500).send({
+          success: false,
+          message: "Failed to update doctor",
+          error: err.message,
+      });
+  }
 };
-
-
 
 
 

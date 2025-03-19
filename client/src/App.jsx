@@ -17,6 +17,8 @@ import Table from './pages/doctors/components/tablecomponent.jsx';
 import MedicalRecord from './pages/medicalRecord.jsx'
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
 import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
+import Adminpage from './pages/admin/Adminpage.jsx';
+import DoctorDetails from './pages/DoctorDetails.jsx';
 const App = () => {
   return (
     <>
@@ -35,6 +37,7 @@ const App = () => {
       <Route path="/pharmacy/:slug" element={<SingleMedicine />} />
       <Route path='/cart' element={<Cart/>}></Route>
       <Route path='/medical-record/:id' element={<MedicalRecord/>}></Route>
+      <Route path='/doctordetails/:id' element={<DoctorDetails/>}></Route>
 
 
       {/* doctor view */}
@@ -44,6 +47,9 @@ const App = () => {
       <Route path='/changeschedule' element={<AddSchedule/>}></Route>
       <Route path='/bb' element={<BookAppointmentTesting/>}></Route>
 
+
+      {/*  admin routes */}
+      <Route path='/admin' element={<Adminpage/>}></Route>
       </Routes>
     </>
   )
