@@ -1,6 +1,18 @@
-
-
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 const DoctorProfile = () => {
+  const [doctor, setDoctor] = useState([]);
+  const {id} = useParams();
+
+  useEffect(() => {
+    // Fetch doctor data from API
+    fetch(`http://localhost:8000/api/doctors/getselecteddoc/${id}`)
+      .then((response) => response.json())
+      .then((data) => setDoctor(data));
+  }, []);
+
+
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       {/* Main Container */}
