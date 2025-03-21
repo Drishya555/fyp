@@ -5,14 +5,14 @@ import { AiFillStar } from "react-icons/ai";
 import './pharmamedia.css';
 import { Link } from 'react-router-dom';
 import {motion} from 'framer-motion';
-
+import { host } from '../../host';
 const Pharmacy = () => {
     const [medicines, setMedicines] = useState([]);
     
     useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/pharmacy/getallmedicines");
+        const response = await axios.get(`${host}api/pharmacy/getallmedicines`);
         setMedicines(response.data.medicines);
       } catch (err) {
         console.log(`Error in fetching ${err} `)

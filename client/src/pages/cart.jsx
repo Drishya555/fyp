@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axios from 'axios';
 import AuthStore from "../hooks/authStore"; // Import the AuthStore
-
+import { host } from "../host.js";
 const Cart = () => {
     
   const [cart, setCart] = useState([]);
@@ -11,7 +11,7 @@ const Cart = () => {
     const fetchData = async () => {
       try {
         const userid = AuthStore.getUser()?.userid || null;
-        const response = await axios.get(`http://localhost:8000/api/cart/getcartdetails/${userid}`);
+        const response = await axios.get(`${host}/api/cart/getcartdetails/${userid}`);
         setCart(response.data.cartdetails);
       } catch (err) {
         console.log(err)

@@ -5,7 +5,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { FcGoogle } from "react-icons/fc";
 import './authmedia.css'
 import {motion} from 'framer-motion';
-
+// import { host } from '../host.js';
 const Login = () => {
   return (
     <>

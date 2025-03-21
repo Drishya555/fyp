@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from 'axios';
 import { Link } from 'react-router-dom';  // Import the Link component from react-router-dom
 import {motion} from 'framer-motion';
-
+import {host} from '../../host.js';
 
 const AllMedicines = () => {
   const [medicines, setMedicines] = useState([]);
@@ -12,7 +12,7 @@ const AllMedicines = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/pharmacy/getallmedicines");
+        const response = await axios.get(`${host}api/pharmacy/getallmedicines`);
         setMedicines(response.data.medicines);
       } catch (err) {
         console.log(`Error in fetching ${err} `)

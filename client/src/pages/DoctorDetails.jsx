@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {host} from '../host.js';
 const DoctorProfile = () => {
-  const [doctor, setDoctor] = useState([]);
+  const [, setDoctor] = useState([]);
   const {id} = useParams();
 
   useEffect(() => {
     // Fetch doctor data from API
-    fetch(`http://localhost:8000/api/doctors/getselecteddoc/${id}`)
+    fetch(`${host}/api/doctors/getselecteddoc/${id}`)
       .then((response) => response.json())
       .then((data) => setDoctor(data));
   }, []);

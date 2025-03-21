@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import AuthStore from "../hooks/authStore"; // Import the AuthStore
-
+import { host } from "../host.js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ const Login = () => {
     setError("");
   
     try {
-      const { data } = await axios.post("http://localhost:8000/api/auth/login", {
+      const { data } = await axios.post(`${host}/api/auth/login`, {
         email,
         password,
       });

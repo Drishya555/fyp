@@ -8,7 +8,7 @@ import {motion} from 'framer-motion';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import AuthStore from "../../hooks/authStore"; // Import the AuthStore
-
+import { host } from "../../host";
 const SingleMedicine = () => {
   const {slug} = useParams();
   const [product, setProduct] = useState(null);
@@ -19,7 +19,7 @@ const SingleMedicine = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/pharmacy/getrandomproducts");
+        const response = await axios.get(`${host}/api/pharmacy/getrandomproducts`);
         setMedicines(response.data.products);
       } catch (err) {
         console.log(`Error in fetching ${err} `)
@@ -33,7 +33,7 @@ const SingleMedicine = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/pharmacy/getmedicinebyslug/${slug}`);
+        const response = await axios.get(`${host}/api/pharmacy/getmedicinebyslug/${slug}`);
         setProduct(response.data.product);
         setLoading(false);
       } catch (err) {
@@ -55,7 +55,7 @@ const SingleMedicine = () => {
             return;
         }
 
-        const response = await fetch("http://localhost:8000/api/cart/addtocart", {
+        const response = await fetch(`${host}/api/cart/addtocart`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

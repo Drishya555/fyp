@@ -225,7 +225,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AuthStore from '../hooks/authStore.js';
-
+import {host} from '../host.js'
 // eslint-disable-next-line react/prop-types
 const Schedule = ({ docid }) => {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -248,7 +248,7 @@ const Schedule = ({ docid }) => {
     const fetchData = async () => {
       if (!docid) return;
       try {
-        const response = await axios.get(`http://localhost:8000/api/doctors/getselecteddoc/${docid}`);
+        const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`);
         const newSchedule = response.data.doctor.freeslots || [];
         setSchedule(newSchedule);
         if (selectedDay) {
@@ -303,7 +303,7 @@ const Schedule = ({ docid }) => {
 
   const updateSlotStatus = async (slotId) => {
     try {
-      const response = await axios.put(`http://localhost:8000/api/doctors/updatedocdetails/${docid}`, {
+      const response = await axios.put(`${host}/api/doctors/updatedocdetails/${docid}`, {
         slotId,
         status: "booked",
       });
@@ -325,7 +325,7 @@ const Schedule = ({ docid }) => {
       const appointmentTime = selectedSlot.time;
 
       // Create the appointment
-      await axios.post("http://localhost:8000/api/appointment/createappointment", {
+      await axios.post(`${host}/api/appointment/createappointment`, {
         user: userid,
         doctor: docid,
         date: appointmentDate,

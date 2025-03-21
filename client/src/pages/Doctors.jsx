@@ -12,6 +12,7 @@ import { MdPeopleOutline } from "react-icons/md";
 import { CiStar } from "react-icons/ci";
 import axios from 'axios';
 import BookAppointmentTesting from "./BookAppointmentTesting.jsx";
+import {host} from '../host.js'
 
 const Doctors = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -55,7 +56,7 @@ const Doctors = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/doctors/getalldoctors");
+        const response = await axios.get(`${host}/api/doctors/getalldoctors`);
         setDoctors(response.data.doctors);
       } catch (err) {
         setError(err.message);
