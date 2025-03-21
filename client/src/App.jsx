@@ -12,7 +12,7 @@ import AllMedicines from './pages/pharmacy/AllMedicines.jsx';
 import SingleMedicine from './pages/pharmacy/SingleMedicine.jsx';
 import Cart from './pages/cart.jsx'
 import Dashboardsidebar from './pages/doctors/Dashboardsidebar.jsx'
-import Docnewsidebar from './pages/doctors/docSidebar.jsx'
+import Docnewsidebar from './pages/doctors/docsidebar.jsx'
 import Table from './pages/doctors/components/tablecomponent.jsx';
 import MedicalRecord from './pages/medicalRecord.jsx'
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
