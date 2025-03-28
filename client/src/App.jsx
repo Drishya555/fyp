@@ -19,6 +19,9 @@ import AddSchedule from './pages/doctors/AddSchedule.jsx';
 import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
 import Adminpage from './pages/admin/Adminpage.jsx';
 import DoctorDetails from './pages/DoctorDetails.jsx';
+import Side from './pages/Sidenav.jsx';
+import HospitalDetails from './pages/HospitalDetails.jsx';
+
 const App = () => {
   return (
     <>
@@ -38,6 +41,8 @@ const App = () => {
       <Route path='/cart' element={<Cart/>}></Route>
       <Route path='/medical-record/:id' element={<MedicalRecord/>}></Route>
       <Route path='/doctordetails/:id' element={<DoctorDetails/>}></Route>
+      <Route path='/tt' element={<Side/>}></Route>
+      <Route path='/hospital-details/:id' element={<HospitalDetails/>}></Route>
 
 
       {/* doctor view */}

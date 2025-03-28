@@ -1,155 +1,221 @@
-import { useState } from "react";
-import { Search, ChevronDown } from "lucide-react";
-import { FaPhone } from "react-icons/fa";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const MedicaLRecord = () => {
-  const [query, setQuery] = useState("");
+// Placeholder data for the heart rate chart
+const heartRateData = [
+  { month: 'Jul', bpm: 60 },
+  { month: 'Aug', bpm: 55 },
+  { month: 'Sep', bpm: 80 },
+  { month: 'Oct', bpm: 50 },
+  { month: 'Nov', bpm: 75 },
+  { month: 'Dec', bpm: 65 },
+];
 
+// Placeholder data for the blood pressure chart
+const bloodPressureData = [
+  { month: 'Jul', systolic: 120, diastolic: 80 },
+  { month: 'Aug', systolic: 118, diastolic: 78 },
+  { month: 'Sep', systolic: 130, diastolic: 85 },
+  { month: 'Oct', systolic: 115, diastolic: 75 },
+  { month: 'Nov', systolic: 125, diastolic: 82 },
+  { month: 'Dec', systolic: 122, diastolic: 79 },
+];
+
+// Placeholder data for recent appointments
+const recentAppointments = [
+  { date: 'Mar 15, 2025', type: 'Cardiology Checkup', doctor: 'Dr. Emily Smith' },
+  { date: 'Feb 10, 2025', type: 'General Consultation', doctor: 'Dr. John Doe' },
+  { date: 'Jan 20, 2025', type: 'Pulmonary Follow-up', doctor: 'Dr. Sarah Lee' },
+];
+
+const Dashboard = () => {
   return (
-    <>
-   
-    <div className="w-full bg-white shadow-sm">
-      <div className="flex flex-col sm:flex-row items-center justify-between p-4 space-y-3 sm:space-y-0">
-        {/* Search Bar */}
-        <div className="flex items-center border-b border-gray-300 px-4 py-2 w-full sm:max-w-md">
-          <Search className="text-gray-500" size={18} />
-          <input
-            type="text"
-            placeholder="Search by Name, Medical IDs, or Number"
-            className="ml-2 w-full outline-none text-sm text-gray-700 placeholder-gray-400"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
+    <div className="min-h-screen text-gray-900 font-sans">
+      {/* Header */}
+     
+      <div className="flex flex-col lg:flex-row">
+        {/* Sidebar */}
+        
 
-        {/* User Info */}
-        <div className="flex items-center space-x-2 sm:space-x-4 text-gray-700 text-sm">
-          <span className="hidden sm:inline">Kebumen, Indonesia <b>12:04 AM</b></span>
-          <span className="hidden sm:inline">|</span>
-          <div className="flex items-center cursor-pointer">
-            <span className="font-medium">hello, Yahyo</span>
-            <ChevronDown size={16} className="ml-1" />
+        {/* Main Content */}
+        <main className="flex-1 ">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Patient Info */}
+            <div className="bg-white p-4 rounded-lg shadow-md">
+              <div className="flex items-center space-x-4">
+              <img
+                  src="https://www.racefans.net/wp-content/uploads/2024/07/racefansdotnet-7448390_HiRes.jpg"
+                  alt="Ethan Miller"
+                  className="rounded-full w-16 h-16 object-cover sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-16 lg:h-16"
+                />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Ethan Miller</h2>
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-blue-600">Schedule visit</button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">General info</h3>
+                <p className="text-gray-700">#9834A-43</p>
+                <p className="text-gray-700">DOB: 15.05.1969</p>
+                <p className="text-gray-700">Age: 55 y.o.</p>
+                <p className="text-gray-700">Gender: Male</p>
+                <p className="text-gray-700">32 Clark St, Brooklyn, NY 11201, USA</p>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">Contact information</h3>
+                <p className="text-gray-700">Email: ethan.miller@gmail.com</p>
+                <p className="text-gray-700">Phone: 555-723-4567</p>
+                <p className="text-gray-700">Teleg: @ethan_miller</p>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">Allergies</h3>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Metformin</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Aspirin</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Strawberry</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Grapes</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Latex</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">Active conditions</h3>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Allergic asthma</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Heart failure</span>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-900">Previous surgeries</h3>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Coronary artery bypass graft</span>
+                  <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">Knee replacement</span>
+                </div>
+                <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+              </div>
+            </div>
+
+            {/* Heart Rate, Diagnoses, and New Appointments Tab */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900">Heart rate</h3>
+                <div className="flex space-x-4 mt-2">
+                  <div>
+                    <p className="text-gray-900">54-123 BPM</p>
+                    <p className="text-gray-500">Heart range</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-900">55-51 BPM</p>
+                    <p className="text-gray-500">Resting rate</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-900">79-110 BPM</p>
+                    <p className="text-gray-500">Walking average</p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={heartRateData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                      <XAxis dataKey="month" stroke="#6b7280" />
+                      <YAxis stroke="#6b7280" />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="bpm" stroke="#ef4444" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900">Recent diagnosis</h3>
+                <ul className="mt-2 space-y-2">
+                  <li className="flex justify-between">
+                    <span className="text-gray-900">Heart failure</span>
+                    <span className="text-gray-500">1 month ago</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span className="text-gray-900">Pneumonia</span>
+                    <span className="text-gray-500">6 months ago</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span className="text-gray-900">GERD</span>
+                    <span className="text-gray-500">1 year ago</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span className="text-gray-900">Pulmonary fibrosis</span>
+                    <span className="text-gray-500">1.5 years ago</span>
+                  </li>
+                </ul>
+                <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+              </div>
+
+              {/* Folders */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-lg shadow-md text-center">
+                  <p className="text-gray-900">Medical prescriptions</p>
+                  <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md text-center">
+                  <p className="text-gray-900">Electronic records</p>
+                  <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md text-center">
+                  <p className="text-gray-900">Diagnosis</p>
+                  <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md text-center">
+                  <p className="text-gray-900">Insurance</p>
+                  <button className="text-blue-500 mt-2 hover:text-blue-600">View all</button>
+                </div>
+              </div>
+
+              {/* Blood Pressure Chart */}
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900">Blood Pressure</h3>
+                <div className="flex space-x-4 mt-2">
+                  <div>
+                    <p className="text-gray-900">115-130 mmHg</p>
+                    <p className="text-gray-500">Systolic range</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-900">75-85 mmHg</p>
+                    <p className="text-gray-500">Diastolic range</p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={bloodPressureData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                      <XAxis dataKey="month" stroke="#6b7280" />
+                      <YAxis stroke="#6b7280" />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="systolic" stroke="#3b82f6" name="Systolic" />
+                      <Line type="monotone" dataKey="diastolic" stroke="#10b981" name="Diastolic" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Recent Appointments Tab */}
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold text-gray-900">Recent Appointments</h3>
+                <ul className="mt-2 space-y-2">
+                  {recentAppointments.map((appointment, index) => (
+                    <li key={index} className="flex justify-between">
+                      <div>
+                        <p className="text-gray-900">{appointment.type}</p>
+                        <p className="text-gray-500 text-sm">{appointment.doctor}</p>
+                      </div>
+                      <span className="text-gray-500">{appointment.date}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button className="text-blue-500 mt-2 hover:text-blue-600">View more</button>
+              </div>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
-    
-    <div className="w-full p-2">
-    <div className="flex flex-col md:flex-row items-center justify-between bg-white p-4 shadow-sm rounded-lg w-full">
-      <div className="flex items-center space-x-4">
-        <img
-          src="https://i.pinimg.com/736x/e5/ec/5e/e5ec5e54221d0cb3fb54ff93f1f1b02f.jpg"
-          alt="Profile"
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        <div>
-          <h2 className="text-lg font-medium">Carlos Sainz Jr.</h2>
-          <p className="text-gray-500 text-sm">30 Years Old, Male</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row md:space-x-8 text-center md:text-left mt-4 md:mt-0">
-        <div>
-          <p className="text-gray-500 text-sm">Latest Appointment</p>
-          <p className="font-medium">1st December 2023</p>
-        </div>
-        <div>
-          <p className="text-gray-500 text-sm">Patient Preferred Language</p>
-          <p className="font-medium">Nepali</p>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-2 mt-4 md:mt-0">
-        <button className="bg-black text-white px-4 py-2 rounded-lg">Initiate new visit</button>
-        <button className="p-2 bg-gray-200 rounded-full">
-          <FaPhone className="text-black" />
-        </button>
-      </div>
-    </div>
-    </div>
-
-
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header Section */}
-      <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-col gap-2">
-        <div className="flex justify-between items-center flex-wrap">
-          <h2 className="text-2xl font-bold text-gray-800">Default Episode of Care</h2>
-          <button className="text-blue-600 font-medium hover:underline">Edit</button>
-        </div>
-        <p className="text-gray-500 text-sm">Start date: 01/10/23 | End date: N/A</p>
-        <div className="mt-3 flex items-center flex-wrap gap-4">
-          <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full text-sm font-medium">MIPS Qualification: Yes</span>
-          <span className="text-blue-600 text-sm font-medium">Primary Classification: Conservative Shoulder</span>
-        </div>
-      </div>
-
-      {/* Care Plan Section */}
-      <div className="mt-6 bg-white p-6 rounded-2xl shadow-lg">
-        <h3 className="text-xl font-semibold text-gray-800">Default Care Plan</h3>
-        <div className="flex space-x-4 mt-4 text-gray-500 border-b pb-2">
-          <button className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">Questionnaires</button>
-          <button className="hover:text-blue-600">All Record</button>
-          <button className="hover:text-blue-600">Exercise</button>
-          <button className="hover:text-blue-600">Education</button>
-        </div>
-
-        {/* Quick Dash - MIPS */}
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-sm text-gray-600 rounded-lg overflow-hidden">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="p-3 text-left">Date</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Score</th>
-                <th className="p-3 text-left">Version</th>
-                <th className="p-3 text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {["01/10/23", "04/09/23", "01/09/23"].map((date, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="p-3">{date}</td>
-                  <td className="p-3">
-                    <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
-                      Completed
-                    </span>
-                  </td>
-                  <td className="p-3">FC: 9.3 & PS: 9.3</td>
-                  <td className="p-3">2</td>
-                  <td className="p-3 text-blue-600 cursor-pointer hover:underline">...</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Doctor & Medical Info Section */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
-          <h4 className="text-lg font-semibold text-gray-800">Doctor</h4>
-          <p className="text-blue-600 text-lg font-medium">Usman Afdal Jalil Shisha</p>
-          <p className="text-gray-500 mt-2">(669) 293 - 847 - 575</p>
-          <p className="text-gray-500">usman@gmail.com</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-lg">
-          <h4 className="text-lg font-semibold text-gray-800">Medical IDs</h4>
-          <p className="text-gray-500 mt-2">ID: 100293847575</p>
-          <p className="text-gray-500">Facility: Sector AX</p>
-          <p className="text-gray-500">Phone: (992) 993 994</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-lg">
-          <h4 className="text-lg font-semibold text-gray-800">Level of Medical Care</h4>
-          <p className="text-gray-500 mt-2">Care Level: Level 02</p>
-          <p className="text-gray-500">Health Care Card: (992) 993 994</p>
-          <p className="text-gray-500">Date: 01 December 23</p>
-        </div>
-      </div>
-    </div>
-
-    </>
-
   );
 };
 
-export default MedicaLRecord;
+export default Dashboard;

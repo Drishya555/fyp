@@ -30,11 +30,11 @@ app.use('/api/appointment', appointmentRoute)
 app.use('/api/hospital', hospitalRoute)
 
 
-// const PORT = 8000;
+const PORT = 8000;
 
-// app.listen(PORT, ()=>{
-//     console.log(`Server is running on port ${PORT}`.bgGreen.white)
-// })
+app.listen(PORT, ()=>{
+    console.log(`Server is running on port ${PORT}`.bgGreen.white)
+})
 
 
 export default app;
