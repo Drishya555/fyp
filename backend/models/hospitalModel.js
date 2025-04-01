@@ -23,6 +23,12 @@ const hospitalSchema = new mongoose.Schema(
     },
     image:{
       type: String,
+    },
+    hospitaltype:{
+      type: String,
+    },
+    price:{
+      type: Number,
     }
   },
   { timestamps: true }

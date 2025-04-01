@@ -67,3 +67,26 @@ export const getsingleappointment = async(req,res) =>{
         })
     }
 }
+
+
+
+
+
+export const getappointmentbydocidcontroller = async(req,res) =>{
+    try {
+        const {id} = req.params;
+
+        const appointments = await appointmentModel.find({doctor: id});
+        res.status(200).send({
+            success: true,
+            message: "Appointments fetched successfully",
+            appointments: appointments    
+        })
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Error occured fetching",
+            error: error.message
+        })
+    }
+}

@@ -1,8 +1,21 @@
 import hospitalModel from "../models/hospitalModel.js";
+import cloudinary from '../config/cloudinary.js'
+
 
 export const registerHospital = async(req,res) => {
     try {
-        const {name, address, licenseNo, bio, rating} = req.body;
+        const {name, address, licenseNo, bio, rating, hospitaltype, price} = req.fields;
+        const {image} = req.files;
+
+        let imageurl;
+
+         if (image) {
+              const result = await cloudinary.uploader.upload(image.path, {
+                folder: "mediaid",
+              });
+              imageurl = result.secure_url;
+            }
+        
 
         const existinglicense = await hospitalModel.findOne({licenseNo});
         if(existinglicense){
@@ -13,7 +26,7 @@ export const registerHospital = async(req,res) => {
         }
 
         const newHospital = new hospitalModel({
-            name, address, licenseNo, bio, rating
+            name, address, licenseNo, bio, rating, hospitaltype, image: imageurl, price
         }).save();
 
         res.status(200).send({
@@ -26,6 +39,26 @@ export const registerHospital = async(req,res) => {
         res.status(500).send({
             success: false,
             message: "Error occured while registering hospital",
+            error: error.message
+        })
+    }
+}
+
+
+
+
+export const getallHospitalController = async(req,res) =>{
+    try {
+        const hospitals = await hospitalModel.find({}).sort({createdAt: -1});
+        res.status(200).send({
+            success: true,
+            message: "All hospitals fetched successfully",
+            hospitals
+        })
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Error occured while fetching hospital",
             error: error.message
         })
     }

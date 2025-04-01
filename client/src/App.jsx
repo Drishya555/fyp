@@ -18,11 +18,16 @@ import MedicalRecord from './pages/medicalRecord.jsx'
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
 import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
 import Adminpage from './pages/admin/Adminpage.jsx';
+import AddHospital from './pages/admin/AddHospital.jsx';
 import DoctorDetails from './pages/DoctorDetails.jsx';
 import Side from './pages/Sidenav.jsx';
 import HospitalDetails from './pages/HospitalDetails.jsx';
-
+import AddDoctor from './pages/hospitals/AddDoctors.jsx';
+import Authstore from './hooks/authStore.js';
 const App = () => {
+
+  const userrole = Authstore.getUser()?.role || null;
+  
   return (
     <>
       <Routes>
@@ -43,10 +48,14 @@ const App = () => {
       <Route path='/doctordetails/:id' element={<DoctorDetails/>}></Route>
       <Route path='/tt' element={<Side/>}></Route>
       <Route path='/hospital-details/:id' element={<HospitalDetails/>}></Route>
+    
+      {/*hospital view */}
+      <Route path='/adddoctor' element={<AddDoctor/>}></Route>
 
 
       {/* doctor view */}
-      <Route path='/profile' element={<Docnewsidebar/>}></Route>
+      
+      {userrole === 'doctor' && <Route path='/profile' element={<Docnewsidebar />} />}
       <Route path='/doctor-dashboard' element={<Dashboardsidebar/>}></Route>
       <Route path='/table' element={<Table/>}></Route>
       <Route path='/changeschedule' element={<AddSchedule/>}></Route>
@@ -55,6 +64,8 @@ const App = () => {
 
       {/*  admin routes */}
       <Route path='/admin' element={<Adminpage/>}></Route>
+      <Route path='/addhospital' element={<AddHospital/>}></Route>
+
       </Routes>
     </>
   )

@@ -1,7 +1,9 @@
 import express from 'express';
-import { registerHospital } from '../controllers/hospitalController.js';
+import { registerHospital,getallHospitalController } from '../controllers/hospitalController.js';
 const router = express.Router();
+import formidable from "express-formidable";
 
-router.post('/registerhospital', registerHospital)
+router.post('/registerhospital',formidable(), registerHospital)
+router.get('/getallhospitals', getallHospitalController)
 
 export default router;
