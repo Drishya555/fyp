@@ -63,3 +63,23 @@ export const getallHospitalController = async(req,res) =>{
         })
     }
 }
+
+
+
+export const getsinglehospitalController = async(req,res) =>{
+    try {
+        const {id} = req.params;
+        const hospital = await hospitalModel.findById(id);
+        res.status(200).send({
+            success: true,
+            message: "Hospital fetched successfully",
+            hospital
+        })
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Error occured while fetching hospital",
+            error: error.message
+        })
+    }
+}

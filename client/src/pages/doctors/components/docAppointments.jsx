@@ -261,64 +261,100 @@
 
 
 
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { ChevronDown, Clock, MapPin, Users, MoreVertical } from "lucide-react";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
-
+import axios from 'axios';
+import Authstore from '../../../hooks/authStore.js'
 export default function Bookings() {
+
+  const userid = Authstore.getUser()?.userid || null;
+
   const [menuOpen, setMenuOpen] = useState(null);
 
-  const bookings = [
-    { 
-      day: "Wed", 
-      date: 28, 
-      time: "09:00 - 09:30", 
-      title: "30min call meeting Peer <> Leslie", 
-      avatars: [
-        "https://media.istockphoto.com/id/1338021659/video/4k-video-footage-of-a-young-female-doctor-using-a-digital-tablet-at-work.jpg?s=640x640&k=20&c=kyKmvRHGncoghKP6_aHzFLJHR4Ju2HcHInlcs2jBR3Y=", 
-        "/static/images/avatar/2.jpg"
-      ],
-      location: "Conference Room A",
-      participants: 4
-    },
-    { 
-      day: "Fri", 
-      date: 30, 
-      time: "15:20 - 16:20", 
-      title: "Livn Product Demo", 
-      avatars: [
-        "/static/images/avatar/3.jpg", 
-        "/static/images/avatar/4.jpg"
-      ],
-      location: "Virtual Meeting",
-      participants: 6
-    },
-    { 
-      day: "Thu", 
-      date: 29, 
-      time: "11:15 - 11:45", 
-      title: "30min call meeting Olivia, Liam <> Alban", 
-      avatars: [
-        "/static/images/avatar/5.jpg", 
-        "/static/images/avatar/6.jpg"
-      ],
-      location: "Zoom Meeting",
-      participants: 3
-    },
-    { 
-      day: "Mon", 
-      date: 2, 
-      time: "11:15 - 11:45", 
-      title: "30min call meeting Yulia, Alvin <> Irina, Mae", 
-      avatars: [
-        "/static/images/avatar/7.jpg", 
-        "/static/images/avatar/8.jpg"
-      ],
-      location: "Board Room 2",
-      participants: 5
-    },
-  ];
+  // const bookings = [
+  //   { 
+  //     day: "Wed", 
+  //     date: 28, 
+  //     time: "09:00 - 09:30", 
+  //     title: "30min call meeting Peer <> Leslie", 
+  //     avatars: [
+  //       "https://media.istockphoto.com/id/1338021659/video/4k-video-footage-of-a-young-female-doctor-using-a-digital-tablet-at-work.jpg?s=640x640&k=20&c=kyKmvRHGncoghKP6_aHzFLJHR4Ju2HcHInlcs2jBR3Y=", 
+  //       "/static/images/avatar/2.jpg"
+  //     ],
+  //     location: "Conference Room A",
+  //     participants: 4
+  //   },
+  //   { 
+  //     day: "Fri", 
+  //     date: 30, 
+  //     time: "15:20 - 16:20", 
+  //     title: "Livn Product Demo", 
+  //     avatars: [
+  //       "/static/images/avatar/3.jpg", 
+  //       "/static/images/avatar/4.jpg"
+  //     ],
+  //     location: "Virtual Meeting",
+  //     participants: 6
+  //   },
+  //   { 
+  //     day: "Thu", 
+  //     date: 29, 
+  //     time: "11:15 - 11:45", 
+  //     title: "30min call meeting Olivia, Liam <> Alban", 
+  //     avatars: [
+  //       "/static/images/avatar/5.jpg", 
+  //       "/static/images/avatar/6.jpg"
+  //     ],
+  //     location: "Zoom Meeting",
+  //     participants: 3
+  //   },
+  //   { 
+  //     day: "Mon", 
+  //     date: 2, 
+  //     time: "11:15 - 11:45", 
+  //     title: "30min call meeting Yulia, Alvin <> Irina, Mae", 
+  //     avatars: [
+  //       "/static/images/avatar/7.jpg", 
+  //       "/static/images/avatar/8.jpg"
+  //     ],
+  //     location: "Board Room 2",
+  //     participants: 5
+  //   },
+  // ];
+
+
+  const [bookings, setBookings] = useState([]);
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/appointment/getappointmentbydoctor/${userid}`
+        );
+
+        if (response.data.success) {
+          // Transform API data to match the required format
+          const formattedBookings = response.data.appointments.map((appointment) => ({
+            day: new Date(appointment.date).toLocaleDateString("en-US", { weekday: "short" }),
+            date: new Date(appointment.date).getDate(),
+            time: new Date(appointment.time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+            title: `Appointment with Patient ID: ${appointment.user}`,
+            avatars: ["/static/images/avatar/1.jpg"], // Placeholder image
+            location: "Doctor's Office",
+            participants: 2, // Doctor + Patient
+            status: appointment.status,
+          }));
+
+          setBookings(formattedBookings);
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 lg:p-8">
