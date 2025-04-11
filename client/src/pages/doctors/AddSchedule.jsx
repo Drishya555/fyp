@@ -16,7 +16,7 @@ const Schedule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${host}api/doctors/getselecteddoc/67cfd188ccd43f0f0cca9280`);
+        const response = await axios.get(`${host}/api/doctors/getselecteddoc/67cfd188ccd43f0f0cca9280`);
         setSchedule(response.data.doctor.freeslots);
       } catch (error) {
         console.log(error);
@@ -40,7 +40,7 @@ const Schedule = () => {
     e.preventDefault();
     const updatedSlots = [...schedule, { day: newSlot.day.toLowerCase(), time: newSlot.time }];
     try {
-      await axios.put(`${host}api/doctors/updatedocdetails/67cfd188ccd43f0f0cca9280`, { freeslots: updatedSlots });
+      await axios.put(`${host}/api/doctors/updatedocdetails/67cfd188ccd43f0f0cca9280`, { freeslots: updatedSlots });
       setSchedule(updatedSlots);
       setNewSlot({ day: "", time: "" });
       alert("Schedule updated!");

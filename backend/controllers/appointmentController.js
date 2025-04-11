@@ -76,7 +76,7 @@ export const getappointmentbydocidcontroller = async(req,res) =>{
     try {
         const {id} = req.params;
 
-        const appointments = await appointmentModel.find({doctor: id});
+        const appointments = await appointmentModel.find({doctor: id}).populate('user', 'name email');
         res.status(200).send({
             success: true,
             message: "Appointments fetched successfully",

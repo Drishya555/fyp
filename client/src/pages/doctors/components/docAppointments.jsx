@@ -267,6 +267,7 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import axios from 'axios';
 import Authstore from '../../../hooks/authStore.js'
+import { host } from '../../../host.js';
 export default function Bookings() {
 
   const userid = Authstore.getUser()?.userid || null;
@@ -330,19 +331,18 @@ export default function Bookings() {
     const fetchAppointments = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/appointment/getappointmentbydoctor/${userid}`
+          `${host}/api/appointment/getappointmentbydoctor/${userid}`
         );
 
         if (response.data.success) {
-          // Transform API data to match the required format
           const formattedBookings = response.data.appointments.map((appointment) => ({
             day: new Date(appointment.date).toLocaleDateString("en-US", { weekday: "short" }),
             date: new Date(appointment.date).getDate(),
             time: new Date(appointment.time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-            title: `Appointment with Patient ID: ${appointment.user}`,
-            avatars: ["/static/images/avatar/1.jpg"], // Placeholder image
+            title: `Appointment with Patient: ${appointment?.user?.name}`,
+            avatars: ["/static/images/avatar/1.jpg"], 
             location: "Doctor's Office",
-            participants: 2, // Doctor + Patient
+            participants: 2, 
             status: appointment.status,
           }));
 
@@ -426,9 +426,9 @@ export default function Bookings() {
               </div>
               
               {/* Meeting Details */}
-              <div className="lg:col-span-4">
-                <p className="font-semibold text-lg sm:text-xl lg:text-base text-gray-900 mb-1 lg:mb-0">
-                  {booking.title}
+              <div className="lg:col-span-4 items-center">
+                <p className="font-semibold text-lg sm:text-xl lg:text-base text-gray-700 mb-1 lg:mb-0 items-center">
+                  {booking?.title}
                 </p>
                 <p className="lg:hidden text-sm text-gray-600 mt-1 flex items-center">
                   <MapPin className="w-4 h-4 mr-1" /> {booking.location}

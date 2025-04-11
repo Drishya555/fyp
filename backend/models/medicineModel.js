@@ -10,7 +10,7 @@ const medicineSchema = new mongoose.Schema(
     },
     category: {
       type:mongoose.ObjectId,
-      ref:"medicinecategories"
+      ref:"MedicineCategory"
     },
     price: {
       type: Number,
@@ -41,4 +41,4 @@ const medicineSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("medicines", medicineSchema);
+export default mongoose.model("Medicine", medicineSchema);

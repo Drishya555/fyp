@@ -27,26 +27,26 @@ export const addNewMedicineCategory = async(req,res) =>{
 }
 
 
+
 export const getAllMedicines = async (req, res) => {
     try {
-        const medicines = await medicineModel
-            .find()
-            .populate("category", "categoryName") 
-
-        res.status(200).json({
-            success: true,
-            message: "Medicines fetched successfully",
-            medicines,
-        });
+      const medicines = await medicineModel
+        .find()
+        .populate("category", "categoryName"); 
+  
+      res.status(200).json({
+        success: true,
+        message: "Medicines fetched successfully",
+        medicines,
+      });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error fetching medicines",
-            error: error.message,
-        });
+      res.status(500).json({
+        success: false,
+        message: "Error fetching medicines",
+        error: error.message,
+      });
     }
-};
-
+  };
 
 
 export const addMedicineController = async(req,res) =>{

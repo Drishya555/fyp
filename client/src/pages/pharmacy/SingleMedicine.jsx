@@ -130,7 +130,7 @@ const SingleMedicine = () => {
         
         </div>
 
-          <p className="text-gray-500">{product.category.categoryName}</p>
+          <p className="text-gray-500">{product?.category?.categoryName}</p>
           <div className="sm:flex items-center gap-4">
           <h1 className="text-[25px] sm:text-[30px] font-medium mt-[-7px]">{product.name}</h1>
           <div className="flex items-center text-gray-500">

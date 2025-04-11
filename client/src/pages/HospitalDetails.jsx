@@ -249,44 +249,44 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {host} from '../host.js'
 // Extended sample hospital data with more details
-const hospitalsData = [
-  {
-    id: 1,
-    name: "City General Hospital",
-    category: "Public",
-    location: "New York",
-    address: "123 Medical Drive, NY 10001",
-    rating: 4.5,
-    price: 90,
-    photo: "https://www.nepalmediciti.com/images/vBlogs/Nepal%20Mediciti.JPG",
-    description: "A leading public hospital providing comprehensive healthcare services with state-of-the-art facilities.",
-    services: ["Emergency Care", "Maternity", "Pediatrics", "Cardiology", "Oncology"],
-    doctors: [
-      { name: "Dr. Sarah Johnson", specialty: "Cardiology", experience: "15 years" },
-      { name: "Dr. Michael Chen", specialty: "Neurology", experience: "12 years" },
-    ],
-    openingHours: {
-      weekdays: "8:00 AM - 8:00 PM",
-      weekends: "9:00 AM - 5:00 PM",
-      emergency: "24/7"
-    },
-    contact: {
-      phone: "+1 (212) 555-1000",
-      email: "info@citygeneral.org"
-    }
-  },
-  // ... other hospitals
-];
+// const hospitalsData = [
+//   {
+//     id: 1,
+//     name: "City General Hospital",
+//     category: "Public",
+//     location: "New York",
+//     address: "123 Medical Drive, NY 10001",
+//     rating: 4.5,
+//     price: 90,
+//     photo: "https://www.nepalmediciti.com/images/vBlogs/Nepal%20Mediciti.JPG",
+//     description: "A leading public hospital providing comprehensive healthcare services with state-of-the-art facilities.",
+//     services: ["Emergency Care", "Maternity", "Pediatrics", "Cardiology", "Oncology"],
+//     doctors: [
+//       { name: "Dr. Sarah Johnson", specialty: "Cardiology", experience: "15 years" },
+//       { name: "Dr. Michael Chen", specialty: "Neurology", experience: "12 years" },
+//     ],
+//     openingHours: {
+//       weekdays: "8:00 AM - 8:00 PM",
+//       weekends: "9:00 AM - 5:00 PM",
+//       emergency: "24/7"
+//     },
+//     contact: {
+//       phone: "+1 (212) 555-1000",
+//       email: "info@citygeneral.org"
+//     }
+//   },
+//   // ... other hospitals
+// ];
 
 
 const HospitalDetails = () => {
   const { id } = useParams();
-  const hospital = hospitalsData.find(h => h.id === parseInt(id));
+  // const hospital = hospitalsData.find(h => h.id === parseInt(id));
 
   const [hospitalData, setHospitalData] = useState(null);
   useEffect(() => {
     const fetchHospitalData = async () => {
-      const res = await axios.get(`${host}/api/hospital/getsinglehospital/67eb9cdc5c10319bbeee620a`);
+      const res = await axios.get(`${host}/api/hospital/getsinglehospital/${id}`);
       setHospitalData(res.data.hospital);
     }
 

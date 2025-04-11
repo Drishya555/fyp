@@ -11,8 +11,8 @@ const Pharmacy = () => {
     
     useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(`${host}api/pharmacy/getallmedicines`);
+      try { 
+        const response = await axios.get(`${host}/api/pharmacy/getallmedicines`);
         setMedicines(response.data.medicines);
       } catch (err) {
         console.log(`Error in fetching ${err} `)
@@ -53,7 +53,7 @@ const Pharmacy = () => {
 
             <div className="p-5 mt-[10px]">
               <div className="w-full flex justify-between">
-                <p className="text-gray-500 text-[15px]">{product.category.categoryName}</p>
+                <p className="text-gray-500 text-[15px]">{product?.category?.categoryName}</p>
                 <p className="flex items-center text-gray-500">
                   ({product.rating}) <AiFillStar color="#FFD700" size={22} />
                 </p>
