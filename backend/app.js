@@ -30,7 +30,7 @@ app.use('/api/appointment', appointmentRoute)
 app.use('/api/hospital', hospitalRoute)
 
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000; //cloud provides port or else 8000 in localserver 
 
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`.bgGreen.white)

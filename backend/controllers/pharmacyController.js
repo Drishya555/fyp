@@ -1,7 +1,12 @@
 import cloudinary from '../config/cloudinary.js'
 import medicineModel from '../models/medicineModel.js'
+import pharmacistModel from '../models/pharmacistModel.js'
 import medicineCategoryModel from '../models/medicineCategoryModel.js';
 import slugify from 'slugify';
+import doctorModel from '../models/doctorModel.js';
+import userModel from '../models/userModel.js';
+import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
+import crypto from 'crypto';
 
 export const addNewMedicineCategory = async(req,res) =>{
     try {
@@ -125,3 +130,64 @@ export const getRandomProducts = async (req, res) => {
   
 
 
+
+
+  export const registerPharmacistController = async(req,res) =>{
+      try {
+          const {name, email, password, phone,licenseNo} = req.fields;
+          const {image} = req.files;
+  
+          let imageurl;
+  
+           if (image) {
+                const result = await cloudinary.uploader.upload(image.path, {
+                  folder: "mediaid",
+                });
+                imageurl = result.secure_url;
+              }
+          
+  
+              const pharmacists = await pharmacistModel.findOne({ email });
+              const doctors = await doctorModel.findOne({ email });
+              const users = await userModel.findOne({ email });
+              
+              const existingUser = pharmacists || doctors || users;
+              
+              if (existingUser) {
+                return res.status(409).send({
+                  success: false,
+                  message: "Email is already taken",
+                });
+              }
+              
+
+      const hashedPassword = await hashPassword(password);
+  
+      const resetToken = crypto.randomBytes(32).toString("hex");
+  
+      const pharmacist = await new pharmacistModel({
+          name,
+          email,
+          password: hashedPassword,
+          resetToken,
+          phone:phone,
+          licenseNo:licenseNo,
+          image:imageurl,
+      }).save();
+  
+      res.status(201).send({
+          success: true,
+          message: "Pharmacist registered successfully",
+          pharmacist,
+        });
+      } catch (error) {
+          console.log(error);
+      res.status(500).send({
+        success: false,
+        message: "Error in registration",
+        error,
+      });
+      }
+  
+  }
+  

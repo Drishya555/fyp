@@ -1,9 +1,12 @@
 import { ArrowRight, Calendar, BedSingle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Tablecomponent from "./tablecomponent";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, getDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Authstore from '../../../hooks/authStore.js'
+import axios from 'axios';
+import { host } from '../../../host.js';
 
 const data = [
   { day: "Mon", appointments: 12 },
@@ -32,6 +35,28 @@ const beds = [
 const PersonalDashboard = () => {
   const bgimg = "https://t3.ftcdn.net/jpg/04/01/33/02/360_F_401330201_h0oE33RLbJTnZc0lrDQb25uYgrb85vLd.jpg";
 
+  const userid = Authstore.getUser()?.userid || null;
+
+  const [appointmentCount, setAppointmentCount] = useState(0); 
+
+useEffect(() => {
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `${host}/api/appointment/getappointmentbydoctor/${userid}`
+      );
+      
+      if (response.data.appointments) {
+        setAppointmentCount(response.data.appointments.length); // Count the appointments
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  fetchAppointments();
+}, []);
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const monthStart = startOfMonth(currentDate);
@@ -48,7 +73,7 @@ const PersonalDashboard = () => {
         <div>
           <h1 className="text-[20px] font-semibold">Good Morning, Dr. Deepali!</h1>
           <p className="text-[14px] text-gray-700">
-            I hope you&apos;re in high spirits—there are 67 patients eagerly waiting for you!
+            I hope you&apos;re in high spirits—there are {appointmentCount} patients eagerly waiting for you!
           </p>
         </div>
         <div

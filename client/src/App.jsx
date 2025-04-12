@@ -23,7 +23,10 @@ import DoctorDetails from './pages/DoctorDetails.jsx';
 import Side from './pages/Sidenav.jsx';
 import HospitalDetails from './pages/HospitalDetails.jsx';
 import AddDoctor from './pages/hospitals/AddDoctors.jsx';
+import AddPharmacist from './pages/hospitals/AddPharmacists.jsx';
+import ProfilePage from './pages/Profilepage.jsx';
 import Authstore from './hooks/authStore.js';
+import Company from './pages/Company.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -48,9 +51,12 @@ const App = () => {
       <Route path='/doctordetails/:id' element={<DoctorDetails/>}></Route>
       <Route path='/tt' element={<Side/>}></Route>
       <Route path='/hospital-details/:id' element={<HospitalDetails/>}></Route>
-    
+      <Route path='/profilepage' element={<ProfilePage/>}></Route>
+      <Route path='/company' element={<Company/>}></Route>
+
       {/*hospital view */}
       <Route path='/adddoctor' element={<AddDoctor/>}></Route>
+      <Route path='/addpharmacist' element={<AddPharmacist/>}></Route>
 
 
       {/* doctor view */}

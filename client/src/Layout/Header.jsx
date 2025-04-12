@@ -155,7 +155,7 @@ export default function Header() {
               Doctors
             </motion.span>
           </a>
-          <a href="#" className="text-lg/6 font-regular text-gray-900">
+          <a href="/pharmacy" className="text-lg/6 font-regular text-gray-900">
             <motion.span
               whileHover={{ scale: 1.05 }} // Text hover animation
               transition={{ type: 'spring', stiffness: 300 }}
@@ -163,7 +163,7 @@ export default function Header() {
               Pharmacy
             </motion.span>
           </a>
-          <a href="#" className="text-lg/6 font-regular text-gray-900">
+          <a href="/company" className="text-lg/6 font-regular text-gray-900">
             <motion.span
               whileHover={{ scale: 1.05 }} // Text hover animation
               transition={{ type: 'spring', stiffness: 300 }}
@@ -262,7 +262,7 @@ export default function Header() {
                       Doctors
                     </a>
                     <a
-                      href="#"
+                      href="/pharmacy"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     >
                       Pharmacy

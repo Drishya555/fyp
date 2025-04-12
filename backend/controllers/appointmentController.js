@@ -76,7 +76,7 @@ export const getappointmentbydocidcontroller = async(req,res) =>{
     try {
         const {id} = req.params;
 
-        const appointments = await appointmentModel.find({doctor: id}).populate('user', 'name email');
+        const appointments = await appointmentModel.find({doctor: id}).populate('user', 'name email image').populate('doctor', 'name email image specialization hospital').sort({createdAt: -1});
         res.status(200).send({
             success: true,
             message: "Appointments fetched successfully",
@@ -86,6 +86,26 @@ export const getappointmentbydocidcontroller = async(req,res) =>{
         res.status(500).send({
             success: false,
             message: "Error occured fetching",
+            error: error.message
+        })
+    }
+}
+
+
+
+export const deleteappointmentcontroller = async(req,res) =>{
+    try {
+        const {id} = req.params;
+        const appointment = await appointmentModel.findByIdAndDelete(id);
+        res.status(200).send({
+            success: true,
+            message: "Appointment deleted successfully",
+            appointment: appointment    
+        })
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Error occured deleting",
             error: error.message
         })
     }
