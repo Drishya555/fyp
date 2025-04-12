@@ -250,13 +250,13 @@ export default function Header() {
                       </DisclosurePanel>
                     </Disclosure>
                     <a
-                      href="#"
+                      href="/hospitals"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     >
                       Hospitals
                     </a>
                     <a
-                      href="#"
+                      href="/doctors"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     >
                       Doctors
@@ -268,7 +268,7 @@ export default function Header() {
                       Pharmacy
                     </a>
                     <a
-                      href="#"
+                      href="/company"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     >
                       Company
