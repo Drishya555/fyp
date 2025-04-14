@@ -20,6 +20,7 @@ import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
 import Adminpage from './pages/admin/Adminpage.jsx';
 import AddHospital from './pages/admin/AddHospital.jsx';
 import DoctorDetails from './pages/DoctorDetails.jsx';
+import HospitalDashboard from './pages/hospitals/HospitalSidebar.jsx'
 import Side from './pages/Sidenav.jsx';
 import HospitalDetails from './pages/HospitalDetails.jsx';
 import AddDoctor from './pages/hospitals/AddDoctors.jsx';
@@ -27,6 +28,7 @@ import AddPharmacist from './pages/hospitals/AddPharmacists.jsx';
 import ProfilePage from './pages/Profilepage.jsx';
 import Authstore from './hooks/authStore.js';
 import Company from './pages/Company.jsx';
+import Pharmacists from './pages/pharmacy/Pharmacist/PharmacistSidebar.jsx'
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -57,6 +59,7 @@ const App = () => {
       {/*hospital view */}
       <Route path='/adddoctor' element={<AddDoctor/>}></Route>
       <Route path='/addpharmacist' element={<AddPharmacist/>}></Route>
+      <Route path='/hospital-dashboard' element={<HospitalDashboard/>}></Route>
 
 
       {/* doctor view */}
@@ -71,6 +74,11 @@ const App = () => {
       {/*  admin routes */}
       <Route path='/admin' element={<Adminpage/>}></Route>
       <Route path='/addhospital' element={<AddHospital/>}></Route>
+
+
+      {/* Pharmacist View */}
+      <Route path='/pharmacist-dashboard' element={<Pharmacists/>}></Route>
+
 
       </Routes>
     </>

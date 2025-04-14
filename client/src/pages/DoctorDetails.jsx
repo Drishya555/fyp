@@ -353,12 +353,12 @@ const DoctorProfile = () => {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                      Rayna Westervelt M.Psi
+                      Dr. Carlos Sainz
                     </h1>
                     <p className="text-blue-600 font-medium">ENT Specialist</p>
                     <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
                       <FaMapMarkerAlt className="text-blue-500" />
-                      <p className="text-gray-600">Siloam Hospitals, West Bekasi</p>
+                      <p className="text-gray-600">Mediciti Hospital</p>
                     </div>
                   </div>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full shadow-md transform transition hover:scale-105 mt-4 md:mt-0">
