@@ -1,11 +1,25 @@
 import hospitalModel from "../models/hospitalModel.js";
 import cloudinary from '../config/cloudinary.js'
-
+import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
+import crypto from 'crypto'
 
 export const registerHospital = async(req,res) => {
     try {
-        const {name, address, licenseNo, bio, rating, hospitaltype, price} = req.fields;
+        const {email, password, name, address, licenseNo, bio, rating, hospitaltype, price} = req.fields;
         const {image} = req.files;
+
+        const existingHospital = await hospitalModel.findOne({ email });
+            if (existingHospital) {
+              return res.status(409).send({
+                success: false,
+                message: "Email is already taken",
+              });
+            }
+
+        const hashedPassword = await hashPassword(password);
+            
+        const resetToken = crypto.randomBytes(32).toString("hex");
+
 
         let imageurl;
 
@@ -26,7 +40,7 @@ export const registerHospital = async(req,res) => {
         }
 
         const newHospital = new hospitalModel({
-            name, address, licenseNo, bio, rating, hospitaltype, image: imageurl, price
+            name, address, licenseNo, bio, rating, hospitaltype, image: imageurl, price,email, password: hashedPassword,resetToken
         }).save();
 
         res.status(200).send({

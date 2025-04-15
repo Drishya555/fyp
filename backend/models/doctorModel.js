@@ -17,7 +17,7 @@ const doctorSchema = new mongoose.Schema(
     },
     hospital:{
       type: mongoose.ObjectId,
-      ref: "hospitals"
+      ref: "Hospital"
     },
     address: {
       type: String,
@@ -34,7 +34,7 @@ const doctorSchema = new mongoose.Schema(
     },
     hospital: {
       type: mongoose.ObjectId,
-      ref:"Hospitals"
+      ref:"Hospital"
     },
     reviews:[
       {

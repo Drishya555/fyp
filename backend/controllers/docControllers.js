@@ -10,7 +10,8 @@ export const getAllDoctors = async (req, res) => {
     try {
         const doctors = await doctorModel
             .find()
-            .populate("specialization", "specialization") 
+            .populate("specialization", "specialization")
+            .populate("hospital", "name")
 
         res.status(200).json({
             success: true,
@@ -140,7 +141,7 @@ export const updatedocController = async (req, res) => {
 
 export const registerDocController = async(req,res) =>{
     try {
-        const {name, email, password, phone,licenseNo} = req.fields;
+        const {name, email, password, phone,licenseNo, hospital} = req.fields;
         const {image} = req.files;
 
         let imageurl;
@@ -172,6 +173,7 @@ export const registerDocController = async(req,res) =>{
         phone:phone,
         licenseNo:licenseNo,
         image:imageurl,
+        hospital
     }).save();
 
     res.status(201).send({
@@ -281,3 +283,18 @@ export const updateImage = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+export const dochospcontroller = async(req,res) =>{
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({
+      success: false,
+      message: "Error fetching doctors by hospital",
+      error: error.message,
+    })
+  }
+}

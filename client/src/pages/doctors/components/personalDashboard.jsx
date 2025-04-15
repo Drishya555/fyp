@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Authstore from '../../../hooks/authStore.js'
 import axios from 'axios';
 import { host } from '../../../host.js';
+import Schedule from "../AddSchedule.jsx";
 
 const data = [
   { day: "Mon", appointments: 12 },
@@ -213,6 +214,11 @@ useEffect(() => {
             )}
           </div>
         </div>
+      </div>
+
+
+      <div className="mt-[50px]">
+          <Schedule/>
       </div>
     </>
   );

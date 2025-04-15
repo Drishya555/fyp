@@ -2,8 +2,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { host } from '../../host.js';
+import Authstore from '../../hooks/authStore.js';
 
 const DoctorRegister = () => {
+  const hospitalid = Authstore.getUser()?.userid || null;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -11,7 +13,7 @@ const DoctorRegister = () => {
     password: '',
     phone: '',
     licenseNo: '',
-    image: null
+    image: null,
   });
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,6 +59,8 @@ const DoctorRegister = () => {
       if (formData.image) {
         formDataToSend.append('image', formData.image);
       }
+      formDataToSend.append('hospital', hospitalid);
+
 
       const response = await axios.post(`${host}/api/doctors/registerdoctor`, formDataToSend, {
         headers: {

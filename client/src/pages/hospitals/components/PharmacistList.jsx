@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import DoctorRegister from '../AddDoctors.jsx';
 
 const TableComponent = () => {
   // Sample patient data
@@ -38,6 +39,7 @@ const TableComponent = () => {
   // State for modals
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddDoctorModalOpen, setIsAddDoctorModalOpen] = useState(false);
   const [currentPatient, setCurrentPatient] = useState(null);
 
   // Handle edit button click
@@ -93,7 +95,15 @@ const TableComponent = () => {
 
   return (
     <section className="container px-4 mx-auto">
-      <h1 className="text-xl font-bold text-gray-800 mb-6">Patient Appointments</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold text-gray-800">Patient Appointments</h1>
+        <button
+          onClick={() => setIsAddDoctorModalOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Add Pharmacist
+        </button>
+      </div>
       
       {/* Desktop Table (hidden on mobile) */}
       <div className="hidden md:flex flex-col">
@@ -366,6 +376,40 @@ const TableComponent = () => {
                 onClick={() => setIsDeleteModalOpen(false)}
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Doctor Modal */}
+      {isAddDoctorModalOpen && (
+        <div className="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full max-w-2xl mx-4 my-8">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Add New Doctor</h3>
+                <button
+                  onClick={() => setIsAddDoctorModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <span className="sr-only">Close</span>
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="max-h-[80vh] overflow-y-auto">
+                <DoctorRegister />
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end">
+              <button
+                type="button"
+                className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:w-auto sm:text-sm"
+                onClick={() => setIsAddDoctorModalOpen(false)}
+              >
+                Close
               </button>
             </div>
           </div>

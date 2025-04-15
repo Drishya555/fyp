@@ -49,14 +49,29 @@ export default function Header() {
   const [isServicesHovered, setIsServicesHovered] = useState(false);
   const [user, setUser] = useState(AuthStore.getUser());
 
+  // Listen for manual login/logout events and update UI
   useEffect(() => {
-    setUser(AuthStore.getUser());
+    const handleAuthChange = () => {
+      setUser(AuthStore.getUser());
+    };
+
+    // Add a custom event to listen for auth change
+    window.addEventListener('authChange', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('authChange', handleAuthChange);
+    };
   }, []);
 
   const handleLogout = () => {
     AuthStore.removeUser();
     setUser(null);
+
+    // Dispatch event to inform other components
+    window.dispatchEvent(new Event('authChange'));
   };
+
+  const userRole = user?.role;
 
 
   return (
@@ -171,6 +186,39 @@ export default function Header() {
               Company
             </motion.span>
           </a>
+
+          {userRole === 'doctor' && (
+           <a href="/doctor-dashboard" className="text-lg/6 font-regular text-gray-900">
+            <motion.span
+              whileHover={{ scale: 1.05 }} // Text hover animation
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              Dashboard
+            </motion.span>
+          </a>)}
+
+
+          {userRole === 'hospital' && (
+           <a href="/hospital-dashboard" className="text-lg/6 font-regular text-gray-900">
+            <motion.span
+              whileHover={{ scale: 1.05 }} // Text hover animation
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              Dashboard
+            </motion.span>
+          </a>)}
+
+
+          {userRole === 'pharmacist' && (
+           <a href="/pharmacist-dashboard" className="text-lg/6 font-regular text-gray-900">
+            <motion.span
+              whileHover={{ scale: 1.05 }} // Text hover animation
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              Dashboard
+            </motion.span>
+          </a>)}
+         
         </PopoverGroup>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <a href="/login" className="text-lg/6 font-regular text-gray-900">

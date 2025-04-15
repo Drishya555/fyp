@@ -5,7 +5,7 @@ import JWT from 'jsonwebtoken';
 import cloudinary from '../config/cloudinary.js'
 import docmodel from '../models/doctorModel.js';
 import pharmacistModel from '../models/pharmacistModel.js';
-
+import hospitalModel from '../models/hospitalModel.js';
 export const registerController = async(req,res) =>{
     try {
         const {name, email, password} = req.body;
@@ -52,9 +52,10 @@ export const loginController = async (req, res) => {
     const user = await userModel.findOne({ email });
     const doctor = await docmodel.findOne({ email });
     const pharmacy = await pharmacistModel.findOne({ email });
+    const hospital = await hospitalModel.findOne({ email });
 
     // If neither user nor doctor exists
-    if (!user && !doctor && !pharmacy) {
+    if (!user && !doctor && !pharmacy && !hospital) {
       return res.status(404).send({
         success: false,
         message: "Email is not registered",
@@ -62,7 +63,7 @@ export const loginController = async (req, res) => {
     }
 
     // Determine if the login is for a user or a doctor
-    const account = user || doctor || pharmacy;
+    const account = user || doctor || pharmacy || hospital;
 
     // Compare passwords
     const match = await comparePassword(password, account.password);
