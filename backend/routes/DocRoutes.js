@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllDoctors, addSpecialization, registerDocController,loginDocController, updatedocController, dochospcontroller} from '../controllers/docControllers.js';
+import { getAllDoctors, addSpecialization, registerDocController,loginDocController, updatedocController, dochospcontroller, getDoctorbyId} from '../controllers/docControllers.js';
 import formidable from "express-formidable";
 
 const router = express.Router();
@@ -9,7 +9,7 @@ router.post('/logindoctor',loginDocController);
 router.get('/getalldoctors', getAllDoctors);
 router.post('/addnewspecialization',addSpecialization);
 router.put('/updatedocdetails/:id',updatedocController);
-router.get('/getselecteddoc/:id',updatedocController);
+router.get('/getselecteddoc/:id',getDoctorbyId);
 router.get('/getdoctorsbyhospital/:id',dochospcontroller);
 
 export default router;

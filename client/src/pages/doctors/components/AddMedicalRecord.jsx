@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Authstore from '../../../hooks/authStore.js';
+import {host} from '../../../host.js'
 import {
   Calendar,
   Heart,
   Pill,
   FileText,
-  ChevronLeft,
   Plus,
   Trash2,
   AlertCircle,
@@ -19,23 +21,47 @@ const AddMedicalData = () => {
   const [savedMessage, setSavedMessage] = useState(null);
   const [patientSearchQuery, setPatientSearchQuery] = useState('');
   const [showPatientSelector, setShowPatientSelector] = useState(false);
+  const [doctor, setDoctor] = useState(null);
+  const [patients, setPatients] = useState([]);
+
+  useEffect(()=>{
+    const getdocbyid = async () => {
+      const docid = Authstore.getUser()?.userid;
+      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`)
+      setDoctor(response.data.doctor)
+    }
+
+    getdocbyid()
+  },[])
   
-  // Selected patient state
   const [selectedPatient, setSelectedPatient] = useState({
     id: '9834A-43',
     name: 'Ethan Miller',
     age: 55,
     photo: '/api/placeholder/40/40'
   });
-  
-  // Mock patient data
-  const patientsList = [
-    { id: '9834A-43', name: 'Ethan Miller', age: 55, photo: '/api/placeholder/40/40' },
-    { id: '7621B-52', name: 'Sarah Johnson', age: 42, photo: '/api/placeholder/40/40' },
-    { id: '5489C-38', name: 'Michael Chen', age: 67, photo: '/api/placeholder/40/40' },
-    { id: '3256D-19', name: 'Lisa Garcia', age: 31, photo: '/api/placeholder/40/40' },
-    { id: '9012E-27', name: 'Robert Williams', age: 58, photo: '/api/placeholder/40/40' }
-  ];
+
+
+
+  useEffect(() => {
+    const getpatientsbydocid = async () => {
+      const docid = Authstore.getUser()?.userid;
+      const response = await axios.get(`${host}/api/appointment/getappointmentbydoctor/${docid}`)
+      setPatients(response.data.appointments)
+      
+      // Set the first patient as selected by default if available
+      if (response.data.appointments.length > 0) {
+        setSelectedPatient({
+          id: response.data.appointments[0].user._id,
+          name: response.data.appointments[0].user?.name,
+          email: response.data.appointments[0].user?.email,
+          photo: response.data.appointments[0].user?.image || '/api/placeholder/40/40'
+        });
+      }
+    }
+
+    getpatientsbydocid()
+  }, [])
   
   // Form states
   const [vitals, setVitals] = useState({
@@ -118,21 +144,26 @@ const AddMedicalData = () => {
   };
   
   const handlePatientSelect = (patient) => {
-    setSelectedPatient(patient);
+    setSelectedPatient({
+      id: patient.user?._id,
+      name: patient.user?.name,
+      email: patient.user?.email,
+      photo: patient.user?.image || '/api/placeholder/40/40'
+    });
     setShowPatientSelector(false);
     
     // Reset form data when changing patients (optional)
     setMedications([]);
     setAppointments([]);
-    setSavedMessage(`Selected patient: ${patient.name}`);
+    setSavedMessage(`Selected patient: ${patient?.user?.name}`);
     setTimeout(() => setSavedMessage(null), 3000);
   };
   
   const filteredPatients = patientSearchQuery 
-    ? patientsList.filter(patient => 
-        patient.name.toLowerCase().includes(patientSearchQuery.toLowerCase()) ||
-        patient.id.toLowerCase().includes(patientSearchQuery.toLowerCase()))
-    : patientsList;
+    ? patients.filter(patient => 
+        patient?.user?.name.toLowerCase().includes(patientSearchQuery.toLowerCase()) ||
+        patient?.user?.id.toLowerCase().includes(patientSearchQuery.toLowerCase()))
+    : patients;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
@@ -146,12 +177,12 @@ const AddMedicalData = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
               <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900">Dr. James Wilson</p>
-                <p className="text-xs text-gray-500">Physician</p>
+                <p className="text-sm font-medium text-gray-900">Dr. {doctor?.name}</p>
+                <p className="text-xs text-gray-500">{doctor?.specialization?.specialization}</p>
               </div>
               <div className="relative">
                 <img
-                  src="/api/placeholder/35/35"
+                  src={doctor?.image}
                   alt="Dr. James Wilson"
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-100"
                 />
@@ -166,13 +197,7 @@ const AddMedicalData = () => {
         {/* Page Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <div className="flex items-center mb-2">
-              <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">
-                <ChevronLeft size={16} className="mr-1" />
-                <span className="text-sm font-medium">Back to Dashboard</span>
-              </a>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Add Medical Data</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Add Medical Record</h2>
             <p className="mt-1 text-sm text-gray-600">
               Update patient health data and keep medical records current
             </p>
@@ -236,7 +261,7 @@ const AddMedicalData = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {filteredPatients.map(patient => (
                     <div 
-                      key={patient.id}
+                      key={patient?.user?._id}
                       onClick={() => handlePatientSelect(patient)}
                       className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
                         selectedPatient.id === patient.id 
@@ -245,13 +270,13 @@ const AddMedicalData = () => {
                       }`}
                     >
                       <img 
-                        src={patient.photo} 
-                        alt={patient.name}
+                        src={patient?.user?.image} 
+                        alt={patient?.user?.name}
                         className="w-10 h-10 rounded-full mr-3" 
                       />
                       <div>
-                        <p className="font-medium">{patient.name}</p>
-                        <p className="text-xs text-gray-500">ID: {patient.id} • Age: {patient.age}</p>
+                        <p className="font-medium">{patient?.user?.name}</p>
+                        <p className="text-xs text-gray-500">ID: {patient?.user?._id} • Age: {patient?.user?.age}</p>
                       </div>
                     </div>
                   ))}

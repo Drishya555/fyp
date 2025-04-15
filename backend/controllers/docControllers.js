@@ -139,6 +139,33 @@ export const updatedocController = async (req, res) => {
 
 
 
+export const getDoctorbyId = async(req,res) =>{
+  try {
+    const {id} = req.params;
+    const doctor = await docmodel.findById(id).populate('specialization', 'specialization');
+    if (!doctor) {
+      return res.status(404).send({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Doctor fetched successfully",
+      doctor,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({
+      success: false,
+      message: "Error fetching doctor by ID",
+      error: error.message,
+    })
+    
+  }
+}
+
+
 export const registerDocController = async(req,res) =>{
     try {
         const {name, email, password, phone,licenseNo, hospital} = req.fields;
@@ -298,3 +325,5 @@ export const dochospcontroller = async(req,res) =>{
     })
   }
 }
+
+
