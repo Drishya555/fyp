@@ -9,6 +9,7 @@ import {
   DisclosurePanel,
   PopoverGroup,
 } from '@headlessui/react'
+import { HiOutlineUserCircle } from "react-icons/hi2";
 import {
   Bars3Icon,
   XMarkIcon,
@@ -20,26 +21,7 @@ import AuthStore from '../hooks/authStore.js'
 
 import { CalendarIcon, DocumentTextIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
 
-const products = [
-  { 
-    name: 'Appointment Booking', 
-    description: 'Schedule and manage your appointments with ease', 
-    href: '/appointment-dashboard', 
-    icon: CalendarIcon // Correct icon for Heroicons v2
-  },
-  { 
-    name: 'Medical Record', 
-    description: 'Access and manage your medical records securely', 
-    href: '/medical-record', 
-    icon: DocumentTextIcon // Correct icon for Heroicons v2
-  },
-  { 
-    name: 'Pharmacy', 
-    description: 'Order and manage your prescriptions online', 
-    href: '/pharmacy', 
-    icon: ShoppingCartIcon // Correct icon for Heroicons v2
-  }
-];
+
 const callsToAction = [
   
 ]
@@ -70,6 +52,31 @@ export default function Header() {
     // Dispatch event to inform other components
     window.dispatchEvent(new Event('authChange'));
   };
+
+  const userId = user?.userid;
+
+  const products = [
+    { 
+      name: 'Appointment Booking', 
+      description: 'Schedule and manage your appointments with ease', 
+      href: '/appointment-dashboard', 
+      icon: CalendarIcon // Correct icon for Heroicons v2
+    },
+    { 
+      name: 'Medical Record', 
+      description: 'Access and manage your medical records securely', 
+      href: `/medical-record/${userId}`, 
+      icon: DocumentTextIcon // Correct icon for Heroicons v2
+    },
+    { 
+      name: 'Pharmacy', 
+      description: 'Order and manage your prescriptions online', 
+      href: '/pharmacy', 
+      icon: ShoppingCartIcon // Correct icon for Heroicons v2
+    }
+  ];
+
+
 
   const userRole = user?.role;
 
@@ -220,7 +227,44 @@ export default function Header() {
           </a>)}
          
         </PopoverGroup>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div className='lg:flex lg:flex-1 lg:justify-end'>
+        {userRole === 'doctor' && (
+                  <a href="/doctorprofile" className="text-lg/6 font-regular text-gray-900">
+                    <motion.span
+                      whileHover={{ scale: 1.05 }} // Text hover animation
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+        <HiOutlineUserCircle size={25}/>
+
+                    </motion.span>
+                  </a>)}
+
+
+                  {userRole === 'user' && (
+                  <a href="/profile" className="text-lg/6 font-regular text-gray-900">
+                    <motion.span
+                      whileHover={{ scale: 1.05 }} // Text hover animation
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+        <HiOutlineUserCircle size={25}/>
+
+                    </motion.span>
+                  </a>)}
+
+
+
+                  {userRole === 'hospital' && (
+                  <a href="/hospitalprofile" className="text-lg/6 font-regular text-gray-900">
+                    <motion.span
+                      whileHover={{ scale: 1.05 }} // Text hover animation
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+        <HiOutlineUserCircle size={25}/>
+
+                    </motion.span>
+                  </a>)}
+        </div> 
+        <div className="hidden lg:flex lg:flex-1 ml-5">
           <a href="/login" className="text-lg/6 font-regular text-gray-900">
             <motion.span
               whileHover={{ scale: 1.05 }} // Text hover animation
@@ -234,6 +278,9 @@ export default function Header() {
             </motion.span>
           </a>
         </div>
+
+        
+        
       </nav>
 
       {/* Mobile Menu with Framer Motion */}

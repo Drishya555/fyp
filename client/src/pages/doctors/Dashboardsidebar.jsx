@@ -3,11 +3,12 @@ import { User, Settings, Monitor, Bell } from "lucide-react";
 import DocPage from "./components/personalDashboard";
 import DocAppointments from "./components/docAppointments";
 import ImgDetection from "./components/imageDetection";
+import AddMedicalData from "./components/AddMedicalRecord";
 
 const menuItems = [
   { id: 1, name: "Dashboard", icon: <User size={20} />, component: <DocPage /> },
   { id: 2, name: "Appointments", icon: <Settings size={20} />, component: <DocAppointments/> },
-  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <div>Add medical record</div> },
+  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <AddMedicalData/> },
   { id: 4, name: "Ai Disease Detection", icon: <Bell size={20} />, component: <ImgDetection/> },
 
 ];

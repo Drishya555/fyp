@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import {
@@ -156,7 +157,9 @@ const upcomingAppointments = [
 ];
 
 // Custom tooltip component for charts
+// eslint-disable-next-line react/prop-types
 const CustomTooltip = ({ active, payload, label }) => {
+  // eslint-disable-next-line react/prop-types
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-100">
@@ -172,7 +175,8 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const CustomDot = ({ cx, cy, stroke, payload, value }) => {
+// eslint-disable-next-line react/prop-types
+const CustomDot = ({ cx, cy, stroke }) => {
   return (
     <svg x={cx - 5} y={cy - 5} width="10" height="10" fill={stroke} viewBox="0 0 10 10">
       <circle cx="5" cy="5" r="5" />
@@ -180,7 +184,8 @@ const CustomDot = ({ cx, cy, stroke, payload, value }) => {
   );
 };
 
-const MedicalRecord = () => {
+const MedicalRecord = ({id}) => {
+  
   const [timeRange, setTimeRange] = useState('week');
   const [expandedTimelineItem, setExpandedTimelineItem] = useState(null);
   const [currentHeartRate] = useState(72);
@@ -197,7 +202,7 @@ const MedicalRecord = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <Heart className="h-6 w-6 text-blue-600 mr-2" />
-            <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack</h1>
+            <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack {id}</h1>
           </div>
           <div className="flex items-center space-x-4">
             <button className="p-2 rounded-full hover:bg-gray-100 relative">
@@ -228,7 +233,7 @@ const MedicalRecord = () => {
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Health Dashboard</h2>
           <p className="mt-1 text-sm text-gray-600">
-            Welcome back, Ethan. Here's your health overview for {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Welcome back, Ethan. Here&apos;s your health overview for {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
         
@@ -326,7 +331,7 @@ const MedicalRecord = () => {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">Height</p>
-                  <p className="text-sm font-medium">5'10" (178cm)</p>
+                  <p className="text-sm font-medium">5&apos;10&quot; (178cm)</p>
                 </div>
               </div>
               

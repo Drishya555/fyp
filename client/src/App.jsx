@@ -12,9 +12,7 @@ import AllMedicines from './pages/pharmacy/AllMedicines.jsx';
 import SingleMedicine from './pages/pharmacy/SingleMedicine.jsx';
 import Cart from './pages/cart.jsx'
 import Dashboardsidebar from './pages/doctors/Dashboardsidebar.jsx'
-import Docnewsidebar from './pages/doctors/docsidebar.jsx'
 import Table from './pages/doctors/components/tablecomponent.jsx';
-import MedicalRecord from './pages/medicalRecord.jsx'
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
 import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
 import Adminpage from './pages/admin/Adminpage.jsx';
@@ -26,12 +24,13 @@ import HospitalDetails from './pages/HospitalDetails.jsx';
 import AddDoctor from './pages/hospitals/AddDoctors.jsx';
 import AddPharmacist from './pages/hospitals/AddPharmacists.jsx';
 import ProfilePage from './pages/Profilepage.jsx';
-import Authstore from './hooks/authStore.js';
+// import Authstore from './hooks/authStore.js';
 import Company from './pages/Company.jsx';
 import Pharmacists from './pages/pharmacy/Pharmacist/PharmacistSidebar.jsx'
+import UserProfile from './pages/userProfile.jsx';
 const App = () => {
 
-  const userrole = Authstore.getUser()?.role || null;
+  // const userrole = Authstore.getUser()?.role || null;
   
   return (
     <>
@@ -49,12 +48,12 @@ const App = () => {
       <Route path='/allmedicines' element={<AllMedicines/>}></Route>
       <Route path="/pharmacy/:slug" element={<SingleMedicine />} />
       <Route path='/cart' element={<Cart/>}></Route>
-      <Route path='/medical-record/:id' element={<MedicalRecord/>}></Route>
       <Route path='/doctordetails/:id' element={<DoctorDetails/>}></Route>
-      <Route path='/tt' element={<Side/>}></Route>
+      <Route path='/medical-record/:id' element={<Side/>}></Route>
       <Route path='/hospital-details/:id' element={<HospitalDetails/>}></Route>
-      <Route path='/profilepage' element={<ProfilePage/>}></Route>
+      <Route path='/doctorprofile' element={<ProfilePage/>}></Route>
       <Route path='/company' element={<Company/>}></Route>
+      <Route path='/profile' element={<UserProfile/>}></Route>
 
       {/*hospital view */}
       <Route path='/adddoctor' element={<AddDoctor/>}></Route>
@@ -64,7 +63,6 @@ const App = () => {
 
       {/* doctor view */}
       
-      {userrole === 'doctor' && <Route path='/profile' element={<Docnewsidebar />} />}
       <Route path='/doctor-dashboard' element={<Dashboardsidebar/>}></Route>
       <Route path='/table' element={<Table/>}></Route>
       <Route path='/changeschedule' element={<AddSchedule/>}></Route>
