@@ -10,22 +10,38 @@ const prescriptionSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "appointments",
     },
-    pharmacist:{
-        type: mongoose.ObjectId,
-        ref:"pharmacists",
-    },
-    medicine:{
-        type: mongoose.ObjectId,
-        ref:"medicines",
+    doctor: {
+      type: mongoose.ObjectId,
+      ref: "doctors",
     },
     prescription:{
         type: String,
         required: true,
     },
+    medication: [
+        {
+            medicineName:{
+                type: String,
+                required: true,
+            },
+            dosage:{
+                type: String,
+                required: true,
+            },
+            frequency:{
+                type: String,
+                required: true,
+            },
+            duration:{
+                type: String,
+                required: true,
+            },
+        }
+    ]
     
     
   },
   { timestamps: true }
 );
 
-export default mongoose.model("prescriptions", prescriptionSchema);
+export default mongoose.model("Prescription", prescriptionSchema);

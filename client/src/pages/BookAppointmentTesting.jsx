@@ -271,7 +271,7 @@ const Schedule = ({ docid }) => {
         display: `${slot.time} (${slot.status})`,
         time: slot.time,
         status: slot.status,
-        slotId: slot._id, // Store the slot ID
+        slotId: slot._id, 
       }));
   };
 
@@ -283,12 +283,12 @@ const Schedule = ({ docid }) => {
     
     let daysToAdd = targetDayIndex - currentDayIndex;
     if (daysToAdd < 0) {
-      daysToAdd += 7; // If target day is earlier in week, go to next week
+      daysToAdd += 7; // If target day is earlier in week, i can gooo next week
     }
     
     const appointmentDate = new Date(today);
     appointmentDate.setDate(today.getDate() + daysToAdd);
-    return appointmentDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    return appointmentDate.toISOString().split("T")[0]; // Format as YMD
   };
 
   const handleDayClick = (day) => {
@@ -336,7 +336,6 @@ const Schedule = ({ docid }) => {
       // Update the slot status to "booked" using the same updatedoc endpoint
       await updateSlotStatus(selectedSlot.slotId);
 
-      // Update local state to reflect the new status
       setSchedule((prevSchedule) =>
         prevSchedule.map((slot) =>
           slot._id === selectedSlot.slotId ? { ...slot, status: "booked" } : slot

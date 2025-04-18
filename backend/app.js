@@ -10,7 +10,7 @@ import cartRoute from './routes/cartRoute.js'
 import connectDB from './config/db.js';
 import appointmentRoute from './routes/AppointmentRoute.js'
 import hospitalRoute from './routes/HospitalRoute.js'
-
+import prescriptionRoutes from './routes/prescriptionRoute.js';
 const app = express();
 
 dotenv.config();
@@ -28,6 +28,7 @@ app.use('/api/pharmacy', pharmaRoute)
 app.use('/api/cart', cartRoute)
 app.use('/api/appointment', appointmentRoute)
 app.use('/api/hospital', hospitalRoute)
+app.use('/api/prescriptions', prescriptionRoutes);
 
 
 const PORT = process.env.PORT || 8000; //cloud provides port or else 8000 in localserver 

@@ -28,10 +28,6 @@ const medicalSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref:"prescriptions"
     },
-    cured:{
-        type: String,
-        default: "False"
-    },
     images:[
         {
             image: {
@@ -39,6 +35,16 @@ const medicalSchema = new mongoose.Schema(
             }
         }
     ],
+    bloodType: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+    },
+    heartRate: {
+      type: Number,
+    },
+    bloodPressure: {
+      type: String
+    }
     
   },
   { timestamps: true }

@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { User, Settings, Monitor, Bell } from "lucide-react";
+import {LayoutDashboard, CalendarClock, FilePlus, BrainCircuit, ClipboardList } from "lucide-react";
 import DocPage from "./components/personalDashboard";
 import DocAppointments from "./components/docAppointments";
 import ImgDetection from "./components/imageDetection";
 import AddMedicalData from "./components/AddMedicalRecord";
+import AddPrescription from "./components/AddPrescription";
 
 const menuItems = [
-  { id: 1, name: "Dashboard", icon: <User size={20} />, component: <DocPage /> },
-  { id: 2, name: "Appointments", icon: <Settings size={20} />, component: <DocAppointments/> },
-  { id: 3, name: "Add Medical Record", icon: <Monitor size={20} />, component: <AddMedicalData/> },
-  { id: 4, name: "Ai Disease Detection", icon: <Bell size={20} />, component: <ImgDetection/> },
-
+  { id: 1, name: "Dashboard", icon: <LayoutDashboard size={20} />, component: <DocPage /> },
+  { id: 2, name: "Appointments", icon: <CalendarClock size={20} />, component: <DocAppointments /> },
+  { id: 3, name: "Add Medical Record", icon: <FilePlus size={20} />, component: <AddMedicalData /> },
+  { id: 4, name: "Ai Disease Detection", icon: <BrainCircuit size={20} />, component: <ImgDetection /> },
+  { id: 5, name: "Prescription", icon: <ClipboardList size={20} />, component: <AddPrescription /> },
 ];
+
 
 export default function ResponsiveSidebar() {
   const [active, setActive] = useState(1);

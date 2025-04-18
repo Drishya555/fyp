@@ -70,26 +70,43 @@ export const getsingleappointment = async(req,res) =>{
 
 
 
-
-
-export const getappointmentbydocidcontroller = async(req,res) =>{
+//fetching unique patients per doctor because one patients can have many appointments with a single doctor
+export const getappointmentbydocidcontroller = async (req, res) => {
     try {
-        const {id} = req.params;
-
-        const appointments = await appointmentModel.find({doctor: id}).populate('user', 'name email image').populate('doctor', 'name email image specialization hospital').sort({createdAt: -1});
-        res.status(200).send({
-            success: true,
-            message: "Appointments fetched successfully",
-            appointments: appointments    
-        })
+      const { id } = req.params;
+  
+      const appointments = await appointmentModel
+        .find({ doctor: id })
+        .populate('user', 'name email image')
+        .populate('doctor', 'name email image specialization hospital')
+        .sort({ createdAt: -1 });
+  
+      // Filter to keep only one appointment per user
+      const uniqueAppointments = [];
+      const seenUsers = new Set();
+  
+      for (let appt of appointments) {
+        const userId = appt.user._id.toString();
+        if (!seenUsers.has(userId)) {
+          uniqueAppointments.push(appt);
+          seenUsers.add(userId);
+        }
+      }
+  
+      res.status(200).send({
+        success: true,
+        message: "Unique user appointments fetched successfully",
+        appointments: uniqueAppointments,
+      });
     } catch (error) {
-        res.status(500).send({
-            success: false,
-            message: "Error occured fetching",
-            error: error.message
-        })
+      res.status(500).send({
+        success: false,
+        message: "Error occurred fetching",
+        error: error.message,
+      });
     }
-}
+  };
+  
 
 
 
