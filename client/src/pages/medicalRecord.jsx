@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import {
   Bell,
@@ -13,6 +13,9 @@ import {
   MessageSquare,
   FileText
 } from 'lucide-react';
+ import Authstore from '../hooks/authStore.js';
+ import {host} from '../host.js';
+ import axios from 'axios';
 
 // Placeholder data
 const heartRateData = {
@@ -78,47 +81,6 @@ const bloodPressureData = {
     { month: 'Dec', systolic: 122, diastolic: 79 },
   ],
 };
-
-const timelineData = [
-  {
-    id: 1,
-    type: 'appointment',
-    date: 'Mar 15, 2025',
-    title: 'Cardiology Checkup',
-    details: 'With Dr. Emily Smith. Reviewed heart function and adjusted medication.',
-    doctor: 'Dr. Emily Smith',
-    location: 'Central Medical Center, Room 305',
-    duration: '45 minutes'
-  },
-  {
-    id: 2,
-    type: 'diagnosis',
-    date: 'Feb 10, 2025',
-    title: 'Heart Failure',
-    details: 'Diagnosed with stage II heart failure. Prescribed beta-blockers.',
-    doctor: 'Dr. Robert Johnson',
-    notes: 'Follow-up required in 3 weeks. Monitor daily fluid intake.'
-  },
-  {
-    id: 3,
-    type: 'appointment',
-    date: 'Jan 20, 2025',
-    title: 'Pulmonary Follow-up',
-    details: 'With Dr. Sarah Lee. Discussed asthma management plan.',
-    doctor: 'Dr. Sarah Lee',
-    location: 'Riverside Clinic, Room 210',
-    duration: '30 minutes'
-  },
-  {
-    id: 4,
-    type: 'diagnosis',
-    date: 'Aug 15, 2024',
-    title: 'Pneumonia',
-    details: 'Treated with antibiotics. Full recovery confirmed.',
-    doctor: 'Dr. Mark Williams',
-    notes: 'No recurring symptoms. Lung function returned to normal.'
-  },
-];
 
 const medicationData = [
   {
@@ -190,10 +152,31 @@ const MedicalRecord = ({id}) => {
   const [expandedTimelineItem, setExpandedTimelineItem] = useState(null);
   const [currentHeartRate] = useState(72);
   const [currentBP] = useState({ systolic: 122, diastolic: 78 });
-
+  const [appointments, setAppointments] = useState([]);
  
 
   const toggleTimelineItem = (id) => setExpandedTimelineItem(expandedTimelineItem === id ? null : id);
+
+const [user,setUser] = useState(null);
+  useEffect(()=>{
+    const getuser = async()=>{
+      const userid = Authstore.getUser()?.userid || null;
+      console.log(userid)
+      const response = await axios.get(`${host}/api/auth/getselecteduser/${userid}`);
+      setUser(response.data?.user)
+    }
+
+
+    const getuserappointments = async()=>{
+      const userid = Authstore.getUser()?.userid || null;
+      console.log(userid)
+      const response = await axios.get(`${host}/api/appointment/getappointmentbyuser/${userid}`);
+      setAppointments(response.data?.appointments)
+    }
+
+    getuser();
+    getuserappointments();
+  },[])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
@@ -303,15 +286,15 @@ const MedicalRecord = ({id}) => {
             <div className="flex items-center space-x-4 mb-6">
               <div className="relative">
                 <img
-                  src="/api/placeholder/56/56"
+                  src={`${user?.image}`}
                   alt="Ethan Miller"
                   className="w-14 h-14 rounded-full object-cover ring-2 ring-blue-100"
                 />
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
               </div>
               <div>
-                <p className="text-lg font-semibold text-gray-900">Ethan Miller</p>
-                <p className="text-sm text-gray-500">ID: #9834A-43</p>
+                <p className="text-lg font-semibold text-gray-900">{user?.name}</p>
+                <p className="text-sm text-gray-500">ID: {user?._id}</p>
               </div>
             </div>
             
@@ -354,7 +337,7 @@ const MedicalRecord = ({id}) => {
                 <div className="space-y-1">
                   <p className="text-sm text-gray-700 flex items-center">
                     <span className="font-medium w-20">Email:</span>
-                    <span className="text-gray-600">ethan.miller@gmail.com</span>
+                    <span className="text-gray-600">{user?.email}</span>
                   </p>
                   <p className="text-sm text-gray-700 flex items-center">
                     <span className="font-medium w-20">Phone:</span>
@@ -608,78 +591,88 @@ const MedicalRecord = ({id}) => {
 
         {/* Medical Timeline */}
         <div className="mt-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Medical Timeline</h3>
-              <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All</button>
-            </div>
-            <div className="mt-4 space-y-4">
-              {timelineData.map((item) => (
-                <div key={item.id} className="border-l-2 border-blue-200 pl-4 pb-4 relative">
-                  <div className="absolute -left-2 top-0 h-4 w-4 rounded-full bg-blue-600 border-4 border-white"></div>
-                  <div 
-                    className={`p-4 rounded-lg cursor-pointer transition-colors duration-200 ${
-                      expandedTimelineItem === item.id ? 'bg-blue-50' : 'bg-gray-50 hover:bg-gray-100'
-                    }`}
-                    onClick={() => toggleTimelineItem(item.id)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-xs text-blue-600 font-medium">{item.date}</p>
-                        <h4 className="text-base font-semibold text-gray-900 mt-1">{item.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{item.details}</p>
-                      </div>
-                      <ChevronDown 
-                        size={18} 
-                        className={`text-gray-500 transition-transform duration-200 ${
-                          expandedTimelineItem === item.id ? 'transform rotate-180' : ''
-                        }`}
-                      />
+  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-semibold text-gray-900">Medical Timeline</h3>
+      <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All</button>
+    </div>
+    <div className="mt-4 space-y-4">
+      {appointments.map((appointment) => {
+        // Format the date to be more readable
+        const formattedDate = new Date(appointment.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        // Create timeline item from appointment data
+        const timelineItem = {
+          id: appointment._id,
+          type: 'appointment',
+          date: formattedDate,
+          title: `Appointment with Dr. ${appointment.doctor.name}`,
+          details: appointment.purpose || 'Scheduled appointment',
+          doctor: `Dr. ${appointment.doctor.name}`,
+          location: appointment.doctor.hospital ? `Hospital ID: ${appointment.doctor.hospital}` : 'Clinic',
+          duration: appointment.time || 'Not specified',
+          status: appointment.status
+        };
+
+        return (
+          <div key={timelineItem.id} className="border-l-2 border-blue-200 pl-4 pb-4 relative">
+            <div className="absolute -left-2 top-0 h-4 w-4 rounded-full bg-blue-600 border-4 border-white"></div>
+            <div 
+              className={`p-4 rounded-lg cursor-pointer transition-colors duration-200 ${
+                expandedTimelineItem === timelineItem.id ? 'bg-blue-50' : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+              onClick={() => toggleTimelineItem(timelineItem.id)}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-blue-600 font-medium">{timelineItem.date}</p>
+                  <h4 className="text-base font-semibold text-gray-900 mt-1">{timelineItem.title}</h4>
+                  <p className="text-sm text-gray-600 mt-1">{timelineItem.details}</p>
+                </div>
+                <ChevronDown 
+                  size={18} 
+                  className={`text-gray-500 transition-transform duration-200 ${
+                    expandedTimelineItem === timelineItem.id ? 'transform rotate-180' : ''
+                  }`}
+                />
+              </div>
+              
+              {expandedTimelineItem === timelineItem.id && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500">Doctor</p>
+                      <p className="text-sm font-medium">{timelineItem.doctor}</p>
                     </div>
-                    
-                    {expandedTimelineItem === item.id && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        {item.type === 'appointment' ? (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-xs text-gray-500">Doctor</p>
-                              <p className="text-sm font-medium">{item.doctor}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Location</p>
-                              <p className="text-sm font-medium">{item.location}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Duration</p>
-                              <p className="text-sm font-medium">{item.duration}</p>
-                            </div>
-                            <button className="col-span-2 mt-2 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                              View Details
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="space-y-3">
-                            <div>
-                              <p className="text-xs text-gray-500">Diagnosed by</p>
-                              <p className="text-sm font-medium">{item.doctor}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-500">Notes</p>
-                              <p className="text-sm font-medium">{item.notes}</p>
-                            </div>
-                            <button className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                              View Full Report
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    <div>
+                      <p className="text-xs text-gray-500">Location</p>
+                      <p className="text-sm font-medium">{timelineItem.location}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Time Slot</p>
+                      <p className="text-sm font-medium">{timelineItem.duration}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Status</p>
+                      <p className="text-sm font-medium">{timelineItem.status}</p>
+                    </div>
+                    <button className="col-span-2 mt-2 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                      View Details
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
       </main>
     </div>
   );

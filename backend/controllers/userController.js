@@ -6,6 +6,7 @@ import cloudinary from '../config/cloudinary.js'
 import docmodel from '../models/doctorModel.js';
 import pharmacistModel from '../models/pharmacistModel.js';
 import hospitalModel from '../models/hospitalModel.js';
+import exp from 'constants';
 export const registerController = async(req,res) =>{
     try {
         const {name, email, password} = req.body;
@@ -149,3 +150,23 @@ export const updateImage = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+export const getSelectedUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await userModel.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).send({
+      success: true,
+      message: "User fetched successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { User, Settings, Monitor, Bell } from "lucide-react";
 import Med from './medicalRecord.jsx'
 import { useParams } from "react-router-dom";
-
+import EditMedicalRecord from "./EditMedicalRecord.jsx";
 
 
 
@@ -13,7 +13,7 @@ export default function ResponsiveSidebar() {
   const {id} = useParams();;
     const menuItems = [
       { id: 1, name: "Profile", icon: <User size={20} />, component: <Med id={id}/>  },
-      { id: 2, name: "Account", icon: <Settings size={20} />, component: <div>Account Page</div> },
+      { id: 2, name: "Edit Medical Record", icon: <Settings size={20} />, component: <EditMedicalRecord id={id}/> },
       { id: 3, name: "Appearance", icon: <Monitor size={20} />, component: <div>Appearance Page</div> },
       { id: 4, name: "Notification", icon: <Bell size={20} />, component: <div>Notification Page</div> },
     ];
