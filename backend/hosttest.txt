@@ -1,3 +1,23 @@
+THIS WORKS
+mkdir -p ~/.ssh
+cp /mnt/c/Users/Drish/Downloads/virginia-mediaid.pem ~/.ssh/
+chmod 600 ~/.ssh/virginia-mediaid.pem
+
+
+
+rsync -avz --exclude 'node_modules' --exclude '.git' \
+-e "ssh -i ~/.ssh/virginia-mediaid.pem" \
+/mnt/c/Users/Drish/Desktop/fyp/fyp/backend \
+ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
+
+
+
+ssh -i ~/.ssh/virginia-mediaid.pem ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com
+
+
+sudo ufw allow 8000
+
+
 rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env'\
 -e "ssh -i ~/Downloads/virginia-mediaid.pem"
 . ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
@@ -14,22 +34,5 @@ ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
 
 
 
+OK http bhayo but i need to host https ma pani How do i do that because vercel only allows https requests not http requests.
 
-THIS WORKS
-mkdir -p ~/.ssh
-cp /mnt/c/Users/Drish/Downloads/virginia-mediaid.pem ~/.ssh/
-chmod 600 ~/.ssh/virginia-mediaid.pem
-
-
-
-rsync -avz --exclude 'node_modules' --exclude '.git' \
--e "ssh -i ~/.ssh/virginia-mediaid.pem" \
-/mnt/c/Users/Drish/Desktop/fyp/fyp/backend \
-ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
-
-
-
-sudo ufw allow 8000
-
-
-ssh -i ~/.ssh/virginia-mediaid.pem ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com
