@@ -2,7 +2,7 @@ import { useState } from "react";
 import { User, Settings, Monitor, Bell } from "lucide-react";
 import Med from './medicalRecord.jsx'
 import { useParams } from "react-router-dom";
-import EditMedicalRecord from "./EditMedicalRecord.jsx";
+import EditMedicalRecord from "./editMedicalRecord.jsx";
 
 
 
