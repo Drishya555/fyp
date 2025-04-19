@@ -40,4 +40,8 @@ app.listen(PORT, ()=>{
 })
 
 
+app.get('/', (req, res) => {
+    res.send('Backend server is running');
+  });
+
 export default app;

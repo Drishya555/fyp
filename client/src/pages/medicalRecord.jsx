@@ -82,43 +82,7 @@ const bloodPressureData = {
   ],
 };
 
-const medicationData = [
-  {
-    name: "Lisinopril",
-    dosage: "10mg",
-    frequency: "Once daily",
-    purpose: "Blood Pressure"
-  },
-  {
-    name: "Metoprolol",
-    dosage: "25mg",
-    frequency: "Twice daily",
-    purpose: "Heart Rate"
-  },
-  {
-    name: "Furosemide",
-    dosage: "20mg",
-    frequency: "Once daily",
-    purpose: "Water Retention"
-  }
-];
 
-const upcomingAppointments = [
-  {
-    date: "Apr 20, 2025",
-    time: "10:30 AM",
-    doctor: "Dr. Emily Smith",
-    department: "Cardiology"
-  },
-  {
-    date: "May 5, 2025",
-    time: "2:15 PM",
-    doctor: "Dr. Robert Johnson",
-    department: "General Practice"
-  }
-];
-
-// Custom tooltip component for charts
 // eslint-disable-next-line react/prop-types
 const CustomTooltip = ({ active, payload, label }) => {
   // eslint-disable-next-line react/prop-types
@@ -158,6 +122,8 @@ const MedicalRecord = ({id}) => {
   const toggleTimelineItem = (id) => setExpandedTimelineItem(expandedTimelineItem === id ? null : id);
 
 const [user,setUser] = useState(null);
+const [medicines, setMedicines] = useState([]);
+
   useEffect(()=>{
     const getuser = async()=>{
       const userid = Authstore.getUser()?.userid || null;
@@ -174,9 +140,28 @@ const [user,setUser] = useState(null);
       setAppointments(response.data?.appointments)
     }
 
+
+    const getuserprescriptions = async () => {
+        const userid = Authstore.getUser()?.userid || null;
+        const response = await axios.get(`${host}/api/prescriptions/user/${userid}`);
+                const allMedications = response.data.prescriptions.flatMap(prescription => 
+          prescription.medication.map(med => ({
+            ...med,
+            prescriptionId: prescription._id,
+            prescribedBy: prescription.doctor.name,
+            prescribedDate: prescription.createdAt
+          }))
+        );
+        
+        setMedicines(allMedications);
+        console.log(allMedications)
+    };
+
     getuser();
     getuserappointments();
+    getuserprescriptions();
   },[])
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
@@ -521,72 +506,112 @@ const [user,setUser] = useState(null);
           
           {/* Current Medications */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Current Medications</h3>
-              <button className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center">
-                <span className="mr-1">All</span>
-                <ChevronDown size={16} />
-              </button>
-            </div>
-            <div className="mt-2 space-y-4">
-              {medicationData.map((med, index) => (
-                <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <div className="rounded-full bg-purple-100 p-2 mr-3">
-                    <Pill className="h-4 w-4 text-purple-500" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <p className="font-medium text-gray-900">{med.name}</p>
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
-                        {med.purpose}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {med.dosage}, {med.frequency}
-                    </p>
-                  </div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Current Medications</h3>
+        <button className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center">
+          <span className="mr-1">All</span>
+          <ChevronDown size={16} />
+        </button>
+      </div>
+      
+      <div className="mt-2 space-y-4">
+        {medicines.length > 0 ? (
+          medicines.map((med, index) => (
+            <div key={`${med.prescriptionId}-${index}`} className="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div className="rounded-full bg-purple-100 p-2 mr-3">
+                <Pill className="h-4 w-4 text-purple-500" />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <p className="font-medium text-gray-900">{med.medicineName}</p>
+                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+                    {med.duration} days
+                  </span>
                 </div>
-              ))}
-              <button className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium">
-                + Add Medication
-              </button>
+                <p className="text-sm text-gray-600">
+                  {med.dosage}, {med.frequency} times
+                </p>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="p-4 text-center text-gray-500">
+            No current medications
           </div>
+        )}
+        
+        <button 
+          className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium"
+          onClick={() => {
+            // Add your new medication logic here
+            console.log('Add medication button clicked');
+          }}
+        >
+          + Add Medication
+        </button>
+      </div>
+    </div>
           
           {/* Upcoming Appointments */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h3>
-              <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All</button>
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h3>
+    <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All</button>
+  </div>
+  <div className="mt-2 space-y-4">
+    {appointments
+      // Filter for upcoming appointments (date is today or in the future)
+      .filter(appointment => {
+        const appointmentDate = new Date(appointment.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return appointmentDate >= today;
+      })
+      // Sort by date (earliest first)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      // Map to the required format
+      .map((appointment) => {
+        // Format the date to be more readable (e.g., "Apr 18, 2025")
+        const formattedDate = new Date(appointment.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        return (
+          <div key={appointment._id} className="p-3 bg-gray-50 rounded-lg">
+            <div className="flex justify-between items-start mb-1">
+              <p className="font-medium text-gray-900">Dr. {appointment.doctor.name}</p>
+              <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                {appointment.purpose || 'General Checkup'}
+              </span>
             </div>
-            <div className="mt-2 space-y-4">
-              {upcomingAppointments.map((appointment, index) => (
-                <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-start mb-1">
-                    <p className="font-medium text-gray-900">{appointment.doctor}</p>
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
-                      {appointment.department}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Calendar size={14} className="mr-1" />
-                    <span>{appointment.date}, {appointment.time}</span>
-                    </div>
-                  <div className="mt-3 flex space-x-2">
-                    <button className="flex-1 px-3 py-1 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                      Reschedule
-                    </button>
-                    <button className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                      Confirm
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <button className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium">
-                + New Appointment
+            <div className="flex items-center text-sm text-gray-600">
+              <Calendar size={14} className="mr-1" />
+              <span>{formattedDate}, {appointment.time}</span>
+            </div>
+            <div className="mt-3 flex space-x-2">
+              <button className="flex-1 px-3 py-1 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                Reschedule
+              </button>
+              <button className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                {appointment.status === 'Pending' ? 'Confirm' : 'View'}
               </button>
             </div>
           </div>
+        );
+      })}
+        <button 
+          className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium"
+          onClick={() => {
+            // Add your new appointment logic here
+            console.log('New appointment button clicked');
+          }}
+        >
+          + New Appointment
+        </button>
+      </div>
+    </div>
         </div>
 
         {/* Medical Timeline */}

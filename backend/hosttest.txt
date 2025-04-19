@@ -1,0 +1,35 @@
+rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env'\
+-e "ssh -i ~/Downloads/virginia-mediaid.pem"
+. ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
+
+
+
+
+
+rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
+-e "ssh -i /mnt/c/Users/Drish/Downloads/virginia-mediaid.pem" \
+/mnt/c/Users/Drish/Desktop/fyp/fyp/backend \
+ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
+
+
+
+
+
+THIS WORKS
+mkdir -p ~/.ssh
+cp /mnt/c/Users/Drish/Downloads/virginia-mediaid.pem ~/.ssh/
+chmod 600 ~/.ssh/virginia-mediaid.pem
+
+
+
+rsync -avz --exclude 'node_modules' --exclude '.git' \
+-e "ssh -i ~/.ssh/virginia-mediaid.pem" \
+/mnt/c/Users/Drish/Desktop/fyp/fyp/backend \
+ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com:~/app
+
+
+
+sudo ufw allow 8000
+
+
+ssh -i ~/.ssh/virginia-mediaid.pem ubuntu@ec2-34-229-174-214.compute-1.amazonaws.com

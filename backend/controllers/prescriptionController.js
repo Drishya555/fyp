@@ -108,7 +108,7 @@ export const getPrescriptionsByUserId = async (req, res) => {
     res.status(200).json({
       success: true,
       count: prescriptions.length,
-      data: prescriptions
+      prescriptions: prescriptions
     });
 
   } catch (error) {

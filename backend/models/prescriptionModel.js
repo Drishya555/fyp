@@ -4,15 +4,15 @@ const prescriptionSchema = new mongoose.Schema(
   {
     user: {
         type: mongoose.ObjectId,
-        ref: "users",
+        ref: "User",
     },
     appointment: {
       type: mongoose.ObjectId,
-      ref: "appointments",
+      ref: "Appointment",
     },
     doctor: {
       type: mongoose.ObjectId,
-      ref: "doctors",
+      ref: "Doctor",
     },
     prescription:{
         type: String,
