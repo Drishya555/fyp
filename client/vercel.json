@@ -1,9 +1,15 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
-  
+  "redirects": [
+    {
+      "source": "www.mediaidbookings.online",
+      "destination": "https://mediaidbookings.online",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
