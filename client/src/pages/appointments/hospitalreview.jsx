@@ -128,7 +128,7 @@ const HospitalAppointmentsAndReview = () => {
               Your Hospital Experience
             </h1>
             <p className="mt-2 text-sm text-gray-500">
-              Review hospitals you've visited
+              Review hospitals you&apos;ve visited
             </p>
           </div>
 

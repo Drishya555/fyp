@@ -25,11 +25,13 @@ const userSchema = new mongoose.Schema(
     bio:{
       type: String,
     },
-    sex:{
+    sex: {
       type: String,
+      enum: ["Male", "Female", "Other"] // Added possible values
     },
-    blood:{
-      type: String
+    blood: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] // Added possible blood types
     },
     nationality:{
       type: String

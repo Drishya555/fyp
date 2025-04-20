@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
+import Authstore from '../hooks/authStore';
+import {host} from '../host.js';
+import axios from 'axios';
 
 export default function UserProfile() {
-  // Sample user data based on your mongoose schema
+
+  const userid = Authstore.getUser()?.userid || null;
+  
   const [user, setUser] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    role: "Administrator",
-    address: "123 Tech Avenue, San Francisco, CA",
-    bio: "Senior software developer with 8 years of experience in full-stack development. Passionate about creating intuitive user experiences and scalable backend solutions.",
-    sex: "Male",
-    blood: "O+",
-    nationality: "American",
-    age: 32,
-    phone: "+1 (555) 123-4567",
-    BMI: "23.4",
+    name: "",
+    email: "",
+    role: "user",
+    address: "",
+    bio: "",
+    sex: "",
+    blood: "",
+    nationality: "",
+    age: 0,
+    phone: "",
+    BMI: "",
     image: "/api/placeholder/150/150",
     bgimage: "/api/placeholder/1920/400"
   });
@@ -22,6 +27,123 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({...user});
   const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedBgImage, setSelectedBgImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await axios.get(`${host}/api/auth/getselecteduser/${userid}`);
+        const apiUser = response.data.user;
+        
+        // Map API response to your user state
+        setUser({
+          name: apiUser.name || "",
+          email: apiUser.email || "",
+          role: apiUser.role || "user",
+          address: apiUser.address || "",
+          bio: apiUser.bio || "",
+          sex: apiUser.sex || "",
+          blood: apiUser.blood || "",
+          nationality: apiUser.nationality || "",
+          age: apiUser.age || 0,
+          phone: apiUser.phone || "",
+          BMI: apiUser.BMI || "",
+          image: apiUser.image || "/api/placeholder/150/150",
+          bgimage: apiUser.bgimage || "/api/placeholder/1920/400"
+        });
+        
+        setEditedUser({
+          ...apiUser,
+          image: apiUser.image || "/api/placeholder/150/150",
+          bgimage: apiUser.bgimage || "/api/placeholder/1920/400"
+        });
+        
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userid) {
+      getUser();
+    }
+  }, [userid]);
+
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+      
+      // Preview the image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setEditedUser(prev => ({...prev, image: event.target.result}));
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  
+  const handleBgImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedBgImage(e.target.files[0]);
+      
+      // Preview the image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setEditedUser(prev => ({...prev, bgimage: event.target.result}));
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  
+  const handleImageUpload = async () => {
+    if (!selectedImage && !selectedBgImage) return;
+  
+    setIsUploading(true);
+    
+    try {
+      const formData = new FormData();
+      if (selectedImage) formData.append('image', selectedImage);
+      if (selectedBgImage) formData.append('bgimage', selectedBgImage);
+  
+      const response = await axios.put(
+        `${host}/api/auth/updateimg/${userid}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+  
+      // Update the user state with new images
+      setUser(prev => ({
+        ...prev,
+        image: response.data.image || prev.image,
+        bgimage: response.data.bgimage || prev.bgimage
+      }));
+      
+      setEditedUser(prev => ({
+        ...prev,
+        image: response.data.image || prev.image,
+        bgimage: response.data.bgimage || prev.bgimage
+      }));
+      
+      setSelectedImage(null);
+      setSelectedBgImage(null);
+      
+      alert('Images updated successfully!');
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert('Failed to upload images');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Handle input changes
   const handleChange = (e) => {
@@ -33,11 +155,53 @@ export default function UserProfile() {
   };
 
   // Save changes
-  const handleSave = () => {
-    setUser({...editedUser});
-    setIsEditing(false);
-    // Here you would typically make an API call to update the user
-    console.log("Saving user data:", editedUser);
+  // const handleSave = async () => {
+  //   try {
+  //     // Make API call to update user
+  //     const response = await axios.put(`${host}/api/auth/updateuser/${userid}`, editedUser);
+      
+  //     // Update local state with the updated user data
+  //     setUser(response.data.user);
+  //     setIsEditing(false);
+      
+  //   } catch (error) {
+  //     console.error("Error updating user:", error);
+  //   }
+  // };
+
+
+  const handleSave = async () => {
+    try {
+      // If there are images to upload, handle them first
+      if (selectedImage || selectedBgImage) {
+        await handleImageUpload();
+      }
+      
+      // Then update the rest of the user data
+      const response = await axios.put(
+        `${host}/api/auth/edituser/${userid}`,
+        editedUser,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      
+      setUser(response.data.user);
+      setIsEditing(false);
+      
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error("Error updating user:", error);
+      if (error.response) {
+        alert(error.response.data.message || 'Failed to update profile');
+      } else if (error.request) {
+        alert('Network error - please check your connection');
+      } else {
+        alert('Error updating profile');
+      }
+    }
   };
 
   // Cancel editing
@@ -46,6 +210,13 @@ export default function UserProfile() {
     setIsEditing(false);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-xl">Loading user data...</div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
@@ -75,16 +246,21 @@ export default function UserProfile() {
         <div className="absolute inset-0 bg-blue-600 bg-opacity-60"></div>
         
         {isEditing && (
-          <div className="absolute bottom-4 right-4">
-            <label className="bg-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer hover:bg-gray-50 transition-all shadow-md flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Change Cover
-              <input type="file" className="hidden" />
-            </label>
-          </div>
-        )}
+  <div className="absolute bottom-4 right-4">
+    <label className="bg-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer hover:bg-gray-50 transition-all shadow-md flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      {isUploading ? 'Uploading...' : 'Change Cover'}
+      <input 
+        type="file" 
+        className="hidden" 
+        accept="image/*"
+        onChange={handleBgImageChange}
+      />
+    </label>
+  </div>
+)}
       </div>
 
       {/* Profile Main Content */}
@@ -100,17 +276,22 @@ export default function UserProfile() {
                   className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg object-cover"
                 />
                 {isEditing && (
-                  <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
-                    <span className="text-white text-sm font-medium flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      Change
-                    </span>
-                    <input type="file" className="hidden" />
-                  </label>
-                )}
+  <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity">
+    <span className="text-white text-sm font-medium flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      Change
+    </span>
+    <input 
+      type="file" 
+      className="hidden" 
+      accept="image/*"
+      onChange={handleImageChange}
+    />
+  </label>
+)}
                 <span className="absolute bottom-2 right-2 h-5 w-5 bg-green-500 rounded-full border-2 border-white" title="Online"></span>
               </div>
             </div>
@@ -139,9 +320,6 @@ export default function UserProfile() {
                         className="text-blue-600 font-medium text-sm border-b border-blue-300 focus:outline-none focus:border-blue-500 bg-transparent"
                       >
                         <option value="User">User</option>
-                        <option value="Administrator">Administrator</option>
-                        <option value="Editor">Editor</option>
-                        <option value="Moderator">Moderator</option>
                       </select>
                     ) : (
                       <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{user.role}</span>
@@ -593,9 +771,7 @@ export default function UserProfile() {
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="User">User</option>
-                    <option value="Administrator">Administrator</option>
-                    <option value="Editor">Editor</option>
-                    <option value="Moderator">Moderator</option>
+                    
                   </select>
                 ) : (
                   <p className="p-2 bg-gray-50 rounded-md">{user.role}</p>
@@ -807,3 +983,53 @@ export default function UserProfile() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
