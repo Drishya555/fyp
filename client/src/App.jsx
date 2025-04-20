@@ -28,6 +28,7 @@ import Authstore from './hooks/authStore.js';
 import Company from './pages/Company.jsx';
 import Pharmacists from './pages/pharmacy/Pharmacist/PharmacistSidebar.jsx'
 import UserProfile from './pages/userProfile.jsx';
+import ReviewSidebar from './pages/appointments/reviewSidebar.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -54,7 +55,7 @@ const App = () => {
       <Route path='/doctorprofile' element={<ProfilePage/>}></Route>
       <Route path='/company' element={<Company/>}></Route>
       <Route path='/profile' element={<UserProfile/>}></Route>
-
+      <Route path='/reviews' element={<ReviewSidebar/>}></Route>
       {/*hospital view */}
       {userrole === 'hospital' && (
         <>

@@ -36,15 +36,19 @@ const doctorSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref:"Hospital"
     },
-    reviews:[
+    reviews: [
       {
-        user:{
-          type:mongoose.ObjectId,
-          ref:"users",
+        user: {
+          type: mongoose.ObjectId,
+          ref: "User",
         },
-        review:{
-          type:String,
-        }
+        review: {
+          type: String,
+        },
+        rating: {
+          type: Number,
+          required: true,
+        },
       }
     ],
     freeslots:[
@@ -63,6 +67,7 @@ const doctorSchema = new mongoose.Schema(
     ],
     rating: {
       type: Number,
+      default: 0,
     },
     about:{
       type: String,

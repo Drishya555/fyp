@@ -327,3 +327,57 @@ export const dochospcontroller = async(req,res) =>{
 }
 
 
+
+export const addreviewcontroller = async (req, res) => {
+  try {
+    const { id } = req.params; // Doctor ID
+    const { userId, review, rating } = req.body;
+
+    // Basic validation
+    if (!userId || !review || rating === undefined) {
+      return res.status(400).json({ error: "User ID, review and rating are required" });
+    }
+
+    const numRating = Number(rating);
+    if (isNaN(numRating)) {
+      return res.status(400).json({ error: "Rating must be a number" });
+    }
+
+    const doctor = await docmodel.findById(id);
+    if (!doctor) return res.status(404).json({ error: "Doctor not found" });
+
+    // Check for existing review
+    const existingReviewIndex = doctor.reviews.findIndex(
+      r => r.user.toString() === userId
+    );
+
+    const newReview = {
+      user: userId,
+      review,
+      rating: numRating
+    };
+
+    // Update or add review
+    if (existingReviewIndex >= 0) {
+      doctor.reviews[existingReviewIndex] = newReview;
+    } else {
+      doctor.reviews.push(newReview);
+    }
+
+    // Calculate new average (safe with default 0)
+    const total = doctor.reviews.reduce((sum, r) => sum + r.rating, 0);
+    doctor.rating = total / doctor.reviews.length;
+
+    await doctor.save();
+    return res.json({ 
+      success: true,
+      message: "Review submitted successfully",
+      averageRating: doctor.rating,
+      totalReviews: doctor.reviews.length
+    });
+
+  } catch (error) {
+    console.error("Review submission error:", error);
+    return res.status(500).json({ error: "Failed to submit review" });
+  }
+};

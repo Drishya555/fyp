@@ -19,7 +19,7 @@ import logo from '../assets/mediaid.png'
 import { motion, AnimatePresence } from 'framer-motion' // Import Framer Motion
 import AuthStore from '../hooks/authStore.js'
 
-import { CalendarIcon, DocumentTextIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
+import { CalendarIcon, DocumentTextIcon, ShoppingCartIcon , StarIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
 
 
 const callsToAction = [
@@ -73,6 +73,12 @@ export default function Header() {
       description: 'Order and manage your prescriptions online', 
       href: '/pharmacy', 
       icon: ShoppingCartIcon // Correct icon for Heroicons v2
+    },
+    { 
+      name: 'Reviews', 
+      description: 'Add reviews for hospitals and doctors', 
+      href: '/reviews', 
+      icon: StarIcon // Correct icon for Heroicons v2
     }
   ];
 

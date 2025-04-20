@@ -97,3 +97,56 @@ export const getsinglehospitalController = async(req,res) =>{
         })
     }
 }
+
+
+
+
+export const addreviewController = async(req,res) =>{
+    try {
+        const { id } = req.params; // hospital ID
+        const { userId, review, rating } = req.body;
+    
+        if (!userId || !review || rating === undefined) {
+          return res.status(400).json({ error: "User ID, review and rating are required" });
+        }
+    
+        const numRating = Number(rating);
+        if (isNaN(numRating)) {
+          return res.status(400).json({ error: "Rating must be a number" });
+        }
+    
+        const hospital = await hospitalModel.findById(id);
+        if (!hospital) return res.status(404).json({ error: "Hospital not found" });
+    
+        const existingReviewIndex = hospital.reviews.findIndex(
+          r => r.user.toString() === userId
+        );
+    
+        const newReview = {
+          user: userId,
+          review,
+          rating: numRating
+        };
+    
+        if (existingReviewIndex >= 0) {
+          hospital.reviews[existingReviewIndex] = newReview;
+        } else {
+          hospital.reviews.push(newReview);
+        }
+    
+        const total = hospital.reviews.reduce((sum, r) => sum + r.rating, 0);
+        hospital.rating = total / hospital.reviews.length;
+    
+        await hospital.save();
+        return res.json({
+          success: true,
+          message: "Review submitted successfully",
+          averageRating: hospital.rating,
+          totalReviews: hospital.reviews.length
+        });
+    
+      } catch (error) {
+        console.error("Hospital review error:", error);
+        return res.status(500).json({ error: "Failed to submit review" });
+      }
+}

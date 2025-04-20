@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { type } from "os";
 
 const hospitalSchema = new mongoose.Schema(
   {
@@ -17,6 +16,23 @@ const hospitalSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    reviews: [
+      {
+        user: {
+          type: mongoose.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        review: {
+          type: String,
+          required: true,
+        },
+        rating: {
+          type: Number,
+          required: true,
+        },
+      }
+    ],
     licenseNo: {
       type: String,
       required: true,
@@ -27,6 +43,7 @@ const hospitalSchema = new mongoose.Schema(
     },
     rating: {
       type: Number,
+      default: 0,
     },
     image:{
       type: String,
