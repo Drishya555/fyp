@@ -1,7 +1,7 @@
 // import { useState, useEffect } from "react";
 // import axios from "axios";
 // import AuthStore from '../hooks/authStore.js';
-
+// import {host} from '../host.js'
 // // eslint-disable-next-line react/prop-types
 // const Schedule = ({ docid }) => {
 //   const [selectedDay, setSelectedDay] = useState(null);
@@ -24,7 +24,7 @@
 //     const fetchData = async () => {
 //       if (!docid) return;
 //       try {
-//         const response = await axios.get(`http://localhost:8000/api/doctors/getselecteddoc/${docid}`);
+//         const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`);
 //         const newSchedule = response.data.doctor.freeslots || [];
 //         setSchedule(newSchedule);
 //         if (selectedDay) {
@@ -45,7 +45,9 @@
 //       .filter((slot) => slot.day.toLowerCase() === fullDayName.toLowerCase())
 //       .map((slot) => ({
 //         display: `${slot.time} (${slot.status})`,
-//         time: slot.time
+//         time: slot.time,
+//         status: slot.status,
+//         slotId: slot._id, 
 //       }));
 //   };
 
@@ -57,12 +59,12 @@
     
 //     let daysToAdd = targetDayIndex - currentDayIndex;
 //     if (daysToAdd < 0) {
-//       daysToAdd += 7; // If target day is earlier in week, go to next week
+//       daysToAdd += 7; // If target day is earlier in week, i can gooo next week
 //     }
     
 //     const appointmentDate = new Date(today);
 //     appointmentDate.setDate(today.getDate() + daysToAdd);
-//     return appointmentDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+//     return appointmentDate.toISOString().split("T")[0]; // Format as YMD
 //   };
 
 //   const handleDayClick = (day) => {
@@ -75,6 +77,19 @@
 //     setSelectedSlot(slot);
 //   };
 
+//   const updateSlotStatus = async (slotId) => {
+//     try {
+//       const response = await axios.put(`${host}/api/doctors/updatedocdetails/${docid}`, {
+//         slotId,
+//         status: "booked",
+//       });
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error updating slot status:", error);
+//       throw error;
+//     }
+//   };
+
 //   const handleCreateAppointment = async () => {
 //     if (!selectedSlot || !purpose || !selectedDay) {
 //       alert("Please select a day, slot, and provide a purpose.");
@@ -83,21 +98,39 @@
 //     try {
 //       const userid = AuthStore.getUser()?.userid || null;
 //       const appointmentDate = getAppointmentDate(selectedDay);
-//       const appointmentTime = selectedSlot.time; // Use the raw time from API
+//       const appointmentTime = selectedSlot.time;
 
-//       await axios.post("http://localhost:8000/api/appointment/createappointment", {
+//       // Create the appointment
+//       await axios.post(`${host}/api/appointment/createappointment`, {
 //         user: userid,
 //         doctor: docid,
 //         date: appointmentDate,
 //         purpose,
 //         time: appointmentTime,
 //       });
+
+//       // Update the slot status to "booked" using the same updatedoc endpoint
+//       await updateSlotStatus(selectedSlot.slotId);
+
+//       setSchedule((prevSchedule) =>
+//         prevSchedule.map((slot) =>
+//           slot._id === selectedSlot.slotId ? { ...slot, status: "booked" } : slot
+//         )
+//       );
+//       setSlots((prevSlots) =>
+//         prevSlots.map((slot) =>
+//           slot.slotId === selectedSlot.slotId
+//             ? { ...slot, status: "booked", display: `${slot.time} (booked)` }
+//             : slot
+//         )
+//       );
+
 //       alert("Appointment created successfully!");
 //       setSelectedSlot(null);
 //       setPurpose("");
 //     } catch (error) {
 //       console.error("Error creating appointment:", error);
-//       alert("Failed to create appointment. Please try again.");   
+//       alert("Failed to create appointment. Please try again.");
 //     }
 //   };
 
@@ -139,9 +172,12 @@
 //                     className={`py-2 px-3 text-sm rounded-lg transition-all duration-200 ${
 //                       selectedSlot?.display === slot.display
 //                         ? "bg-blue-500 text-white"
+//                         : slot.status === "booked"
+//                         ? "bg-gray-300 text-gray-600 cursor-not-allowed"
 //                         : "bg-gray-100 text-gray-600 hover:bg-blue-100"
 //                     }`}
-//                     onClick={() => handleSlotClick(slot)}
+//                     onClick={() => slot.status === "available" && handleSlotClick(slot)}
+//                     disabled={slot.status === "booked"}
 //                   >
 //                     {slot.display}
 //                   </button>
@@ -200,32 +236,13 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AuthStore from '../hooks/authStore.js';
-import {host} from '../host.js'
+import { host } from '../host.js';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 // eslint-disable-next-line react/prop-types
 const Schedule = ({ docid }) => {
   const [selectedDay, setSelectedDay] = useState(null);
@@ -233,6 +250,8 @@ const Schedule = ({ docid }) => {
   const [schedule, setSchedule] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [purpose, setPurpose] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const dayMap = {
     Sun: "sunday",
@@ -276,19 +295,19 @@ const Schedule = ({ docid }) => {
   };
 
   const getAppointmentDate = (selectedDay) => {
-    const today = new Date(); // Today is March 19, 2025 (Wednesday)
+    const today = new Date();
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'];
-    const currentDayIndex = today.getDay(); // 3 for Wednesday
+    const currentDayIndex = today.getDay();
     const targetDayIndex = daysOfWeek.indexOf(selectedDay);
     
     let daysToAdd = targetDayIndex - currentDayIndex;
     if (daysToAdd < 0) {
-      daysToAdd += 7; // If target day is earlier in week, i can gooo next week
+      daysToAdd += 7;
     }
     
     const appointmentDate = new Date(today);
     appointmentDate.setDate(today.getDate() + daysToAdd);
-    return appointmentDate.toISOString().split("T")[0]; // Format as YMD
+    return appointmentDate.toISOString().split("T")[0];
   };
 
   const handleDayClick = (day) => {
@@ -298,6 +317,13 @@ const Schedule = ({ docid }) => {
   };
 
   const handleSlotClick = (slot) => {
+    // Check if user is logged in before allowing slot selection
+    const user = AuthStore.getUser();
+    if (!user || !user.userid) {
+      toast.error("Please sign in to book an appointment");
+      navigate('/login');
+      return;
+    }
     setSelectedSlot(slot);
   };
 
@@ -316,24 +342,33 @@ const Schedule = ({ docid }) => {
 
   const handleCreateAppointment = async () => {
     if (!selectedSlot || !purpose || !selectedDay) {
-      alert("Please select a day, slot, and provide a purpose.");
+      toast.error("Please select a day, slot, and provide a purpose.");
       return;
     }
+
+    // Check if user is logged in
+    const user = AuthStore.getUser();
+    if (!user || !user.userid) {
+      toast.error("Please sign in to book an appointment");
+      navigate('/login');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const userid = AuthStore.getUser()?.userid || null;
       const appointmentDate = getAppointmentDate(selectedDay);
       const appointmentTime = selectedSlot.time;
 
       // Create the appointment
       await axios.post(`${host}/api/appointment/createappointment`, {
-        user: userid,
+        user: user.userid,
         doctor: docid,
         date: appointmentDate,
         purpose,
         time: appointmentTime,
       });
 
-      // Update the slot status to "booked" using the same updatedoc endpoint
+      // Update the slot status to "booked"
       await updateSlotStatus(selectedSlot.slotId);
 
       setSchedule((prevSchedule) =>
@@ -349,12 +384,19 @@ const Schedule = ({ docid }) => {
         )
       );
 
-      alert("Appointment created successfully!");
+      toast.success("Appointment created successfully!");
       setSelectedSlot(null);
       setPurpose("");
     } catch (error) {
       console.error("Error creating appointment:", error);
-      alert("Failed to create appointment. Please try again.");
+      if (error.response && error.response.status === 401) {
+        toast.error("Please sign in to book an appointment");
+        navigate('/login');
+      } else {
+        toast.error(error.response?.data?.message || "Failed to create appointment. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -436,9 +478,14 @@ const Schedule = ({ docid }) => {
             />
             <button
               onClick={handleCreateAppointment}
-              className="w-full mt-3 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all duration-200 text-sm font-medium"
+              disabled={loading}
+              className={`w-full mt-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
+                loading
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
             >
-              Confirm
+              {loading ? "Processing..." : "Confirm"}
             </button>
           </div>
         )}

@@ -7,6 +7,8 @@ import docmodel from '../models/doctorModel.js';
 import pharmacistModel from '../models/pharmacistModel.js';
 import hospitalModel from '../models/hospitalModel.js';
 import exp from 'constants';
+
+
 export const registerController = async(req,res) =>{
     try {
         const {name, email, password} = req.body;

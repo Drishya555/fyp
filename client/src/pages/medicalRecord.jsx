@@ -163,8 +163,20 @@ const [medicines, setMedicines] = useState([]);
   },[])
 
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
+  return (  
+    <>
+    {!user ? (
+  <div className="flex flex-col items-center justify-center h-64">
+  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <p className="mt-3 text-gray-500">No medical record found. Kindly Sign in </p>
+  <a href="/login" className="mt-2 text-blue-600 hover:underline">Sign In</a>
+
+
+  </div>
+) : (
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-white shadow-sm backdrop-blur-lg bg-white/90">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -700,6 +712,9 @@ const [medicines, setMedicines] = useState([]);
 </div>
       </main>
     </div>
+)}
+    
+    </>
   );
 };
 

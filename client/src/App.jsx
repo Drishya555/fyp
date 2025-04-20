@@ -24,13 +24,13 @@ import HospitalDetails from './pages/HospitalDetails.jsx';
 import AddDoctor from './pages/hospitals/AddDoctors.jsx';
 import AddPharmacist from './pages/hospitals/AddPharmacists.jsx';
 import ProfilePage from './pages/Profilepage.jsx';
-// import Authstore from './hooks/authStore.js';
+import Authstore from './hooks/authStore.js';
 import Company from './pages/Company.jsx';
 import Pharmacists from './pages/pharmacy/Pharmacist/PharmacistSidebar.jsx'
 import UserProfile from './pages/userProfile.jsx';
 const App = () => {
 
-  // const userrole = Authstore.getUser()?.role || null;
+  const userrole = Authstore.getUser()?.role || null;
   
   return (
     <>
@@ -56,17 +56,24 @@ const App = () => {
       <Route path='/profile' element={<UserProfile/>}></Route>
 
       {/*hospital view */}
+      {userrole === 'hospital' && (
+        <>
       <Route path='/adddoctor' element={<AddDoctor/>}></Route>
       <Route path='/addpharmacist' element={<AddPharmacist/>}></Route>
       <Route path='/hospital-dashboard' element={<HospitalDashboard/>}></Route>
-
+      </>
+      )}
 
       {/* doctor view */}
       
-      <Route path='/doctor-dashboard' element={<Dashboardsidebar/>}></Route>
-      <Route path='/table' element={<Table/>}></Route>
-      <Route path='/changeschedule' element={<AddSchedule/>}></Route>
-      <Route path='/bb' element={<BookAppointmentTesting/>}></Route>
+      {userrole === 'doctor' && (
+  <>
+    <Route path='/doctor-dashboard' element={<Dashboardsidebar />} />
+    <Route path='/table' element={<Table />} />
+    <Route path='/changeschedule' element={<AddSchedule />} />
+    <Route path='/bb' element={<BookAppointmentTesting />} />
+  </>
+)}
 
 
       {/*  admin routes */}

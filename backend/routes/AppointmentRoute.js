@@ -1,5 +1,6 @@
 import express from 'express';
 import { createappointment, deleteappointmentcontroller, getallappointment,getappointmentbydocidcontroller,getsingleappointment,getappointmentbyuser} from '../controllers/appointmentController.js';
+import { requireSignIn } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
