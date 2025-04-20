@@ -10,4 +10,5 @@ router.post('/forgotpw')
 router.put("/updateimg/:id", formidable(), updateImage)
 router.get('/getselecteduser/:id', getSelectedUser)
 router.put('/edituser/:id',editUserController)
+
 export default router;
