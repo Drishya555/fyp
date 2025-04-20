@@ -22,33 +22,33 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    bio:{
+    bio: {
       type: String,
     },
     sex: {
       type: String,
-      enum: ["Male", "Female", "Other"] // Added possible values
+      enum: ["Male", "Female", "Other"]
     },
     blood: {
       type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] // Added possible blood types
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
     },
-    nationality:{
+    nationality: {
       type: String
     },
-    age:{
+    age: {
       type: Number
     },
-    phone:{
+    phone: {
       type: String
     },
-    BMI:{
+    BMI: {
       type: String
     },
-    image:{
-      type:String,
+    image: {
+      type: String,
     },
-    bgimage:{
+    bgimage: {
       type: String
     },
     resetToken: {
@@ -57,8 +57,18 @@ const userSchema = new mongoose.Schema(
     resetTokenExpires: {
       type: Date,
     },
+    otp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    }
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema); 
+export default mongoose.model("User", userSchema);

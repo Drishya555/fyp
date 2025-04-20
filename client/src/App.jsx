@@ -29,6 +29,9 @@ import Company from './pages/Company.jsx';
 import Pharmacists from './pages/pharmacy/Pharmacist/PharmacistSidebar.jsx'
 import UserProfile from './pages/userProfile.jsx';
 import ReviewSidebar from './pages/appointments/reviewSidebar.jsx';
+import OTPVerificationPage from './pages/OTPVerificationPage.jsx';
+import ForgotPasswordPage from './pages/Forgotpw.jsx';
+import ResetPasswordPage from './pages/Resetpw.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -56,6 +59,10 @@ const App = () => {
       <Route path='/company' element={<Company/>}></Route>
       <Route path='/profile' element={<UserProfile/>}></Route>
       <Route path='/reviews' element={<ReviewSidebar/>}></Route>
+      <Route path="/verify-otp" element={<OTPVerificationPage />} />
+      <Route path="/forgotpw" element={<ForgotPasswordPage />} />
+      <Route path="/resetpw/:token" element={<ResetPasswordPage />} />
+
       {/*hospital view */}
       {userrole === 'hospital' && (
         <>

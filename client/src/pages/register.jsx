@@ -13,6 +13,7 @@ export default function RegisterPage() {
     password: '',
     agreeToTerms: false
   });
+  // eslint-disable-next-line no-unused-vars
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,10 +69,13 @@ export default function RegisterPage() {
       });
       
       if (response.data.success) {
-        setSubmitted(true);
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        navigate('/verify-otp', {
+          state: {
+            userId: response.data.userId,
+            email: form.email
+          },
+          replace: true
+        });
       }
     } catch (err) {
       setLoading(false);

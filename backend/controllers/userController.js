@@ -6,12 +6,20 @@ import cloudinary from '../config/cloudinary.js'
 import docmodel from '../models/doctorModel.js';
 import pharmacistModel from '../models/pharmacistModel.js';
 import hospitalModel from '../models/hospitalModel.js';
-import exp from 'constants';
+import nodemailer from 'nodemailer';
 
 
-export const registerController = async(req,res) =>{
-    try {
-        const {name, email, password} = req.body;
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email service
+  auth: {
+    user: 'mediaidapp@gmail.com',
+    pass: 'ijro tsfg jxwh ujef',
+  },
+});
+
+export const registerController = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -20,32 +28,178 @@ export const registerController = async(req,res) =>{
         message: "Email is already taken",
       });
     }
-    const hashedPassword = await hashPassword(password);
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedPassword = await hashPassword(password);
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 minutes
 
     const user = await new userModel({
-        name,
-        email,
-        password: hashedPassword,
-        resetToken
+      name,
+      email,
+      password: hashedPassword,
+      otp,
+      otpExpires,
+      verified: false
     }).save();
 
+    // Send OTP email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Verify Your Email Address',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Email Verification</h2>
+          <p>Hello ${name},</p>
+          <p>Thank you for registering with us. Please use the following OTP to verify your email address:</p>
+          <div style="background: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">
+            <h1 style="margin: 0; color: #2563eb; letter-spacing: 5px;">${otp}</h1>
+          </div>
+          <p>This OTP will expire in 15 minutes.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>Best regards,<br/>The MediAid Team</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
     res.status(201).send({
-        success: true,
-        message: "User registered successfully",
-        user,
-      });
-    } catch (error) {
-        console.log(error);
+      success: true,
+      message: "Registration successful. Please check your email for OTP.",
+      userId: user._id,
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).send({
       success: false,
       message: "Error in registration",
       error,
     });
+  }
+};
+
+export const verifyOtpController = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
     }
 
-}
+    if (user.verified) {
+      return res.status(400).send({
+        success: false,
+        message: "Email already verified",
+      });
+    }
+
+    if (user.otp !== otp) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (user.otpExpires < new Date()) {
+      return res.status(400).send({
+        success: false,
+        message: "OTP has expired",
+      });
+    }
+
+    user.verified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error verifying OTP",
+      error,
+    });
+  }
+};
+
+export const resendOtpController = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.verified) {
+      return res.status(400).send({
+        success: false,
+        message: "Email already verified",
+      });
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send OTP email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'New OTP for Email Verification',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">New OTP for Verification</h2>
+          <p>Hello ${user.name},</p>
+          <p>Here's your new OTP to verify your email address:</p>
+          <div style="background: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">
+            <h1 style="margin: 0; color: #2563eb; letter-spacing: 5px;">${otp}</h1>
+          </div>
+          <p>This OTP will expire in 15 minutes.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p>Best regards,<br/>The MediAid Team</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).send({
+      success: true,
+      message: "New OTP sent successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error resending OTP",
+      error,
+    });
+  }
+};
+
+
+
+
+
+
+
+
 
 export const loginController = async (req, res) => {
   try {
@@ -254,6 +408,150 @@ export const editUserController = async (req, res) => {
       success: false,
       message: "Error updating user",
       error: error.message,
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+export const forgotPasswordController = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if user exists
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "Email not found",
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Save token to user
+    user.resetToken = resetToken;
+    user.resetTokenExpires = resetTokenExpires;
+    await user.save();
+
+    // Create reset link
+    const resetLink = `http://localhost:5173/resetpw/${resetToken}`;
+
+    // Send email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Password Reset</h2>
+          <p>Hello ${user.name},</p>
+          <p>We received a request to reset your password. Click the button below to reset it:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${resetLink}" style="background-color: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Reset Password
+            </a>
+          </div>
+          <p>If you didn't request this, please ignore this email. The link will expire in 15 minutes.</p>
+          <p>Best regards,<br/>The MediAid Team</p>
+          <p style="font-size: 12px; color: #6b7280;">Or copy and paste this link in your browser: ${resetLink}</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).send({
+      success: true,
+      message: "Password reset link sent to your email",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in sending reset link",
+      error,
+    });
+  }
+};
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    // Find user by token and check expiration
+    const user = await userModel.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Update password and clear token
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error resetting password",
+      error,
+    });
+  }
+};
+
+
+
+// Add this to your userController.js
+export const verifyResetTokenController = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const user = await userModel.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Token is valid",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error verifying token",
+      error,
     });
   }
 };
