@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Authstore from '../../../hooks/authStore.js';
@@ -19,7 +20,7 @@ const AddMedicalData = () => {
   const [showPatientSelector, setShowPatientSelector] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
-  const [setIsSaving] = useState(false);
+  const [issaving, setIsSaving] = useState(false);
   
   useEffect(() => {
     const getdocbyid = async () => {

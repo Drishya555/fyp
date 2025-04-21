@@ -329,7 +329,23 @@ export const getSelectedUser = async (req, res) => {
 
 
 
+export const getall = async (req, res) => {
 
+  try {
+    const user = await userModel.find();
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).send({
+      success: true,
+      message: "User fetched successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
 
 export const editUserController = async (req, res) => {
   try {
@@ -555,3 +571,5 @@ export const verifyResetTokenController = async (req, res) => {
     });
   }
 };
+
+

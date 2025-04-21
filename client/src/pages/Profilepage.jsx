@@ -126,16 +126,9 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-[]">
       {/* Medical-themed background */}
-      <div className="fixed inset-0 z-0 opacity-10">
-        <div className="absolute inset-0 bg-blue-50" style={{
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}></div>
-      </div>
-
+     
       {/* Header Section with Medical Design */}
       <div className="relative bg-gradient-to-r from-blue-50 to-blue-100 h-48 md:h-64 rounded-b-3xl shadow-sm overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-blue-500"></div>

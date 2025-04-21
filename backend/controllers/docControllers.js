@@ -142,7 +142,7 @@ export const updatedocController = async (req, res) => {
 export const getDoctorbyId = async(req,res) =>{
   try {
     const {id} = req.params;
-    const doctor = await docmodel.findById(id).populate('specialization', 'specialization');
+    const doctor = await docmodel.findById(id).populate('specialization', 'specialization').populate('hospital', 'name image');
     if (!doctor) {
       return res.status(404).send({
         success: false,
@@ -381,3 +381,31 @@ export const addreviewcontroller = async (req, res) => {
     return res.status(500).json({ error: "Failed to submit review" });
   }
 };
+
+
+
+export const getthreereviewscontroller = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const doctor = await docmodel.findById(id).populate("reviews.user", "name");
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Get the last three reviews
+    const reviews = doctor.reviews.slice(-3);
+
+    res.status(200).json({
+      success: true,
+      message: "Last three reviews fetched successfully",
+      reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching reviews",
+      error: error.message,
+    });
+  }
+}

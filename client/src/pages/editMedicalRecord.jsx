@@ -1,157 +1,256 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Authstore from '../hooks/authStore.js';
-import {host} from '../host.js'
+import {host} from '../host.js';
 import {
-  Calendar,
   Heart,
-  Pill,
-  FileText,
+  AlertTriangle,
   Plus,
   Trash2,
   AlertCircle,
   Save,
-  User
+  User,
+  Edit,
+  X
 } from 'lucide-react';
 
-const UpdateMedicalData = ({id}) => {
+const UpdateMedicalData = () => {
   const [activeSection, setActiveSection] = useState('vitals');
   const [savedMessage, setSavedMessage] = useState(null);
-  const [doctor, setDoctor] = useState(null);
-  const [patient, setPatient] = useState(null);
-  console.log(id)
-  useEffect(() => {
-    const getdocbyid = async () => {
-      const docid = Authstore.getUser()?.userid;
-      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`)
-      setDoctor(response.data.doctor)
-    }
-
-    getdocbyid();
-    
-    // Fetch patient details - assuming patient ID is available via URL params or context
-    const fetchPatientData = async () => {
-      // In a real implementation, you would get the patient ID from URL params or context
-      // const patientId = // get from URL or context
-      // For demo purposes, using a hardcoded patient
-      setPatient({
-        id: '9834A-43',
-        name: 'Ethan Miller',
-        age: 55,
-        photo: '/api/placeholder/40/40'
-      });
-      
-      // Fetch existing patient data to populate the form
-      // const response = await axios.get(`${host}/api/patients/${patientId}`);
-      // setPatient(response.data.patient);
-      // You could also pre-populate the form data with the patient's existing records
-    }
-    
-    fetchPatientData();
-  }, []);
+  const [medicalRecord, setMedicalRecord] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Form states
   const [vitals, setVitals] = useState({
-    heartRate: '72',
-    systolic: '120',
-    diastolic: '80',
+    heartRate: '',
+    systolic: '',
+    diastolic: '',
+    temperature: '',
+    respiratoryRate: '',
+    oxygenSaturation: '',
     date: new Date().toISOString().split('T')[0]
   });
   
-  const [medication, setMedication] = useState({
+  const [allergy, setAllergy] = useState({
     name: '',
-    dosage: '',
-    frequency: '',
-    purpose: ''
-  });
-  
-  const [appointment, setAppointment] = useState({
-    date: '',
-    time: '',
-    doctor: '',
-    department: ''
-  });
-  
-  const [timelineEvent, setTimelineEvent] = useState({
-    type: 'appointment',
-    date: '',
-    title: '',
-    details: '',
-    doctor: '',
-    location: '',
-    duration: '',
+    reaction: '',
+    severity: 'mild',
     notes: ''
   });
+
+  const [editingAllergyIndex, setEditingAllergyIndex] = useState(null);
+  const [allergies, setAllergies] = useState([]);
   
-  // Pre-populated data for demonstration purposes
-  const [medications, setMedications] = useState([
-    {
-      name: 'Lisinopril',
-      dosage: '10mg',
-      frequency: 'Once daily',
-      purpose: 'Blood Pressure'
-    },
-    {
-      name: 'Atorvastatin',
-      dosage: '20mg',
-      frequency: 'Once daily at night',
-      purpose: 'Cholesterol'
+  useEffect(() => {
+    const fetchMedicalRecord = async () => {
+      try {
+        setIsLoading(true);
+        const patientId = Authstore.getUser()?.userid;
+        const doctorId = Authstore.getUser()?.userid;
+
+        // Get medical record for the current user
+        const recordResponse = await axios.get(`${host}/api/medical-records/${patientId}/${doctorId}`);
+        
+        if (recordResponse.data) {
+          setMedicalRecord(recordResponse.data);
+          
+          // Initialize vitals from medical record
+          if (recordResponse.data.vitals) {
+            setVitals({
+              heartRate: recordResponse.data.vitals.heartRate || '',
+              systolic: recordResponse.data.vitals.bloodPressure?.systolic || '',
+              diastolic: recordResponse.data.vitals.bloodPressure?.diastolic || '',
+              temperature: recordResponse.data.vitals.temperature || '',
+              respiratoryRate: recordResponse.data.vitals.respiratoryRate || '',
+              oxygenSaturation: recordResponse.data.vitals.oxygenSaturation || '',
+              date: recordResponse.data.vitals.date || new Date().toISOString().split('T')[0]
+            });
+          }
+          
+          // Initialize allergies from medical record
+          if (recordResponse.data.allergies && recordResponse.data.allergies.length > 0) {
+            // If allergies are stored as strings, convert to objects
+            if (typeof recordResponse.data.allergies[0] === 'string') {
+              const allergyObjects = recordResponse.data.allergies.map(name => ({
+                name,
+                reaction: '',
+                severity: 'mild',
+                notes: ''
+              }));
+              setAllergies(allergyObjects);
+            } else {
+              // If already objects, use as-is
+              setAllergies(recordResponse.data.allergies);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching medical record:', error);
+        setSavedMessage('Failed to load medical record');
+        setTimeout(() => setSavedMessage(null), 3000);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchMedicalRecord();
+  }, []);
+  
+  const handleUpdateVitals = async () => {
+    try {
+      const patientId = Authstore.getUser()?.userid;
+      const doctorId = Authstore.getUser()?.userid;
+      
+      const vitalsData = {
+        heartRate: Number(vitals.heartRate),
+        bloodPressure: {
+          systolic: Number(vitals.systolic),
+          diastolic: Number(vitals.diastolic)
+        },
+        temperature: Number(vitals.temperature),
+        respiratoryRate: Number(vitals.respiratoryRate),
+        oxygenSaturation: Number(vitals.oxygenSaturation),
+        date: vitals.date
+      };
+
+      await axios.post(`${host}/api/medical-records`, {
+        patientId,
+        doctorId,
+        vitals: vitalsData
+      });
+
+      setSavedMessage('Vitals data updated successfully');
+      setTimeout(() => setSavedMessage(null), 3000);
+    } catch (error) {
+      console.error('Error updating vitals:', error);
+      setSavedMessage('Failed to update vitals');
+      setTimeout(() => setSavedMessage(null), 3000);
     }
-  ]);
+  };
   
-  const [appointments, setAppointments] = useState([
-    {
-      date: '2025-04-25',
-      time: '10:00',
-      doctor: 'Dr. Emily Smith',
-      department: 'Cardiology'
+  const handleAddAllergy = async () => {
+    if (!allergy.name.trim()) {
+      setSavedMessage('Allergen name is required');
+      setTimeout(() => setSavedMessage(null), 3000);
+      return;
     }
-  ]);
-  
-  const handleUpdateVitals = () => {
-    // Logic to update vitals data
-    setSavedMessage(`Vitals data updated for ${patient?.name}`);
-    setTimeout(() => setSavedMessage(null), 3000);
-  };
-  
-  const handleAddMedication = () => {
-    if (medication.name && medication.dosage) {
-      setMedications([...medications, medication]);
-      setMedication({ name: '', dosage: '', frequency: '', purpose: '' });
-    }
-  };
-  
-  const handleRemoveMedication = (index) => {
-    const updatedMedications = [...medications];
-    updatedMedications.splice(index, 1);
-    setMedications(updatedMedications);
-  };
-  
-  const handleAddAppointment = () => {
-    if (appointment.date && appointment.doctor) {
-      setAppointments([...appointments, appointment]);
-      setAppointment({ date: '', time: '', doctor: '', department: '' });
+
+    try {
+      let updatedAllergies;
+      
+      if (editingAllergyIndex !== null) {
+        // Update existing allergy
+        updatedAllergies = [...allergies];
+        updatedAllergies[editingAllergyIndex] = allergy;
+      } else {
+        // Add new allergy
+        updatedAllergies = [...allergies, allergy];
+      }
+      
+      setAllergies(updatedAllergies);
+      setAllergy({ name: '', reaction: '', severity: 'mild', notes: '' });
+      setEditingAllergyIndex(null);
+      
+      // Save to backend
+      await saveAllergies(updatedAllergies);
+    } catch (error) {
+      console.error('Error adding allergy:', error);
+      setSavedMessage('Failed to save allergy');
+      setTimeout(() => setSavedMessage(null), 3000);
     }
   };
   
-  const handleRemoveAppointment = (index) => {
-    const updatedAppointments = [...appointments];
-    updatedAppointments.splice(index, 1);
-    setAppointments(updatedAppointments);
+  const saveAllergies = async (allergiesToSave) => {
+    try {
+      const patientId = Authstore.getUser()?.userid;
+      const doctorId = Authstore.getUser()?.userid;
+      
+      await axios.post(`${host}/api/medical-records`, {
+        patientId,
+        doctorId,
+        allergies: allergiesToSave
+      });
+
+      setSavedMessage('Allergies updated successfully');
+      setTimeout(() => setSavedMessage(null), 3000);
+    } catch (error) {
+      console.error('Error saving allergies:', error);
+      setSavedMessage('Failed to update allergies');
+      setTimeout(() => setSavedMessage(null), 3000);
+      throw error;
+    }
+  };
+
+  const handleRemoveAllergy = async (index) => {
+    try {
+      const updatedAllergies = [...allergies];
+      updatedAllergies.splice(index, 1);
+      setAllergies(updatedAllergies);
+      
+      // Save to backend
+      await saveAllergies(updatedAllergies);
+    } catch (error) {
+      console.error('Error removing allergy:', error);
+    }
+  };
+
+  const handleEditAllergy = (index) => {
+    setAllergy({...allergies[index]});
+    setEditingAllergyIndex(index);
+  };
+
+  const handleCancelEdit = () => {
+    setAllergy({ name: '', reaction: '', severity: 'mild', notes: '' });
+    setEditingAllergyIndex(null);
   };
   
-  const handleUpdateTimelineEvent = () => {
-    // Logic to update timeline event
-    setSavedMessage(`Medical event updated in ${patient?.name}'s timeline`);
-    setTimeout(() => setSavedMessage(null), 3000);
+  const handleUpdateAllData = async () => {
+    try {
+      const patientId = Authstore.getUser()?.userid;
+      const doctorId = Authstore.getUser()?.userid;
+      
+      // Prepare vitals data
+      const vitalsData = {
+        heartRate: Number(vitals.heartRate),
+        bloodPressure: {
+          systolic: Number(vitals.systolic),
+          diastolic: Number(vitals.diastolic)
+        },
+        temperature: Number(vitals.temperature),
+        respiratoryRate: Number(vitals.respiratoryRate),
+        oxygenSaturation: Number(vitals.oxygenSaturation),
+        date: vitals.date
+      };
+
+      // Update both vitals and allergies in one call
+      await axios.post(`${host}/api/medical-records`, {
+        patientId,
+        doctorId,
+        vitals: vitalsData,
+        allergies: allergies
+      });
+
+      setSavedMessage('Medical data updated successfully');
+      setTimeout(() => setSavedMessage(null), 3000);
+    } catch (error) {
+      console.error('Error updating all data:', error);
+      setSavedMessage('Failed to update data');
+      setTimeout(() => setSavedMessage(null), 3000);
+    }
   };
-  
-  const handleUpdateAllData = () => {
-    // Logic to update all collected data
-    setSavedMessage(`All data updated for patient ${patient?.name}`);
-    setTimeout(() => setSavedMessage(null), 3000);
-  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-700">Loading medical data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">
@@ -162,21 +261,6 @@ const UpdateMedicalData = ({id}) => {
             <Heart className="h-6 w-6 text-blue-600 mr-2" />
             <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900">Dr. {doctor?.name}</p>
-                <p className="text-xs text-gray-500">{doctor?.specialization?.specialization}</p>
-              </div>
-              <div className="relative">
-                <img
-                  src={doctor?.image}
-                  alt="Doctor"
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-100"
-                />
-              </div>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -185,9 +269,9 @@ const UpdateMedicalData = ({id}) => {
         {/* Page Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Update Medical Record</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Update Your Medical Record</h2>
             <p className="mt-1 text-sm text-gray-600">
-              Update patient health data and keep medical records current
+              Keep your health information up to date
             </p>
           </div>
           <button 
@@ -197,29 +281,6 @@ const UpdateMedicalData = ({id}) => {
             <Save size={18} className="mr-2" />
             Update All Data
           </button>
-        </div>
-        
-        {/* Patient Info Section */}
-        <div className="mb-6 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center">
-            <div className="mr-4 bg-blue-100 p-3 rounded-full">
-              <User size={20} className="text-blue-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Patient Information</h3>
-              <div className="flex items-center mt-2">
-                <img 
-                  src={patient?.photo} 
-                  alt={patient?.name}
-                  className="w-10 h-10 rounded-full mr-3 ring-2 ring-blue-100" 
-                />
-                <div>
-                  <p className="font-medium">{patient?.name}</p>
-                  <p className="text-sm text-gray-500">ID: {patient?.id} • Age: {patient?.age}</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
         
         {/* Save Message */}
@@ -235,9 +296,7 @@ const UpdateMedicalData = ({id}) => {
           <nav className="flex space-x-8" aria-label="Tabs">
             {[
               { id: 'vitals', label: 'Vitals', icon: Heart },
-              { id: 'medications', label: 'Medications', icon: Pill },
-              { id: 'appointments', label: 'Appointments', icon: Calendar },
-              { id: 'timeline', label: 'Timeline Events', icon: FileText }
+              { id: 'allergies', label: 'Allergies', icon: AlertTriangle },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -261,7 +320,7 @@ const UpdateMedicalData = ({id}) => {
           {activeSection === 'vitals' && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Update Vital Signs for {patient?.name}
+                Update Your Vital Signs
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -282,6 +341,7 @@ const UpdateMedicalData = ({id}) => {
                     value={vitals.heartRate}
                     onChange={(e) => setVitals({...vitals, heartRate: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="0"
                   />
                 </div>
                 
@@ -293,6 +353,7 @@ const UpdateMedicalData = ({id}) => {
                     value={vitals.systolic}
                     onChange={(e) => setVitals({...vitals, systolic: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="0"
                   />
                 </div>
                 
@@ -304,6 +365,45 @@ const UpdateMedicalData = ({id}) => {
                     value={vitals.diastolic}
                     onChange={(e) => setVitals({...vitals, diastolic: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Temperature (°F)</label>
+                  <input
+                    type="number"
+                    placeholder="Ex: 98.6"
+                    value={vitals.temperature}
+                    onChange={(e) => setVitals({...vitals, temperature: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    step="0.1"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Respiratory Rate (breaths/min)</label>
+                  <input
+                    type="number"
+                    placeholder="Ex: 16"
+                    value={vitals.respiratoryRate}
+                    onChange={(e) => setVitals({...vitals, respiratoryRate: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Oxygen Saturation (%)</label>
+                  <input
+                    type="number"
+                    placeholder="Ex: 98"
+                    value={vitals.oxygenSaturation}
+                    onChange={(e) => setVitals({...vitals, oxygenSaturation: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="0"
+                    max="100"
                   />
                 </div>
               </div>
@@ -319,309 +419,126 @@ const UpdateMedicalData = ({id}) => {
             </div>
           )}
           
-          {/* Medications Section */}
-          {activeSection === 'medications' && (
+          {/* Allergies Section */}
+          {activeSection === 'allergies' && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Update Medications for {patient?.name}
+                Manage Your Allergies
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Medication Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Allergen Name*</label>
                   <input
                     type="text"
-                    placeholder="Ex: Lisinopril"
-                    value={medication.name}
-                    onChange={(e) => setMedication({...medication, name: e.target.value})}
+                    placeholder="Ex: Penicillin"
+                    value={allergy.name}
+                    onChange={(e) => setAllergy({...allergy, name: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dosage</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Reaction</label>
                   <input
                     type="text"
-                    placeholder="Ex: 10mg"
-                    value={medication.dosage}
-                    onChange={(e) => setMedication({...medication, dosage: e.target.value})}
+                    placeholder="Ex: Rash, difficulty breathing"
+                    value={allergy.reaction}
+                    onChange={(e) => setAllergy({...allergy, reaction: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Once daily"
-                    value={medication.frequency}
-                    onChange={(e) => setMedication({...medication, frequency: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Blood Pressure"
-                    value={medication.purpose}
-                    onChange={(e) => setMedication({...medication, purpose: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={handleAddMedication}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
-                >
-                  <Plus size={18} className="mr-2" />
-                  Add Medication
-                </button>
-              </div>
-              
-              {/* List of medications */}
-              {medications.length > 0 && (
-                <div className="mt-6">
-                  <h4 className="text-md font-medium text-gray-700 mb-3">Current Medications</h4>
-                  <div className="space-y-3">
-                    {medications.map((med, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">{med.name} ({med.dosage})</p>
-                          <p className="text-sm text-gray-600">{med.frequency}, Purpose: {med.purpose}</p>
-                        </div>
-                        <button 
-                          onClick={() => handleRemoveMedication(index)}
-                          className="p-1 text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Appointments Section */}
-          {activeSection === 'appointments' && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Update Appointments for {patient?.name}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={appointment.date}
-                    onChange={(e) => setAppointment({...appointment, date: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                  <input
-                    type="time"
-                    value={appointment.time}
-                    onChange={(e) => setAppointment({...appointment, time: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Doctor Name</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Dr. Emily Smith"
-                    value={appointment.doctor}
-                    onChange={(e) => setAppointment({...appointment, doctor: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
                   <select
-                    value={appointment.department}
-                    onChange={(e) => setAppointment({...appointment, department: e.target.value})}
+                    value={allergy.severity}
+                    onChange={(e) => setAllergy({...allergy, severity: e.target.value})}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="">Select Department</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="General Practice">General Practice</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Orthopedics">Orthopedics</option>
-                    <option value="Dermatology">Dermatology</option>
+                    <option value="mild">Mild</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="severe">Severe</option>
+                    <option value="life-threatening">Life-threatening</option>
                   </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                  <input
+                    type="text"
+                    placeholder="Additional notes (e.g., treatment)"
+                    value={allergy.notes}
+                    onChange={(e) => setAllergy({...allergy, notes: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </div>
               </div>
               
-              <div className="mt-6 flex justify-end">
+              <div className="mt-6 flex justify-end space-x-3">
+                {editingAllergyIndex !== null && (
+                  <button
+                    onClick={handleCancelEdit}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center"
+                  >
+                    <X size={18} className="mr-2" />
+                    Cancel
+                  </button>
+                )}
                 <button
-                  onClick={handleAddAppointment}
+                  onClick={handleAddAllergy}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
                 >
                   <Plus size={18} className="mr-2" />
-                  Add Appointment
+                  {editingAllergyIndex !== null ? 'Update Allergy' : 'Add Allergy'}
                 </button>
               </div>
               
-              {/* List of appointments */}
-              {appointments.length > 0 && (
+              {/* List of allergies */}
+              {allergies.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="text-md font-medium text-gray-700 mb-3">Scheduled Appointments</h4>
+                  <h4 className="text-md font-medium text-gray-700 mb-3">Your Allergies</h4>
                   <div className="space-y-3">
-                    {appointments.map((apt, index) => (
+                    {allergies.map((allergyItem, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
-                          <p className="font-medium text-gray-900">{apt.doctor}</p>
-                          <p className="text-sm text-gray-600">
-                            {new Date(apt.date).toLocaleDateString()}, {apt.time} - {apt.department}
-                          </p>
+                          <div className="flex items-center">
+                            <p className="font-medium text-gray-900">{allergyItem.name}</p>
+                            <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                              allergyItem.severity === 'mild' ? 'bg-yellow-100 text-yellow-800' :
+                              allergyItem.severity === 'moderate' ? 'bg-orange-100 text-orange-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {allergyItem.severity}
+                            </span>
+                          </div>
+                          {allergyItem.reaction && (
+                            <p className="text-sm text-gray-600">Reaction: {allergyItem.reaction}</p>
+                          )}
+                          {allergyItem.notes && (
+                            <p className="text-xs text-gray-500 mt-1">Notes: {allergyItem.notes}</p>
+                          )}
                         </div>
-                        <button 
-                          onClick={() => handleRemoveAppointment(index)}
-                          className="p-1 text-red-600 hover:text-red-800"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleEditAllergy(index)}
+                            className="p-1 text-blue-600 hover:text-blue-800"
+                            title="Edit"
+                          >
+                            <Edit size={18} />
+                          </button>
+                          <button 
+                            onClick={() => handleRemoveAllergy(index)}
+                            className="p-1 text-red-600 hover:text-red-800"
+                            title="Delete"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
-          )}
-          
-          {/* Timeline Events Section */}
-          {activeSection === 'timeline' && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Update Medical Timeline for {patient?.name}
-              </h3>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="eventType"
-                      value="appointment"
-                      checked={timelineEvent.type === 'appointment'}
-                      onChange={() => setTimelineEvent({...timelineEvent, type: 'appointment'})}
-                      className="mr-2"
-                    />
-                    <span>Appointment</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="eventType"
-                      value="diagnosis"
-                      checked={timelineEvent.type === 'diagnosis'}
-                      onChange={() => setTimelineEvent({...timelineEvent, type: 'diagnosis'})}
-                      className="mr-2"
-                    />
-                    <span>Diagnosis</span>
-                  </label>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={timelineEvent.date}
-                    onChange={(e) => setTimelineEvent({...timelineEvent, date: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Cardiology Checkup"
-                    value={timelineEvent.title}
-                    onChange={(e) => setTimelineEvent({...timelineEvent, title: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
-                  <textarea
-                    rows="3"
-                    placeholder="Describe the event..."
-                    value={timelineEvent.details}
-                    onChange={(e) => setTimelineEvent({...timelineEvent, details: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Dr. Emily Smith"
-                    value={timelineEvent.doctor}
-                    onChange={(e) => setTimelineEvent({...timelineEvent, doctor: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                {timelineEvent.type === 'appointment' ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                      <input
-                        type="text"
-                        placeholder="Ex: Central Medical Center, Room 305"
-                        value={timelineEvent.location}
-                        onChange={(e) => setTimelineEvent({...timelineEvent, location: e.target.value})}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                      <input
-                        type="text"
-                        placeholder="Ex: 45 minutes"
-                        value={timelineEvent.duration}
-                        onChange={(e) => setTimelineEvent({...timelineEvent, duration: e.target.value})}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                    <input
-                      type="text"
-                      placeholder="Additional notes..."
-                      value={timelineEvent.notes}
-                      onChange={(e) => setTimelineEvent({...timelineEvent, notes: e.target.value})}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                )}
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={handleUpdateTimelineEvent}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                >
-                  Update Timeline
-                </button>
-              </div>
             </div>
           )}
         </div>

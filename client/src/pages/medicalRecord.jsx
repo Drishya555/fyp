@@ -299,11 +299,11 @@ const [medicines, setMedicines] = useState([]);
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">Gender</p>
-                  <p className="text-sm font-medium">Male</p>
+                  <p className="text-sm font-medium">{user?.sex}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">Blood Type</p>
-                  <p className="text-sm font-medium">O+</p>
+                  <p className="text-sm font-medium">{user?.blood}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs text-gray-500">Height</p>
