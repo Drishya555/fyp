@@ -71,7 +71,7 @@ export const getsingleappointment = async(req,res) =>{
 
 
 //fetching unique patients per doctor because one patients can have many appointments with a single doctor
-export const getappointmentbydocidcontroller = async (req, res) => {
+export const getsingleappointmentbydoctor = async (req, res) => {
     try {
       const { id } = req.params;
   
@@ -86,10 +86,13 @@ export const getappointmentbydocidcontroller = async (req, res) => {
       const seenUsers = new Set();
   
       for (let appt of appointments) {
-        const userId = appt.user._id.toString();
-        if (!seenUsers.has(userId)) {
-          uniqueAppointments.push(appt);
-          seenUsers.add(userId);
+        // Check if user exists before accessing _id
+        if (appt.user && appt.user._id) {
+          const userId = appt.user._id.toString();
+          if (!seenUsers.has(userId)) {
+            uniqueAppointments.push(appt);
+            seenUsers.add(userId);
+          }
         }
       }
   
@@ -106,7 +109,6 @@ export const getappointmentbydocidcontroller = async (req, res) => {
       });
     }
   };
-  
 
 
   export const getappointmentbyuser = async(req,res) =>{
@@ -156,3 +158,37 @@ export const deleteappointmentcontroller = async(req,res) =>{
         })
     }
 }
+
+
+
+export const getappapointmentbydoctor = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      // Find a single appointment for the given doctor ID
+      const appointment = await appointmentModel
+        .findOne({ doctor: id })  // Use `findOne` instead of `find`
+        .populate('user', 'name email image')
+        .populate('doctor', 'name email image specialization hospital')
+        .sort({ createdAt: -1 }); // Still sorts, but returns only one
+  
+      if (!appointment) {
+        return res.status(404).send({
+          success: false,
+          message: "No appointment found for this doctor",
+        });
+      }
+  
+      res.status(200).send({
+        success: true,
+        message: "Single appointment fetched successfully",
+        appointment, // Return the single appointment
+      });
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "Error occurred while fetching appointment",
+        error: error.message,
+      });
+    }
+  };

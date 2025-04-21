@@ -2,7 +2,6 @@
 import { useState, useEffect} from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import {
-  Bell,
   Heart,
   Calendar,
   ChevronDown,
@@ -185,19 +184,16 @@ const [medicines, setMedicines] = useState([]);
             <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack {id}</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-gray-100 relative">
-              <Bell size={20} className="text-gray-600" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
+           
             <div className="flex items-center space-x-3">
               <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900">Ethan Miller</p>
+                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500">Patient</p>
               </div>
               <div className="relative">
                 <img
-                  src="/api/placeholder/35/35"
-                  alt="Ethan Miller"
+                  src={`${user?.image}`}
+                  alt="profile pic"
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-100"
                 />
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
@@ -213,7 +209,7 @@ const [medicines, setMedicines] = useState([]);
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Health Dashboard</h2>
           <p className="mt-1 text-sm text-gray-600">
-            Welcome back, Ethan. Here&apos;s your health overview for {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Welcome back, ${user?.name}. Here&apos;s your health overview 
           </p>
         </div>
         
@@ -284,7 +280,7 @@ const [medicines, setMedicines] = useState([]);
               <div className="relative">
                 <img
                   src={`${user?.image}`}
-                  alt="Ethan Miller"
+                  alt="profile pic"
                   className="w-14 h-14 rounded-full object-cover ring-2 ring-blue-100"
                 />
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>

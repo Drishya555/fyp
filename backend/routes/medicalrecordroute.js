@@ -1,22 +1,13 @@
-import express from "express";
+import express from 'express';
 import {
-  getOrCreateMedicalRecord,
-  updateMedicalRecord,
-  addVitals,
-  addTimelineEvent,
-  linkAppointment,
-  linkPrescription,
-  getCompleteHistory
-} from "../controllers/medicalRecordController.js";
+  createOrUpdateMedicalRecord,
+  getMedicalRecord,
+} from '../controllers/medicalRecordController.js';
 
 const router = express.Router();
+router.post('/', createOrUpdateMedicalRecord);
 
-router.get("/patient/:patientId", getOrCreateMedicalRecord);
-router.put("/:id", updateMedicalRecord);
-router.post("/:id/vitals", addVitals);
-router.post("/:id/timeline", addTimelineEvent);
-router.post("/:id/link-appointment", linkAppointment);
-router.post("/:id/link-prescription", linkPrescription);
-router.get("/patient/:patientId/history", getCompleteHistory);
+// GET /api/medical-records/:patientId/:doctorId
+router.get('/:patientId/:doctorId', getMedicalRecord);
 
 export default router;

@@ -1,6 +1,6 @@
 
 
-export const host = "https://54.164.8.50/";
+export const host = "http://localhost:8000";
 
 //http://localhost:8000
 //https://fypbackend-roan.vercel.app
