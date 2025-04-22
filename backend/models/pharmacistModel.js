@@ -21,20 +21,6 @@ const pharmacistSchema = new mongoose.Schema(
     phone:{
          type:String
        },
-    specialization: {
-         type: mongoose.ObjectId,
-         ref: "Specialization",
-       },
-    licenseNo: {
-         type: String,
-       },
-    hospital: {
-         type: mongoose.ObjectId,
-         ref:"Hospitals"
-       },
-       totalPatients:{
-         type:String
-       },
        
        image:{
          type:String,

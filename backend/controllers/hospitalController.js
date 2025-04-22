@@ -150,3 +150,89 @@ export const addreviewController = async(req,res) =>{
         return res.status(500).json({ error: "Failed to submit review" });
       }
 }
+
+
+
+export const editHospitalController = async (req, res) => {
+  try {
+      const { id } = req.params;
+      const { email, password, name, address, licenseNo, bio, hospitaltype, price } = req.fields;
+      const { image } = req.files;
+
+      // Find the hospital by ID
+      const hospital = await hospitalModel.findById(id);
+      if (!hospital) {
+          return res.status(404).send({
+              success: false,
+              message: "Hospital not found"
+          });
+      }
+
+      // Check if email is being changed and if new email is already taken
+      if (email && email !== hospital.email) {
+          const emailExists = await hospitalModel.findOne({ email });
+          if (emailExists) {
+              return res.status(409).send({
+                  success: false,
+                  message: "Email is already taken"
+              });
+          }
+          hospital.email = email;
+      }
+
+      // Check if licenseNo is being changed and if new license is already taken
+      if (licenseNo && licenseNo !== hospital.licenseNo) {
+          const licenseExists = await hospitalModel.findOne({ licenseNo });
+          if (licenseExists) {
+              return res.status(409).send({
+                  success: false,
+                  message: "License number is already taken"
+              });
+          }
+          hospital.licenseNo = licenseNo;
+      }
+
+      // Update password if provided
+      if (password) {
+          hospital.password = await hashPassword(password);
+      }
+
+      // Update image if provided
+      if (image) {
+          // First delete the old image from Cloudinary if it exists
+          if (hospital.image) {
+              const publicId = hospital.image.split('/').pop().split('.')[0];
+              await cloudinary.uploader.destroy(`mediaid/${publicId}`);
+          }
+          
+          // Upload new image
+          const result = await cloudinary.uploader.upload(image.path, {
+              folder: "mediaid",
+          });
+          hospital.image = result.secure_url;
+      }
+
+      // Update other fields
+      if (name) hospital.name = name;
+      if (address) hospital.address = address;
+      if (bio) hospital.bio = bio;
+      if (hospitaltype) hospital.hospitaltype = hospitaltype;
+      if (price) hospital.price = price;
+
+      // Save the updated hospital
+      const updatedHospital = await hospital.save();
+
+      res.status(200).send({
+          success: true,
+          message: "Hospital updated successfully",
+          hospital: updatedHospital
+      });
+
+  } catch (error) {
+      res.status(500).send({
+          success: false,
+          message: "Error occurred while updating hospital",
+          error: error.message
+      });
+  }
+};

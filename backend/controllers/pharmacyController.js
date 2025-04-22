@@ -33,6 +33,25 @@ export const addNewMedicineCategory = async(req,res) =>{
 
 
 
+export const getallcategories = async(req,res) =>{
+  try {
+    const categories = await medicineCategoryModel.find();
+    res.status(200).send({
+        success: true,
+        message: "All categories fetched successfully",
+        categories
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error adding new category",
+      error: error.message
+  })
+  }
+}
+
+
+
 export const getAllMedicines = async (req, res) => {
     try {
       const medicines = await medicineModel
@@ -191,3 +210,98 @@ export const getRandomProducts = async (req, res) => {
   
   }
   
+
+
+
+
+export const updateMedicineController = async (req, res) => {
+  try {
+      const { name, category, price, discountprice, rating, description, strength, manufacturer, stock } = req.fields;
+      const { medicineimg } = req.files;
+      
+      const medicine = await medicineModel.findById(req.params.id);
+      if (!medicine) {
+          return res.status(404).send({
+              success: false,
+              message: "Medicine not found"
+          });
+      }
+
+      let imageUrl = medicine.medicineimg;
+      if (medicineimg) {
+          // Delete old image from Cloudinary if exists
+          if (medicine.medicineimg) {
+              const publicId = medicine.medicineimg.split('/').pop().split('.')[0];
+              await cloudinary.uploader.destroy(`mediaid/${publicId}`);
+          }
+          
+          // Upload new image
+          const result = await cloudinary.uploader.upload(medicineimg.path, {
+              folder: "mediaid",
+          });
+          imageUrl = result.secure_url;
+      }
+
+      const updatedMedicine = await medicineModel.findByIdAndUpdate(
+          req.params.id,
+          {
+              name,
+              slug: name ? slugify(name, { lower: true }) : medicine.slug,
+              category: category || medicine.category,
+              price: price || medicine.price,
+              discountprice: discountprice || medicine.discountprice,
+              rating: rating || medicine.rating,
+              description: description || medicine.description,
+              strength: strength || medicine.strength,
+              manufacturer: manufacturer || medicine.manufacturer,
+              stock: stock || medicine.stock,
+              medicineimg: imageUrl
+          },
+          { new: true }
+      ).populate("category", "categoryName");
+
+      res.status(200).send({
+          success: true,
+          message: "Medicine updated successfully",
+          medicine: updatedMedicine
+      });
+  } catch (error) {
+      res.status(500).send({
+          success: false,
+          message: "Error updating medicine",
+          error: error.message
+      });
+  }
+};
+
+
+export const deleteMedicineController = async (req, res) => {
+  try {
+      const medicine = await medicineModel.findById(req.params.id);
+      if (!medicine) {
+          return res.status(404).send({
+              success: false,
+              message: "Medicine not found"
+          });
+      }
+
+      // Delete image from Cloudinary if exists
+      if (medicine.medicineimg) {
+          const publicId = medicine.medicineimg.split('/').pop().split('.')[0];
+          await cloudinary.uploader.destroy(`mediaid/${publicId}`);
+      }
+
+      await medicineModel.findByIdAndDelete(req.params.id);
+
+      res.status(200).send({
+          success: true,
+          message: "Medicine deleted successfully"
+      });
+  } catch (error) {
+      res.status(500).send({
+          success: false,
+          message: "Error deleting medicine",
+          error: error.message
+      });
+  }
+};

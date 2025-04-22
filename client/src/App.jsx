@@ -32,6 +32,7 @@ import ReviewSidebar from './pages/appointments/reviewSidebar.jsx';
 import OTPVerificationPage from './pages/OTPVerificationPage.jsx';
 import ForgotPasswordPage from './pages/Forgotpw.jsx';
 import ResetPasswordPage from './pages/Resetpw.jsx';
+import HospitalProfile from './pages/HospitalProfile.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -87,6 +88,7 @@ const App = () => {
       {/*  admin routes */}
       <Route path='/admin' element={<Adminpage/>}></Route>
       <Route path='/addhospital' element={<AddHospital/>}></Route>
+      <Route path='/hospitalprofile' element={<HospitalProfile/>}></Route>
 
 
       {/* Pharmacist View */}

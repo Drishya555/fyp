@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { User, Settings, Monitor, Bell } from "lucide-react";
-
-
+import Orders from "./components/orders";
+import Prescriptions from "./components/prescriptions";
+import Products from "./components/products";
+import PharmacistDasboard from "./components/pharmacistDasboard";
 const menuItems = [
-  { id: 1, name: "Dashboard", icon: <User size={20} />, component: <div>hi</div> },
-  { id: 2, name: "Products", icon: <Settings size={20} />, component: <div>hi</div>  },
-  { id: 3, name: "Orders", icon: <Monitor size={20} />, component: <div>hi</div>  },
-  { id: 4, name: "Prescription", icon: <Bell size={20} />, component: <div>hi</div>   },
+  { id: 1, name: "Dashboard", icon: <User size={20} />, component: <PharmacistDasboard/> },
+  { id: 2, name: "Products", icon: <Settings size={20} />, component: <Products/> },
+  { id: 3, name: "Orders", icon: <Monitor size={20} />, component: <Orders/>  },
+  { id: 4, name: "Prescription", icon: <Bell size={20} />, component: <Prescriptions/> },
 ];
 
 export default function ResponsiveSidebar() {
@@ -16,7 +18,7 @@ export default function ResponsiveSidebar() {
     <div className="h-screen min-h-screen flex flex-col md:flex-row">
       {/* Sidebar for larger screens */}
       <div className="hidden md:block w-64 h-full min-h-screen bg-white shadow-md">
-        <h2 className="p-4 text-gray-700 font-semibold">Profile Page</h2>
+        <h2 className="p-4 text-gray-700 font-semibold">Pharmacist Dashboard</h2>
         <nav className="mt-4">
           {menuItems.map((item) => (
             <div

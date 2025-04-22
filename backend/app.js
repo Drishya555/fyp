@@ -32,7 +32,6 @@ app.use('/api/hospital', hospitalRoute)
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use("/api/medical-records", medicalRecordRoutes);
 
-
 const PORT = process.env.PORT || 8000; //cloud provides port or else 8000 in localserver 
 
 app.listen(PORT, ()=>{
