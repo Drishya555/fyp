@@ -76,6 +76,24 @@ export const addSpecialization = async(req,res) =>{
     }
 }
 
+
+export const getallSpecialization = async(req,res) =>{
+  try {
+    const specialization = await specializationModel.find();
+    res.status(200).send({
+      success: true,
+      message: "Specialization fetched successfully",
+      specialization
+    })
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      message: "Specialization failed to fetch",
+      
+  })
+  }
+}
+
 export const updatedocController = async (req, res) => {
   try {
       const { id } = req.params; // Doctor ID
@@ -409,3 +427,93 @@ export const getthreereviewscontroller = async (req, res) => {
     });
   }
 }
+
+
+
+
+
+export const updateDoctorProfileController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const fields = req.fields;
+    const files = req.files;
+
+    // Define all array fields
+    const arrayFields = [
+      'skills',
+      'careerProgression', 
+      'notableCases', 
+      'performanceMetrics',
+      'testimonials',
+      'education',
+      'researchPublications',
+      'awards',
+      'certifications',
+      'languages',
+      'professionalMemberships'
+    ];
+
+    // Process array fields
+    arrayFields.forEach(field => {
+      if (fields[field]) {
+        try {
+          // Parse if it's a string, otherwise use as-is
+          fields[field] = typeof fields[field] === 'string' 
+            ? JSON.parse(fields[field])
+            : fields[field];
+          
+          // Ensure it's an array
+          if (!Array.isArray(fields[field])) {
+            fields[field] = [];
+          }
+        } catch (e) {
+          console.error(`Error parsing ${field}:`, e);
+          fields[field] = [];
+        }
+      }
+    });
+
+    // Handle file uploads
+    if (files?.image) {
+      const imageResult = await cloudinary.uploader.upload(files.image.path, { 
+        folder: "mediaid" 
+      });
+      fields.image = imageResult.secure_url;
+    }
+    
+    if (files?.bgimage) {
+      const bgImageResult = await cloudinary.uploader.upload(files.bgimage.path, { 
+        folder: "mediaid" 
+      });
+      fields.bgimage = bgImageResult.secure_url;
+    }
+
+    const updatedDoctor = await docmodel.findByIdAndUpdate(
+      id,
+      { $set: fields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Doctor not found" 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      doctor: updatedDoctor
+    });
+
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+};

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const doctorSchema = new mongoose.Schema(
   {
+    // Existing fields
     name: {
       type: String,
       required: true,
@@ -11,33 +12,30 @@ const doctorSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    bio:{
+    bio: {
       type: String
     },
     password: {
       type: String,
       required: true,
     },
-    hospital:{
-      type: mongoose.ObjectId,
-      ref: "Hospital"
-    },
     address: {
       type: String,
     },
-    phone:{
-      type:String
+    phone: {
+      type: String
     },
-    specialization: {
+    specialization: [{
       type: mongoose.ObjectId,
       ref: "Specialization",
-    },
+      percentage: Number
+    }],
     licenseNo: {
       type: String,
     },
     hospital: {
       type: mongoose.ObjectId,
-      ref:"Hospital"
+      ref: "Hospital"
     },
     reviews: [
       {
@@ -54,16 +52,16 @@ const doctorSchema = new mongoose.Schema(
         },
       }
     ],
-    freeslots:[
+    freeslots: [
       {
-        day:{
-          type:String,
+        day: {
+          type: String,
         },
-        time:{
-          type:String,
+        time: {
+          type: String,
         },
-        status:{
-          type:String,
+        status: {
+          type: String,
           default: "available",
         }
       }
@@ -72,31 +70,31 @@ const doctorSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    about:{
+    about: {
       type: String,
     },
-    experience:{
+    experience: {
       type: String
     },
-    totalPatients:{
-      type:String
+    totalPatients: {
+      type: String
     },
-    hourlyPrice:{
+    hourlyPrice: {
       type: String,
     },
-    image:{
-      type:String,
+    image: {
+      type: String,
     },
-    bgimage:{
-      type:String,
+    bgimage: {
+      type: String,
     },
-    role:{
+    role: {
       type: String,
       default: "doctor",
     },
-    verified:{
-      type:Boolean,
-      default:false
+    verified: {
+      type: Boolean,
+      default: false
     },
     resetToken: {
       type: String,
@@ -104,6 +102,63 @@ const doctorSchema = new mongoose.Schema(
     resetTokenExpires: {
       type: Date,
     },
+
+    location: {
+      type: String,
+      default: ""
+    },
+    username: {
+      type: String,
+      default: ""
+    },
+    employmentType: {
+      type: String,
+      enum: ["Full-time", "Part-time", "Contract", "Locum", "Other"],
+      default: "Full-time"
+    },
+    portfolio: {
+      type: String,
+      default: ""
+    },
+    skills: [{
+      type: String
+    }],
+    careerProgression: [
+      {
+        year: String,
+        role: String,
+        description: String,
+        company: String,
+        achievements: [String]
+      }
+    ],
+    notableCases: [
+      {
+        title: String,
+        description: String,
+        year: String,
+        tags: [String]
+      }
+    ],
+    performanceMetrics: [
+      {
+        category: String,
+        score: Number
+      }
+    ],
+    testimonials: [
+      {
+        author: String,
+        position: String,
+        text: String,
+        rating: Number
+      }
+    ],
+    availability: {
+      type: String,
+      enum: ["Available", "Limited", "Not Available"],
+      default: "Available"
+    }
   },
   { timestamps: true }
 );
