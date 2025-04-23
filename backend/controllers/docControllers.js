@@ -333,7 +333,13 @@ export const updateImage = async (req, res) => {
 
 export const dochospcontroller = async(req,res) =>{
   try {
-    
+    const {id} = req.params;
+    const doctor = await docmodel.find({hospital:id}).populate('specialization', 'specialization').populate('hospital');
+    res.status(200).json({
+      success: true,
+      message: "Doctors fetched successfully",
+      doctor,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).send({
@@ -514,6 +520,50 @@ export const updateDoctorProfileController = async (req, res) => {
       message: "Failed to update profile",
       error: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+};
+
+
+
+
+export const deleteDoctorController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // First find the doctor to get their image URLs
+    const doctor = await docmodel.findById(id);
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    // Delete images from Cloudinary if they exist
+    if (doctor.image) {
+      const publicId = doctor.image.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`mediaid/${publicId}`);
+    }
+
+    if (doctor.bgimage) {
+      const publicId = doctor.bgimage.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`mediaid/${publicId}`);
+    }
+
+    // Delete the doctor from database
+    await docmodel.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Doctor deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting doctor:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete doctor",
+      error: error.message,
     });
   }
 };

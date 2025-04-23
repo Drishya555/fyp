@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { User, Settings, Monitor, Bell } from "lucide-react";
+import { User, Settings, Monitor } from "lucide-react";
 import HospitalDashboard from "./components/HospitalDashboard.jsx";
 import HospitalAppointments from './components/HospitalAppointments.jsx'
 import DoctorsList from './components/DoctorsList.jsx'
-import PharmacistList from './components/PharmacistList.jsx'
 
 const menuItems = [
   { id: 1, name: "Dashboard", icon: <User size={20} />, component: <HospitalDashboard/> },
   { id: 2, name: "Appointments", icon: <Settings size={20} />, component: <HospitalAppointments/> },
   { id: 3, name: "Doctors", icon: <Monitor size={20} />, component: <DoctorsList/> },
-  { id: 4, name: "Pharmacists", icon: <Bell size={20} />, component: <PharmacistList/>  },
 ];
 
 export default function ResponsiveSidebar() {

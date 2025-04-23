@@ -167,7 +167,7 @@ export const getappapointmentbydoctor = async (req, res) => {
   
       // Find a single appointment for the given doctor ID
       const appointment = await appointmentModel
-        .findOne({ doctor: id })  // Use `findOne` instead of `find`
+        .findOne({ doctor: id }) 
         .populate('user', 'name email image')
         .populate('doctor', 'name email image specialization hospital')
         .sort({ createdAt: -1 }); // Still sorts, but returns only one

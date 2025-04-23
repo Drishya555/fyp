@@ -33,6 +33,7 @@ import OTPVerificationPage from './pages/OTPVerificationPage.jsx';
 import ForgotPasswordPage from './pages/Forgotpw.jsx';
 import ResetPasswordPage from './pages/Resetpw.jsx';
 import HospitalProfile from './pages/HospitalProfile.jsx';
+import PaymentSuccess from './pages/paymentSuccess.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -63,6 +64,7 @@ const App = () => {
       <Route path="/verify-otp" element={<OTPVerificationPage />} />
       <Route path="/forgotpw" element={<ForgotPasswordPage />} />
       <Route path="/resetpw/:token" element={<ResetPasswordPage />} />
+      <Route path='/payment-success' element={<PaymentSuccess/>}></Route>
 
       {/*hospital view */}
       {userrole === 'hospital' && (
