@@ -34,6 +34,7 @@ import ForgotPasswordPage from './pages/Forgotpw.jsx';
 import ResetPasswordPage from './pages/Resetpw.jsx';
 import HospitalProfile from './pages/HospitalProfile.jsx';
 import PaymentSuccess from './pages/paymentSuccess.jsx';
+import NotFound from '../404.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -94,7 +95,15 @@ const App = () => {
 
 
       {/* Pharmacist View */}
-      <Route path='/pharmacist-dashboard' element={<Pharmacists/>}></Route>
+      {userrole === 'pharmacist' && (
+      <>
+        <Route path='/pharmacist-dashboard' element={<Pharmacists/>}></Route>
+      </>
+      )}
+
+
+<Route path='*' element={<NotFound/>}></Route>
+
 
 
       </Routes>

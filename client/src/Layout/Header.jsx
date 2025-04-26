@@ -211,6 +211,17 @@ export default function Header() {
           </a>)}
 
 
+          {userRole === 'admin' && (
+           <a href="/admin" className="text-lg/6 font-regular text-gray-900">
+            <motion.span
+              whileHover={{ scale: 1.05 }} // Text hover animation
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              Dashboard
+            </motion.span>
+          </a>)}
+
+
           {userRole === 'hospital' && (
            <a href="/hospital-dashboard" className="text-lg/6 font-regular text-gray-900">
             <motion.span
@@ -269,6 +280,9 @@ export default function Header() {
 
                     </motion.span>
                   </a>)}
+
+
+                  
         </div> 
         <div className="hidden lg:flex lg:flex-1 ml-5">
           <a href="/login" className="text-lg/6 font-regular text-gray-900">

@@ -162,33 +162,121 @@ export const deleteappointmentcontroller = async(req,res) =>{
 
 
 export const getappapointmentbydoctor = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      // Find a single appointment for the given doctor ID
-      const appointment = await appointmentModel
-        .findOne({ doctor: id }) 
-        .populate('user', 'name email image')
-        .populate('doctor', 'name email image specialization hospital')
-        .sort({ createdAt: -1 }); // Still sorts, but returns only one
-  
-      if (!appointment) {
-        return res.status(404).send({
-          success: false,
-          message: "No appointment found for this doctor",
-        });
-      }
-  
-      res.status(200).send({
-        success: true,
-        message: "Single appointment fetched successfully",
-        appointment, // Return the single appointment
-      });
-    } catch (error) {
-      res.status(500).send({
+  try {
+    const { id } = req.params;
+
+    // Find all appointments for the given doctor ID
+    const appointments = await appointmentModel
+      .find({ doctor: id }) 
+      .populate('user', 'name email image')
+      .populate('doctor', 'name email image specialization hospital')
+      .sort({ createdAt: -1 }); 
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).send({
         success: false,
-        message: "Error occurred while fetching appointment",
-        error: error.message,
+        message: "No appointments found for this doctor",
       });
     }
+
+    res.status(200).send({
+      success: true,
+      message: "Appointments fetched successfully",
+      count: appointments.length, // Add count of appointments
+      appointments, // Return the array of appointments
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error occurred while fetching appointments",
+      error: error.message,
+    });
+  }
   };
+
+
+
+
+  export const updateAppointmentStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Validate the status value
+        const validStatuses = ["Pending", "Approved", "Cancelled", "Completed"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).send({
+                success: false,
+                message: "Invalid status value. Must be one of: Pending, Approved, Cancelled, Completed"
+            });
+        }
+
+        const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true } // Return the updated document
+        ).populate('user', 'name email')
+         .populate('doctor', 'name email');
+
+        if (!updatedAppointment) {
+            return res.status(404).send({
+                success: false,
+                message: "Appointment not found"
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Appointment status updated successfully",
+            appointment: updatedAppointment
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: "Error occurred while updating appointment status",
+            error: error.message
+        });
+    }
+};
+
+
+
+export const getappointmentbyHospital = async (req, res) => {
+  try {
+    const { id } = req.params; // This is the hospital ID
+
+    // Find all appointments where the doctor's hospital matches the given ID
+    const appointments = await appointmentModel
+      .find()
+      .populate({
+        path: 'doctor',
+        match: { hospital: id }, 
+        select: 'name email image specialization hospital'
+      })
+      .populate('user', 'name email image')
+      .sort({ createdAt: -1 });
+
+    const filteredAppointments = appointments.filter(appt => appt.doctor !== null);
+
+    if (!filteredAppointments || filteredAppointments.length === 0) {
+      return res.status(404).send({
+        success: false,
+        message: "No appointments found for this hospital",
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Appointments fetched successfully by hospital",
+      count: filteredAppointments.length,
+      appointments: filteredAppointments,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error occurred while fetching appointments by hospital",
+      error: error.message,
+    });
+  }
+};

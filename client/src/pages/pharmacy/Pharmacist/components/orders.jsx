@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { host } from "../../../../host.js";
-import { FiEdit, FiTrash2, FiSearch, FiFilter, FiChevronDown, FiChevronUp, FiPackage, FiDollarSign, FiCalendar, FiUser, FiShoppingBag } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiSearch, FiFilter, FiChevronDown, FiChevronUp, FiPackage, FiCalendar, FiUser, FiShoppingBag } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const OrderManagement = () => {
@@ -207,8 +207,7 @@ const OrderManagement = () => {
 
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <FiDollarSign className="text-green-600" />
-                      <span className="font-medium">₹{order.totalAmount.toLocaleString()}</span>
+                      <span className="font-medium">Rs.{order.totalAmount.toLocaleString()}/-</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm">Payment:</span>
