@@ -19,7 +19,7 @@ import logo from '../assets/mediaid.png'
 import { motion, AnimatePresence } from 'framer-motion' // Import Framer Motion
 import AuthStore from '../hooks/authStore.js'
 
-import { CalendarIcon, DocumentTextIcon, ShoppingCartIcon , StarIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
+import {DocumentTextIcon, ShoppingCartIcon , StarIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
 
 
 const callsToAction = [
@@ -56,12 +56,6 @@ export default function Header() {
   const userId = user?.userid;
 
   const products = [
-    { 
-      name: 'Appointment Booking', 
-      description: 'Schedule and manage your appointments with ease', 
-      href: '/appointment-dashboard', 
-      icon: CalendarIcon // Correct icon for Heroicons v2
-    },
     { 
       name: 'Medical Record', 
       description: 'Access and manage your medical records securely', 

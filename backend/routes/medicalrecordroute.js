@@ -8,6 +8,6 @@ import {
 const router = express.Router();
 router.post('/', createOrUpdateMedicalRecord);
 router.put('/patient-vitals', updatePatientVitals); 
-router.get('/:patientId/:doctorId', getMedicalRecord);
+router.get('/:patientId', getMedicalRecord);
 
 export default router;

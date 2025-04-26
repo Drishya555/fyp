@@ -64,15 +64,13 @@ export const createOrUpdateMedicalRecord = async (req, res) => {
   }
 };
 
-
-// Additional controller to get medical records by patient and doctor
+// Controller to get medical records by patient only
 export const getMedicalRecord = async (req, res) => {
   try {
-    const { patientId, doctorId } = req.params;
+    const { patientId } = req.params;
 
     const medicalRecord = await MedicalRecord.findOne({
-      patient: patientId,
-      doctor: doctorId
+      patient: patientId
     }).populate('patient doctor');
 
     if (!medicalRecord) {
@@ -84,7 +82,7 @@ export const getMedicalRecord = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: medicalRecord
+      medicalRecord
     });
 
   } catch (error) {
@@ -96,6 +94,7 @@ export const getMedicalRecord = async (req, res) => {
     });
   }
 };
+
 
 
 
