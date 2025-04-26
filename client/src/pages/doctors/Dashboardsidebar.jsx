@@ -5,13 +5,14 @@ import DocAppointments from "./components/docAppointments";
 import ImgDetection from "./components/imageDetection";
 import AddMedicalData from "./components/AddMedicalRecord";
 import AddPrescription from "./components/AddPrescription";
-
+import AddSchedule from "./AddSchedule.jsx";
 const menuItems = [
   { id: 1, name: "Dashboard", icon: <LayoutDashboard size={20} />, component: <DocPage /> },
   { id: 2, name: "Appointments", icon: <CalendarClock size={20} />, component: <DocAppointments /> },
   { id: 3, name: "Add Medical Record", icon: <FilePlus size={20} />, component: <AddMedicalData /> },
   { id: 4, name: "Ai Disease Detection", icon: <BrainCircuit size={20} />, component: <ImgDetection /> },
   { id: 5, name: "Prescription", icon: <ClipboardList size={20} />, component: <AddPrescription /> },
+  { id: 6, name: "Change Schedule", icon: <ClipboardList size={20} />, component: <AddSchedule /> },
 ];
 
 
