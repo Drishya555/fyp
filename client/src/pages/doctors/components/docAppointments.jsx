@@ -45,7 +45,7 @@ export default function Bookings() {
       if (response.data.success) {
         const formattedBookings = response.data.appointments.map((appointment) => {
           // Create a date object from the appointment date
-          const appointmentDate = new Date(appointment.date);
+          const appointmentDate = new Date(appointment.date.split('T')[0]); 
           
           return {
             id: appointment._id,
@@ -54,7 +54,7 @@ export default function Bookings() {
             month: appointmentDate.toLocaleDateString("en-US", { month: "short" }),
             year: appointmentDate.getFullYear(),
             fullDate: appointmentDate,
-            time: new Date(appointment.time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+            time: appointment.time, 
             title: `Appointment with Patient: ${appointment?.user?.name} purpose: ${appointment?.purpose}`,
             avatars: [`${appointment?.user?.image}`,`${appointment?.doctor?.image}`],
             location: "Doctor's Office",
@@ -84,7 +84,7 @@ export default function Bookings() {
       let comparison = 0;
       
       if (sortField === "date") {
-        comparison = a.fullDate - b.fullDate;
+        comparison = new Date(a.fullDate) - new Date(b.fullDate);
       } else if (sortField === "status") {
         comparison = a.status.localeCompare(b.status);
       } else if (sortField === "title") {

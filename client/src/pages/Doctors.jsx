@@ -8,6 +8,7 @@ import { FaRegUser, FaSearch } from "react-icons/fa";
 import axios from 'axios';
 import BookAppointmentTesting from "./BookAppointmentTesting.jsx";
 import { host } from '../host.js';
+import { useNavigate } from 'react-router-dom';
 
 // Import images
 import a from '../assets/gm.png';
@@ -32,6 +33,7 @@ const Doctors = () => {
     rating: ""
   });
   const [sortOption, setSortOption] = useState("recommended");
+  const navigate = useNavigate();
 
   const categories = [
     { name: "General", img: a },
@@ -41,6 +43,8 @@ const Doctors = () => {
     { name: "Neurologist", img: e },
     { name: "Psychiatrists", img: f },
   ];
+
+  
 
   const tabs = ["About", "Schedule", "Ratings"];
   const tabContent = {
@@ -354,11 +358,17 @@ const Doctors = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredDoctors.map((doctor, index) => (
                     <div
-                      key={index}
-                      className={`bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer
-                        ${selectedDoctor?._id === doctor._id ? "ring-2 ring-blue-500" : ""}`}
-                      onClick={() => setSelectedDoctor(doctor)}
-                    >
+                    key={index}
+                    className={`bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer
+                      ${selectedDoctor?._id === doctor._id ? "ring-2 ring-blue-500" : ""}`}
+                    onClick={() => {
+                      if (window.innerWidth < 1024) { // lg breakpoint
+                        navigate(`/doctordetails/${doctor._id}`);
+                      } else {
+                        setSelectedDoctor(doctor);
+                      }
+                    }}
+                  >
                       <div 
                         className="w-full h-48 bg-cover bg-center"
                         style={{ backgroundImage: `url('${doctor.image || "https://via.placeholder.com/300x200?text=Doctor"}')`}}

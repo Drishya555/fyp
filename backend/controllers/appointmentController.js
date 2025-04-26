@@ -1,32 +1,113 @@
 import appointmentModel from "../models/appointmentModel.js"
+import Doctor from '../models/doctorModel.js'
+import nodemailer from 'nodemailer';
+import User from '../models/userModel.js'
 
 
-export const createappointment = async(req,res) =>{
-    try {
-        const {user,doctor,date, purpose, time} = req.body;
+const transporter = nodemailer.createTransport({
+  service: 'gmail', 
+  auth: {
+    user: 'mediaidapp@gmail.com',
+    pass: 'ijro tsfg jxwh ujef',
+  },
+});
+const createAppointmentEmail = (recipientName, appointmentDetails, isDoctor) => {
+  const role = isDoctor ? 'a patient' : 'your doctor';
+  return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Appointment Confirmation</h2>
+      <p>Dear ${recipientName},</p>
+      <p>Your appointment with ${role} has been successfully booked:</p>
+      
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+        <p><strong>Date:</strong> ${new Date(appointmentDetails.date).toDateString()}</p>
+        <p><strong>Time:</strong> ${appointmentDetails.time}</p>
+        <p><strong>Purpose:</strong> ${appointmentDetails.purpose || 'Not specified'}</p>
+        ${isDoctor ? `<p><strong>Patient:</strong> ${appointmentDetails.patientName}</p>` : ''}
+      </div>
+      
+      <p style="margin-top: 30px;">Best regards,<br>Healthcare Team</p>
+    </div>
+  `;
+};
 
-        const newappointment = new appointmentModel({
-            user,
-            doctor,
-            date,
-            purpose,
-            time
-        }).save();
+export const createappointment = async (req, res) => {
+  try {
+    const { user, doctor, date, purpose, time } = req.body;
 
-        res.status(201).send({
-            success: true,
-            message: "Appointment created successfully",
-            appointment: newappointment
-        })
+    // 1. Create the appointment
+    const newappointment = await new appointmentModel({
+      user,
+      doctor,
+      date,
+      purpose,
+      time
+    }).save();
 
-    } catch (error) {
-        res.status(500).send({
-            success: false,
-            message: "Error occured while creating appointment",
-            error: error.message
-        })
+    // 2. Fetch doctor and patient details
+    const [doctorData, patientData] = await Promise.all([
+      Doctor.findById(doctor).select('email name'),
+      User.findById(user).select('email name')
+    ]);
+
+    if (!doctorData || !patientData) {
+      return res.status(404).send({
+        success: false,
+        message: "Doctor or patient not found",
+      });
     }
-}
+
+    // 3. Prepare appointment details for emails
+    const appointmentDetails = {
+      date,
+      time,
+      purpose,
+      patientName: patientData.name,
+      doctorName: doctorData.name
+    };
+
+    // 4. Send emails to both parties
+    const sendEmailPromises = [
+      transporter.sendMail({
+        from: process.env.EMAIL_USERNAME,
+        to: doctorData.email,
+        subject: `New Appointment - ${patientData.name}`,
+        html: createAppointmentEmail(doctorData.name, appointmentDetails, true)
+      }),
+      transporter.sendMail({
+        from: process.env.EMAIL_USERNAME,
+        to: patientData.email,
+        subject: `Appointment Confirmation - Dr. ${doctorData.name}`,
+        html: createAppointmentEmail(patientData.name, appointmentDetails, false)
+      })
+    ];
+
+    // Execute email sending in parallel (but don't await to not block response)
+    Promise.all(sendEmailPromises)
+      .then(results => {
+        console.log('Emails sent successfully:', results.map(r => r.response));
+      })
+      .catch(error => {
+        console.error('Error sending emails:', error);
+        // Consider logging this to an error tracking service
+      });
+
+    // 5. Respond to client
+    res.status(201).send({
+      success: true,
+      message: "Appointment created successfully",
+      appointment: newappointment
+    });
+
+  } catch (error) {
+    console.error('Error in createappointment:', error);
+    res.status(500).send({
+      success: false,
+      message: "Error occurred while creating appointment",
+      error: error.message
+    });
+  }
+};
 
 
 
