@@ -450,11 +450,84 @@ export const editUserController = async (req, res) => {
   }
 };
 
+export const changePasswordController = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, userId } = req.body;
+
+    // Find user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Verify current password
+    const isMatch = await comparePassword(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error changing password",
+      error: error.message,
+    });
+  }
+};
 
 
 
+export const deleteAccountController = async (req, res) => {
+  try {
+    const { userId } = req.body;
 
+    // Verify the requesting user is the same as the user being deleted
+    if (req.user._id.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this account",
+      });
+    }
 
+    // Find and delete user
+    const deletedUser = await userModel.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error deleting account",
+      error: error.message,
+    });
+  }
+};
 
 
 

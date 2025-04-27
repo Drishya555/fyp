@@ -1,5 +1,5 @@
 import { useState, useEffect} from "react";
-import { Clock, MapPin, MoreVertical,BadgeCheck   , Filter, SortAsc, SortDesc } from "lucide-react";
+import { Clock, MapPin, MoreVertical   , Filter, SortAsc, SortDesc } from "lucide-react";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import axios from 'axios';
@@ -134,11 +134,7 @@ export default function Bookings() {
     setOpen(true);
   };
 
-  const handleStatusClick = (id, currentStatus) => {
-    setSelectedBookingId(id);
-    setNewStatus(currentStatus);
-    setStatusDialogOpen(true);
-  };
+  
 
   const handleStatusChange = async () => {
     try {
@@ -433,12 +429,7 @@ export default function Bookings() {
                   
                   {menuOpen === `${groupIndex}-${index}` && (
                     <div className="lg:hidden mt-3 bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-                      <button 
-                        className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                        onClick={() => handleStatusClick(booking.id, booking.status)}
-                      >
-                        <BadgeCheck  className="w-4 h-4 mr-2" /> Update Status
-                      </button>
+                      
                       <button className="w-full flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
                         <Clock className="w-4 h-4 mr-2" /> Reschedule
                       </button>

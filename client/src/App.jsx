@@ -34,6 +34,16 @@ import ResetPasswordPage from './pages/Resetpw.jsx';
 import HospitalProfile from './pages/HospitalProfile.jsx';
 import PaymentSuccess from './pages/paymentSuccess.jsx';
 import NotFound from '../404.jsx';
+import DocAppointments from './pages/doctors/components/personalDashboard.jsx';
+import ImageDetection from './pages/doctors/components/imageDetection.jsx';
+import AddMedicalRecord from './pages/doctors/components/AddMedicalRecord.jsx';
+import AddPrescription from './pages/doctors/components/AddPrescription.jsx';
+import ChangeSchedule from './pages/doctors/AddSchedule.jsx';
+import HospitalAppointments from './pages/hospitals/components/HospitalAppointments.jsx';
+import DoctorsList from './pages/hospitals/components/DoctorsList.jsx';
+import Prescriptions from './pages/pharmacy/Pharmacist/components/prescriptions.jsx';
+import Orders from './pages/pharmacy/Pharmacist/components/orders.jsx';
+import Products from './pages/pharmacy/Pharmacist/components/products.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -71,6 +81,9 @@ const App = () => {
       <Route path='/adddoctor' element={<AddDoctor/>}></Route>
       <Route path='/addpharmacist' element={<AddPharmacist/>}></Route>
       <Route path='/hospital-dashboard' element={<HospitalDashboard/>}></Route>
+      <Route path='/hospital-appointments' element={<HospitalAppointments/>}></Route>
+      <Route path='/doctors-list' element={<DoctorsList/>}></Route>
+
       </>
       )}
 
@@ -82,6 +95,11 @@ const App = () => {
     <Route path='/table' element={<Table />} />
     <Route path='/changeschedule' element={<AddSchedule />} />
     <Route path='/bb' element={<BookAppointmentTesting />} />
+    <Route path='/docAppointments' element={<DocAppointments />} />
+    <Route path='/imageDetection' element={<ImageDetection />} />
+    <Route path='/addMedicalRecord' element={<AddMedicalRecord />} />
+    <Route path='/addPrescription' element={<AddPrescription />} />
+    <Route path='/addSchedule' element={<ChangeSchedule />} />
   </>
 )}
 
@@ -96,6 +114,10 @@ const App = () => {
       {userrole === 'pharmacist' && (
       <>
         <Route path='/pharmacist-dashboard' element={<Pharmacists/>}></Route>
+        <Route path='/prescriptions' element={<Prescriptions/>}></Route>
+        <Route path='/pharmacist-orders' element={<Orders/>}></Route>
+        <Route path='/pharmacist-products' element={<Products/>}></Route>
+
       </>
       )}
 

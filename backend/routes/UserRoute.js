@@ -1,7 +1,7 @@
 import express from 'express';
-import { loginController, registerController, updateImage, getall, getSelectedUser, editUserController, verifyOtpController, resendOtpController, forgotPasswordController, resetPasswordController, verifyResetTokenController } from '../controllers/userController.js';
+import { loginController, registerController, updateImage, getall, getSelectedUser, editUserController, verifyOtpController, resendOtpController, forgotPasswordController, resetPasswordController, verifyResetTokenController, changePasswordController, deleteAccountController } from '../controllers/userController.js';
 import formidable from "express-formidable";
-import authenticateToken from '../middlewares/authmiddleware.js'; 
+import authenticateToken from '../middlewares/authMiddleware.js'; 
 
 const router = express.Router();
 
@@ -18,5 +18,7 @@ router.post('/resend-otp', resendOtpController);
 router.post('/forgot-password', forgotPasswordController);
 router.post('/reset-password', resetPasswordController);
 router.post('/verify-reset-token', verifyResetTokenController);
+router.post("/changepassword", authenticateToken, changePasswordController);
+router.delete("/deleteaccount",authenticateToken,deleteAccountController);
 
 export default router;

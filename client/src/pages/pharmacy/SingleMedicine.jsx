@@ -68,26 +68,35 @@ const SingleMedicine = () => {
 
   const addtocart = async (productid) => {
     try {
-      const userid = AuthStore.getUser()?.userid || null;
+      const user = AuthStore.getUser();
+      const userid = user?.userid || null;
+      
+      // Check if user is logged in
       if (!userid) {
         toast.warning("Please log in to add items to your cart");
         return;
       }
+  
+      // Check if user has the correct role (not a doctor)
+      if (user?.role != 'user') {
+        toast.warning("Only users can add items to cart");
+        return;
+      }
+  
       const token = AuthStore.getToken();
-
+  
       const response = await fetch(`${host}/api/cart/addtocart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : '',  
-
         },
         body: JSON.stringify({
           user: userid,
           products: [{ product: productid, quantity }],
         }),
       });
-
+  
       const data = await response.json();
       if (data.success) {
         setAddedToCart(true);

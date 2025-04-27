@@ -13,22 +13,20 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 import {
   Bars3Icon,
   XMarkIcon,
+  ShoppingBagIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import logo from '../assets/mediaid.png'
-import { motion, AnimatePresence } from 'framer-motion' // Import Framer Motion
+import { motion, AnimatePresence } from 'framer-motion'
 import AuthStore from '../hooks/authStore.js'
 
-import {DocumentTextIcon, ShoppingCartIcon , StarIcon } from '@heroicons/react/24/outline'; // Correct import for Heroicons v2
+import {DocumentTextIcon, ShoppingCartIcon, StarIcon } from '@heroicons/react/24/outline';
 
-
-const callsToAction = [
-  
-]
+const callsToAction = []
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isServicesHovered, setIsServicesHovered] = useState(false);
+  const [isServicesHovered, setIsServicesHovered] = useState(false)
   const [user, setUser] = useState(AuthStore.getUser());
 
   // Listen for manual login/logout events and update UI
@@ -60,26 +58,90 @@ export default function Header() {
       name: 'Medical Record', 
       description: 'Access and manage your medical records securely', 
       href: `/medical-record/${userId}`, 
-      icon: DocumentTextIcon // Correct icon for Heroicons v2
+      icon: DocumentTextIcon
     },
     { 
       name: 'Pharmacy', 
       description: 'Order and manage your prescriptions online', 
       href: '/pharmacy', 
-      icon: ShoppingCartIcon // Correct icon for Heroicons v2
+      icon: ShoppingCartIcon
     },
     { 
       name: 'Reviews', 
       description: 'Add reviews for hospitals and doctors', 
       href: '/reviews', 
-      icon: StarIcon // Correct icon for Heroicons v2
+      icon: StarIcon
+    }
+  ];
+
+  // Doctor dashboard options for mobile view only
+  const doctorDashboardOptions = [
+    {
+      name: 'Dashboard',
+      href: '/doctor-dashboard'
+    },
+    {
+      name: 'Appointments',
+      href: '/docAppointments'
+    },
+    {
+      name: 'Add Medical Record',
+      href: '/addMedicalRecord'
+    },
+    {
+      name: 'AI Disease Detection',
+      href: '/imageDetection'
+    },
+    {
+      name: 'Prescription',
+      href: '/addPrescription'
+    },
+    {
+      name: 'Change Schedule',
+      href: '/addSchedule'
+    }
+  ];
+
+  //hospital dashboard options for phone ciew
+  const hospitalDashboardOptions = [
+    {
+      name: 'Dashboard',
+      href: '/hospital-dashboard'
+    },
+    {
+      name: 'Appointments',
+      href: '/hospital-appointments'
+    },
+    {
+      name: 'Doctors',
+      href: '/doctors-list'
     }
   ];
 
 
+  const pharmacistDashboardItems = [
+    {
+      name: 'Dashboard',
+      href: '/pharmacist-dashboard'
+    },
+    {
+      name: 'Products',
+      href: '/pharmacist-products'
+    },
+    {
+      name: 'Orders',
+      href: '/pharmacist-orders'
+    },
+    {
+      name: 'Prescriptions',
+      href: '/prescriptions'
+    }
+  ];
+
+  
 
   const userRole = user?.role;
-
+  const username = user?.name;
 
   return (
     <header className="bg-white z-50">
@@ -91,7 +153,7 @@ export default function Header() {
               alt=""
               src={logo}
               className="h-9 w-auto"
-              whileHover={{ scale: 1.05 }} // Logo hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             />
           </a>
@@ -107,63 +169,63 @@ export default function Header() {
           </button>
         </div>
         <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-        <div
-    className="relative"
-    onMouseEnter={() => setIsServicesHovered(true)} // Open on hover
-    onMouseLeave={() => setIsServicesHovered(false)} // Close on hover out
-  >
-    <button
-      className="flex items-center gap-x-1 text-lg/6 font-regular text-gray-900"
-    >
-      <motion.span
-        whileHover={{ scale: 1.05 }} // Text hover animation
-        transition={{ type: 'spring', stiffness: 300 }}
-      >
-        Services
-      </motion.span>
-      <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
-    </button>
-
-    <AnimatePresence>
-      {isServicesHovered && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-          className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-900/5"
-          onMouseEnter={() => setIsServicesHovered(true)} // Keep open when hovering over the panel
-          onMouseLeave={() => setIsServicesHovered(false)} // Close when hovering out of the panel
-        >
-          <div className="p-4">
-            {products.map((item) => (
-              <motion.div
-                key={item.name}
-                className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
-                whileHover={{ scale: 1.02 }} // Item hover animation
+          <div
+            className="relative"
+            onMouseEnter={() => setIsServicesHovered(true)}
+            onMouseLeave={() => setIsServicesHovered(false)}
+          >
+            <button
+              className="flex items-center gap-x-1 text-lg/6 font-regular text-gray-900"
+            >
+              <motion.span
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
-                <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                  <item.icon aria-hidden="true" className="size-6 text-gray-600 group-hover:text-indigo-600" />
-                </div>
-                <div className="flex-auto">
-                  <a href={item.href} className="block font-semibold text-gray-900">
-                    {item.name}
-                    <span className="absolute inset-0" />
-                  </a>
-                  <p className="mt-1 text-gray-600">{item.description}</p>
-                </div>
-              </motion.div>
-            ))}
+                Services
+              </motion.span>
+              <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
+            </button>
+
+            <AnimatePresence>
+              {isServicesHovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-900/5"
+                  onMouseEnter={() => setIsServicesHovered(true)}
+                  onMouseLeave={() => setIsServicesHovered(false)}
+                >
+                  <div className="p-4">
+                    {products.map((item) => (
+                      <motion.div
+                        key={item.name}
+                        className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                      >
+                        <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                          <item.icon aria-hidden="true" className="size-6 text-gray-600 group-hover:text-indigo-600" />
+                        </div>
+                        <div className="flex-auto">
+                          <a href={item.href} className="block font-semibold text-gray-900">
+                            {item.name}
+                            <span className="absolute inset-0" />
+                          </a>
+                          <p className="mt-1 text-gray-600">{item.description}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </div>
 
           <a href="/hospitals" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Hospitals
@@ -171,7 +233,7 @@ export default function Header() {
           </a>
           <a href="/doctors" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Doctors
@@ -179,7 +241,7 @@ export default function Header() {
           </a>
           <a href="/pharmacy" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Pharmacy
@@ -187,114 +249,116 @@ export default function Header() {
           </a>
           <a href="/company" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Company
             </motion.span>
           </a>
 
+          {/* For desktop view - Doctor gets a simple link, not a dropdown */}
           {userRole === 'doctor' && (
            <a href="/doctor-dashboard" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Dashboard
             </motion.span>
           </a>)}
-
 
           {userRole === 'admin' && (
            <a href="/admin" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Dashboard
             </motion.span>
           </a>)}
-
 
           {userRole === 'hospital' && (
            <a href="/hospital-dashboard" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Dashboard
             </motion.span>
           </a>)}
-
 
           {userRole === 'pharmacist' && (
            <a href="/pharmacist-dashboard" className="text-lg/6 font-regular text-gray-900">
             <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+              whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
               Dashboard
             </motion.span>
           </a>)}
-         
         </PopoverGroup>
-        <div className='lg:flex lg:flex-1 lg:justify-end'>
-        {userRole === 'doctor' && (
-                  <a href="/doctorprofile" className="text-lg/6 font-regular text-gray-900">
-                    <motion.span
-                      whileHover={{ scale: 1.05 }} // Text hover animation
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-        <HiOutlineUserCircle size={25}/>
 
-                    </motion.span>
-                  </a>)}
-
-
-                  {userRole === 'user' && (
-                  <a href="/profile" className="text-lg/6 font-regular text-gray-900">
-                    <motion.span
-                      whileHover={{ scale: 1.05 }} // Text hover animation
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-        <HiOutlineUserCircle size={25}/>
-
-                    </motion.span>
-                  </a>)}
-
-
-
-                  {userRole === 'hospital' && (
-                  <a href="/hospitalprofile" className="text-lg/6 font-regular text-gray-900">
-                    <motion.span
-                      whileHover={{ scale: 1.05 }} // Text hover animation
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-        <HiOutlineUserCircle size={25}/>
-
-                    </motion.span>
-                  </a>)}
-
-
-                  
-        </div> 
-        <div className="hidden lg:flex lg:flex-1 ml-5">
-          <a href="/login" className="text-lg/6 font-regular text-gray-900">
-            <motion.span
-              whileHover={{ scale: 1.05 }} // Text hover animation
+        {/* Updated icons section with better spacing and no cart counter */}
+        <div className="hidden lg:flex items-center ml-8 gap-8">
+          {/* Cart Icon without counter */}
+          <a href="/cart" className="relative flex items-center justify-center group">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
               transition={{ type: 'spring', stiffness: 300 }}
+              className="text-gray-700 group-hover:text-[#5770ff]"
             >
-              {user?(
-              <button className='w-full p-3 hover:text-[#5770ff] transition-[0.3s]' onClick={handleLogout}>Log out <span aria-hidden="true">&rarr;</span></button>
-              ):(
-                <button className='w-full p-3 hover:text-[#5770ff] transition-[0.3s]'>Log In <span aria-hidden="true">&rarr;</span></button>
-              )}
-            </motion.span>
+              <ShoppingBagIcon className="h-6 w-6" />
+            </motion.div>
+          </a>
+
+          {/* Profile Icon */}
+          {user && (
+            <div className="relative group">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                className="text-gray-700 group-hover:text-[#5770ff]"
+              >
+                {userRole === 'doctor' && (
+                  <a href="/doctorprofile" className="flex items-center">
+                    <HiOutlineUserCircle className="h-6 w-6" />
+                  </a>
+                )}
+
+                {userRole === 'user' && (
+                  <a href="/profile" className="flex items-center">
+                    <HiOutlineUserCircle className="h-6 w-6" />
+                  </a>
+                )}
+
+                {userRole === 'hospital' && (
+                  <a href="/hospitalprofile" className="flex items-center">
+                    <HiOutlineUserCircle className="h-6 w-6" />
+                  </a>
+                )}
+
+                {userRole === 'pharmacist' && (
+                  <a href="/pharmacist-profile" className="flex items-center">
+                    <HiOutlineUserCircle className="h-6 w-6" />
+                  </a>
+                )}
+              </motion.div>
+            </div>
+          )}
+
+          {/* Login/Logout Button with additional margin */}
+          <a href="/login" className="ml-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+              onClick={user ? handleLogout : undefined}
+              className="flex items-center py-2 px-4 rounded-md hover:text-[#5770ff] font-medium transition-colors"
+            >
+              {user ? 'Log out' : 'Log In'} <span aria-hidden="true" className="ml-1">&rarr;</span>
+            </motion.button>
           </a>
         </div>
 
-        
-        
       </nav>
 
       {/* Mobile Menu with Framer Motion */}
@@ -316,7 +380,7 @@ export default function Header() {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }} // Adjusted for subtle bounce
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10"
             >
               <div className="flex items-center justify-between">
@@ -339,6 +403,19 @@ export default function Header() {
               </div>
               <div className="mt-6 flow-root">
                 <div className="-my-6 divide-y divide-gray-500/10">
+                  {/* User profile info in mobile menu */}
+                  {user && (
+                    <div className="py-6">
+                      <div className="flex items-center gap-3 px-3 mb-4">
+                        <HiOutlineUserCircle className="h-8 w-8 text-gray-600" />
+                        <div>
+                          <p className="font-semibold text-gray-900">Welcome</p>
+                          <p className="text-sm text-gray-600">{username}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="space-y-2 py-6">
                     <Disclosure as="div" className="-mx-3">
                       <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
@@ -382,13 +459,106 @@ export default function Header() {
                     >
                       Company
                     </a>
+                    
+                    {/* Doctor dashboard dropdown for mobile view only */}
+                    {userRole === 'doctor' && (
+                      <Disclosure as="div" className="-mx-3">
+                        <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                          Dashboard
+                          <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-[open]:rotate-180" />
+                        </DisclosureButton>
+                        <DisclosurePanel className="mt-2 space-y-2">
+                          {doctorDashboardOptions.map((item) => (
+                            <DisclosureButton
+                              key={item.name}
+                              as="a"
+                              href={item.href}
+                              className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                            >
+                              {item.name}
+                            </DisclosureButton>
+                          ))}
+                        </DisclosurePanel>
+                      </Disclosure>
+                    )}
+                    
+
+
+                    {userRole === 'hospital' && (
+                      <Disclosure as="div" className="-mx-3">
+                        <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                          Dashboard
+                          <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-[open]:rotate-180" />
+                        </DisclosureButton>
+                        <DisclosurePanel className="mt-2 space-y-2">
+                          {hospitalDashboardOptions.map((item) => (
+                            <DisclosureButton
+                              key={item.name}
+                              as="a"
+                              href={item.href}
+                              className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                            >
+                              {item.name}
+                            </DisclosureButton>
+                          ))}
+                        </DisclosurePanel>
+                      </Disclosure>
+                    )}
+
+
+                      {userRole === 'pharmacist' && (
+                      <Disclosure as="div" className="-mx-3">
+                        <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                          Dashboard
+                          <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-[open]:rotate-180" />
+                        </DisclosureButton>
+                        <DisclosurePanel className="mt-2 space-y-2">
+                          {pharmacistDashboardItems.map((item) => (
+                            <DisclosureButton
+                              key={item.name}
+                              as="a"
+                              href={item.href}
+                              className="block rounded-lg py-2 pl-6 pr-3 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
+                            >
+                              {item.name}
+                            </DisclosureButton>
+                          ))}
+                        </DisclosurePanel>
+                      </Disclosure>
+                    )}
+
+                    {/* Added cart link to mobile menu without counter */}
+                    <a
+                      href="/cart"
+                      className="-mx-3 flex items-center justify-between rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                    >
+                      <span>Cart</span>
+                      <ShoppingBagIcon className="h-5 w-5" />
+                    </a>
+                    
+                    {/* Other role dashboards remain as single links */}
+                    {userRole === 'admin' && (
+                      <a
+                        href="/admin"
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                      >
+                        Dashboard
+                      </a>
+                    )}
+                    
+                    
+                    
+                   
                   </div>
+                  
+                  {/* Login/Logout button in mobile */}
                   <div className="py-6">
                     <a
                       href="/login"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                      onClick={user ? handleLogout : undefined}
                     >
-                      Log in
+                      {user ? 'Log out' : 'Log in'}
                     </a>
                   </div>
                 </div>
