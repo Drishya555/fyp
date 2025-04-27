@@ -42,7 +42,8 @@ const UpdateMedicalData = () => {
 
   const [editingAllergyIndex, setEditingAllergyIndex] = useState(null);
   const [allergies, setAllergies] = useState([]);
-  
+  const token = Authstore.getToken();
+
   useEffect(() => {
     const fetchMedicalRecord = async () => {
       try {
@@ -51,7 +52,13 @@ const UpdateMedicalData = () => {
         const doctorId = Authstore.getUser()?.userid;
 
         // Get medical record for the current user
-        const recordResponse = await axios.get(`${host}/api/medical-records/${patientId}/${doctorId}`);
+        const recordResponse = await axios.get(`${host}/api/medical-records/${patientId}/${doctorId}`,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',  
+            },
+          }
+        );
         
         if (recordResponse.data) {
           setMedicalRecord(recordResponse.data);
@@ -119,6 +126,10 @@ const UpdateMedicalData = () => {
         patientId,
         doctorId,
         vitals: vitalsData
+      },{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
       });
 
       setSavedMessage('Vitals data updated successfully');
@@ -171,6 +182,10 @@ const UpdateMedicalData = () => {
         patientId,
         doctorId,
         allergies: allergiesToSave
+      },{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
       });
 
       setSavedMessage('Allergies updated successfully');
@@ -230,6 +245,10 @@ const UpdateMedicalData = () => {
         doctorId,
         vitals: vitalsData,
         allergies: allergies
+      },{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
       });
 
       setSavedMessage('Medical data updated successfully');

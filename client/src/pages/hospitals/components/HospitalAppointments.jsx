@@ -10,6 +10,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 export default function Bookings() {
   const userid = Authstore.getUser()?.userid || null;
+      const token = Authstore.getToken();
 
   const [menuOpen, setMenuOpen] = useState(null);
   const [open, setOpen] = useState(false);
@@ -39,7 +40,9 @@ export default function Bookings() {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        `${host}/api/appointment/getappointmentbyhospital/${userid}`
+        `${host}/api/appointment/getappointmentbyhospital/${userid}`,{headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },}
       );
 
       if (response.data.success) {
@@ -139,7 +142,9 @@ export default function Bookings() {
     try {
       const response = await axios.put(`${host}/api/appointment/updateappointment/${selectedBookingId}`, {
         status: newStatus
-      });
+      },{headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
       
       if (response.data.success) {
         // Update the booking status in the local state
@@ -166,7 +171,9 @@ export default function Bookings() {
 
   const handleDeleteAppointment = async() => {
     try {
-      const response = await axios.delete(`${host}/api/appointment/deleteappointment/${selectedBookingId}`);
+      const response = await axios.delete(`${host}/api/appointment/deleteappointment/${selectedBookingId}`,{headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
       if (response.data.success) {
         setBookings((prevBookings) => prevBookings.filter((booking) => booking.id !== selectedBookingId));
       } else {

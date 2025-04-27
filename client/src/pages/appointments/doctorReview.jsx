@@ -41,7 +41,12 @@ const AppointmentsAndReview = () => {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${host}/api/appointment/getappointmentbyuser/${userId}`);
+      const token = Authstore.getToken();  // Retrieve the token from AuthStore
+      const response = await axios.get(`${host}/api/appointment/getappointmentbyuser/${userId}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setAppointments(response.data.appointments);
       setLoading(false);
     } catch (err) {
@@ -74,11 +79,20 @@ const AppointmentsAndReview = () => {
     }
 
     try {
-      const response = await axios.post(`${host}/api/doctors/addreview/${selectedDoctor._id}`, {
-        userId,
-        review,
-        rating,
-      });
+      const token = Authstore.getToken(); 
+      const response = await axios.post(
+        `${host}/api/doctors/addreview/${selectedDoctor._id}`,
+        {
+          userId,
+          review,
+          rating,
+        },
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        }
+      );
 
       if (response.data.success) {
         setSubmitSuccess(true);

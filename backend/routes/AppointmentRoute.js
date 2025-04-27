@@ -1,17 +1,27 @@
 import express from 'express';
-import { createappointment, deleteappointmentcontroller, getallappointment,getappointmentbyHospital,getsingleappointmentbydoctor,getsingleappointment,getappointmentbyuser, getappapointmentbydoctor, updateAppointmentStatus} from '../controllers/appointmentController.js';
+import { 
+  createappointment, 
+  deleteappointmentcontroller, 
+  getallappointment,
+  getappointmentbyHospital,
+  getsingleappointmentbydoctor,
+  getsingleappointment,
+  getappointmentbyuser,
+  getappapointmentbydoctor, 
+  updateAppointmentStatus
+} from '../controllers/appointmentController.js';
+import authenticateToken from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/createappointment', createappointment)
-router.get('/viewallappointments',getallappointment )
-router.get('/viewsingleappointment/:id',getsingleappointment)
-router.get('/getappointmentbydoctor/:id',getsingleappointmentbydoctor)
-router.get('/getallappointmentsbydoctor/:id',getappapointmentbydoctor)
-router.get('/getappointmentbyuser/:id',getappointmentbyuser)
-router.get('/getappointmentbyhospital/:id',getappointmentbyHospital)
-router.put('/updateappointment/:id')
-router.delete('/deleteappointment/:id',deleteappointmentcontroller)
-router.put("/updateappointment/:id", updateAppointmentStatus);
+router.post('/createappointment', authenticateToken, createappointment);
+router.get('/viewallappointments', authenticateToken, getallappointment);
+router.get('/viewsingleappointment/:id', authenticateToken, getsingleappointment);
+router.get('/getappointmentbydoctor/:id', authenticateToken, getsingleappointmentbydoctor);
+router.get('/getallappointmentsbydoctor/:id', authenticateToken, getappapointmentbydoctor);
+router.get('/getappointmentbyuser/:id', authenticateToken, getappointmentbyuser);
+router.get('/getappointmentbyhospital/:id', authenticateToken, getappointmentbyHospital);
+router.put('/updateappointment/:id', authenticateToken, updateAppointmentStatus);
+router.delete('/deleteappointment/:id', authenticateToken, deleteappointmentcontroller);
 
 export default router;

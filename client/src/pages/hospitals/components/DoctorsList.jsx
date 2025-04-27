@@ -12,13 +12,18 @@ const DoctorListComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const hospitalId = Authstore.getUser()?.userid; 
+  const token = Authstore.getToken();
 
   // Fetch doctors by hospital ID
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${host}/api/doctors/getdoctorsbyhospital/${hospitalId}`);
+        const response = await axios.get(`${host}/api/doctors/getdoctorsbyhospital/${hospitalId}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         if (response.data.success) {
           setDoctors(response.data.doctor);
         } else {
@@ -43,7 +48,11 @@ const DoctorListComponent = () => {
   // Confirm deletion
   const confirmDelete = async () => {
     try {
-      const response = await axios.delete(`${host}/api/doctors/${currentDoctor._id}`);
+      const response = await axios.delete(`${host}/api/doctors/${currentDoctor._id}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       if (response.data.success) {
         // Remove doctor from state
         setDoctors(doctors.filter(doc => doc._id !== currentDoctor._id));
@@ -325,7 +334,11 @@ const DoctorListComponent = () => {
                   // Refetch doctors data
                   const fetchDoctors = async () => {
                     try {
-                      const response = await axios.get(`${host}/api/doctors/getdoctorsbyhospital/${hospitalId}`);
+                      const response = await axios.get(`${host}/api/doctors/getdoctorsbyhospital/${hospitalId}`,{
+                        headers: {
+                          Authorization: token ? `Bearer ${token}` : '',  
+                        },
+                      });
                       if (response.data.success) {
                         setDoctors(response.data.doctor);
                       }

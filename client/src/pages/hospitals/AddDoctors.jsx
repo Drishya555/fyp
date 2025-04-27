@@ -18,6 +18,7 @@ const DoctorRegister = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const token = Authstore.getToken();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,12 +65,14 @@ const DoctorRegister = () => {
 
       const response = await axios.post(`${host}/api/doctors/registerdoctor`, formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          Authorization: token ? `Bearer ${token}` : '',  
+
         }
       });
 
       if (response.data.success) {
-        navigate('/doctor/login', { state: { registrationSuccess: true } });
+        navigate('/hospital-dashboard', { state: { registrationSuccess: true } });
       }
     } catch (err) {
       setLoading(false);
@@ -268,7 +271,7 @@ const DoctorRegister = () => {
 
             <div className="mt-6">
               <button
-                onClick={() => navigate('/doctor/login')}
+                onClick={() => navigate('/login')}
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Sign in

@@ -3,6 +3,7 @@ import axios from "axios";
 import { host } from "../../../../host.js";
 import { FiEdit, FiTrash2, FiSearch, FiFilter, FiChevronDown, FiChevronUp, FiPackage, FiCalendar, FiUser, FiShoppingBag } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import Authstore from '../../../../hooks/authStore.js';
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -15,6 +16,8 @@ const OrderManagement = () => {
     paymentStatus: "",
     deliveryStatus: ""
   });
+        const token = Authstore.getToken();
+
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
   useEffect(() => {
@@ -24,7 +27,11 @@ const OrderManagement = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${host}/api/orders`);
+      const response = await axios.get(`${host}/api/orders`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setOrders(response.data.orders);
       setLoading(false);
     } catch (error) {
@@ -35,7 +42,11 @@ const OrderManagement = () => {
 
   const handleDelete = async (orderId) => {
     try {
-      await axios.delete(`${host}/api/orders/${orderId}`);
+      await axios.delete(`${host}/api/orders/${orderId}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setDeleteConfirmation(null);
       fetchOrders();
     } catch (error) {
@@ -45,7 +56,9 @@ const OrderManagement = () => {
 
   const handleStatusUpdate = async (orderId) => {
     try {
-      await axios.put(`${host}/api/orders/${orderId}`, statusUpdate);
+      await axios.put(`${host}/api/orders/${orderId}`, statusUpdate ,{ headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
       setEditingOrder(null);
       fetchOrders();
     } catch (error) {

@@ -10,6 +10,7 @@ const Schedule = () => {
   const [selectedEndTime, setSelectedEndTime] = useState(null);
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0); // 0 = current week, 1 = next week, etc.
   const userId = Authstore.getUser()?.userid || null;
+  const token = Authstore.getToken();
 
   // Get the current week days based on the week offset
   const getWeekDays = (weekOffset) => {
@@ -17,7 +18,7 @@ const Schedule = () => {
     const shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const today = new Date();
     const currentDay = today.getDay(); // 0 = Sunday, 6 = Saturday
-    
+
     // Calculate the date of the Sunday that starts this week
     const sundayDate = new Date(today);
     sundayDate.setDate(today.getDate() - currentDay + (weekOffset * 7));
@@ -104,7 +105,11 @@ const Schedule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${host}/api/doctors/getselecteddoc/${userId}`);
+        const response = await axios.get(`${host}/api/doctors/getselecteddoc/${userId}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         setSchedule(response.data.doctor.freeslots || []);
       } catch (error) {
         console.error("Error fetching schedule:", error);
@@ -200,7 +205,9 @@ const Schedule = () => {
 
     try {
       const updatedSlots = [...schedule, newSlot];
-      await axios.put(`${host}/api/doctors/updatedocdetails/${userId}`, { freeslots: updatedSlots });
+      await axios.put(`${host}/api/doctors/updatedocdetails/${userId}`, { freeslots: updatedSlots },{ headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
       setSchedule(updatedSlots);
       setSelectedStartTime(null);
       setSelectedEndTime(null);
@@ -223,7 +230,9 @@ const Schedule = () => {
         !(s.day === slot.day && s.time === slot.time)
       );
       
-      await axios.put(`${host}/api/doctors/updatedocdetails/${userId}`, { freeslots: updatedSlots });
+      await axios.put(`${host}/api/doctors/updatedocdetails/${userId}`, { freeslots: updatedSlots }, { headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
       setSchedule(updatedSlots);
       alert("Slot removed successfully!");
     } catch (error) {

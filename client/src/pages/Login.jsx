@@ -34,6 +34,7 @@ const Login = () => {
           email: data.user.email,
           address: data.user.address || "",  
           role: data.user.role, 
+          token: data.token,
         });
         window.dispatchEvent(new Event('authChange'));        
         console.log("Stored User:", AuthStore.getUser()); // Debugging line

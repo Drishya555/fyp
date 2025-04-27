@@ -16,6 +16,7 @@ export default function Bookings() {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState("");
+  const token = Authstore.getToken();
 
   // Filter and sort states
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -39,7 +40,11 @@ export default function Bookings() {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
-        `${host}/api/appointment/getallappointmentsbydoctor/${userid}`
+        `${host}/api/appointment/getallappointmentsbydoctor/${userid}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        }
       );
 
       if (response.data.success) {
@@ -139,6 +144,10 @@ export default function Bookings() {
     try {
       const response = await axios.put(`${host}/api/appointment/updateappointment/${selectedBookingId}`, {
         status: newStatus
+      },{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
       });
       
       if (response.data.success) {
@@ -166,7 +175,11 @@ export default function Bookings() {
 
   const handleDeleteAppointment = async() => {
     try {
-      const response = await axios.delete(`${host}/api/appointment/deleteappointment/${selectedBookingId}`);
+      const response = await axios.delete(`${host}/api/appointment/deleteappointment/${selectedBookingId}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       if (response.data.success) {
         setBookings((prevBookings) => prevBookings.filter((booking) => booking.id !== selectedBookingId));
       } else {

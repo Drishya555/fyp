@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {host} from '../host.js'
 import { useNavigate } from 'react-router-dom';
+import AuthStore from '../hooks/authStore.js';
 // Extended sample hospital data with more details
 // const hospitalsData = [
 //   {
@@ -33,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 //   // ... other hospitals
 // ];
 
+const token = AuthStore.getToken();
 
 const HospitalDetails = () => {
   const { id } = useParams();
@@ -42,7 +44,11 @@ const HospitalDetails = () => {
   const [hospitalData, setHospitalData] = useState(null);
   useEffect(() => {
     const fetchHospitalData = async () => {
-      const res = await axios.get(`${host}/api/hospital/getsinglehospital/${id}`);
+      const res = await axios.get(`${host}/api/hospital/getsinglehospital/${id}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setHospitalData(res.data.hospital);
     }
 

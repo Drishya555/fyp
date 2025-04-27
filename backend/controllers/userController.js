@@ -21,11 +21,20 @@ export const registerController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check if user already exists (including unverified ones)
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
+      // If user exists but isn't verified, you might want to resend OTP
+      if (!existingUser.verified) {
+        return res.status(409).send({
+          success: false,
+          message: "Email already registered but not verified. Resending OTP...",
+          userId: existingUser._id, // Return existing user ID for OTP verification
+        });
+      }
       return res.status(409).send({
         success: false,
-        message: "Email is already taken",
+        message: "Email is already taken and verified",
       });
     }
 
@@ -33,14 +42,15 @@ export const registerController = async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 minutes
 
-    const user = await new userModel({
+    // Create but don't save yet
+    const user = new userModel({
       name,
       email,
       password: hashedPassword,
       otp,
       otpExpires,
       verified: false
-    }).save();
+    });
 
     // Send OTP email
     const mailOptions = {
@@ -62,11 +72,15 @@ export const registerController = async (req, res) => {
       `,
     };
 
+    // Try to send email first
     await transporter.sendMail(mailOptions);
+    
+    // Only save user if email was sent successfully
+    await user.save();
 
     res.status(201).send({
       success: true,
-      message: "Registration successful. Please check your email for OTP.",
+      message: "OTP sent to email. Please verify to complete registration.",
       userId: user._id,
     });
   } catch (error) {
@@ -74,7 +88,7 @@ export const registerController = async (req, res) => {
     res.status(500).send({
       success: false,
       message: "Error in registration",
-      error,
+      error: error.message,
     });
   }
 };
@@ -112,6 +126,7 @@ export const verifyOtpController = async (req, res) => {
       });
     }
 
+    // Mark as verified and clear OTP fields
     user.verified = true;
     user.otp = undefined;
     user.otpExpires = undefined;
@@ -119,17 +134,23 @@ export const verifyOtpController = async (req, res) => {
 
     res.status(200).send({
       success: true,
-      message: "Email verified successfully",
+      message: "Email verified successfully. Registration complete.",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
       message: "Error verifying OTP",
-      error,
+      error: error.message,
     });
   }
 };
+
 
 export const resendOtpController = async (req, res) => {
   try {
@@ -247,6 +268,7 @@ export const loginController = async (req, res) => {
         address: account.address || "",
         role: account.role || (user ? "user" : "doctor"), // Set role based on account type
         ...(doctor && { licenseNo: doctor.licenseNo, image: doctor.image }), // Include doctor-specific fields
+        token: token
       },
       token,
     };

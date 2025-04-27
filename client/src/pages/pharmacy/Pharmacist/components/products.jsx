@@ -3,7 +3,7 @@ import axios from 'axios';
 import { host } from '../../../../host.js';
 import { FiEdit, FiTrash2, FiPlus, FiX, FiUpload, FiImage } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-
+import AuthStore from '../../../../hooks/authStore.js';
 const MedicineManagement = () => {
   const [medicines, setMedicines] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -11,6 +11,8 @@ const MedicineManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentMedicine, setCurrentMedicine] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const token = AuthStore.getToken();
+  
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -34,7 +36,11 @@ const MedicineManagement = () => {
   const fetchMedicines = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${host}/api/pharmacy/getallmedicines`);
+      const response = await axios.get(`${host}/api/pharmacy/getallmedicines`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setMedicines(response.data.medicines);
     } catch (error) {
       console.error('Error fetching medicines:', error);
@@ -46,7 +52,11 @@ const MedicineManagement = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${host}/api/pharmacy/getallcategories`);
+      const response = await axios.get(`${host}/api/pharmacy/getallcategories`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -84,13 +94,14 @@ const MedicineManagement = () => {
           `${host}/api/pharmacy/editmedicinecontroller/${currentMedicine._id}`,
           data,
           {
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: { 'Content-Type': 'multipart/form-data',             Authorization: token ? `Bearer ${token}` : '',  
+            },
           }
         );
         toast.success('Medicine updated successfully');
       } else {
         await axios.post(`${host}/api/pharmacy/addmedicine`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 'Content-Type': 'multipart/form-data', Authorization: token ? `Bearer ${token}` : '' },
         });
         toast.success('Medicine added successfully');
       }
@@ -156,7 +167,11 @@ const MedicineManagement = () => {
     if (window.confirm('Are you sure you want to delete this medicine?')) {
       try {
         setIsLoading(true);
-        await axios.delete(`${host}/api/pharmacy/deletemedicine/${id}`);
+        await axios.delete(`${host}/api/pharmacy/deletemedicine/${id}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         toast.success('Medicine deleted successfully');
         fetchMedicines();
       } catch (error) {

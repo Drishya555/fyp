@@ -31,11 +31,16 @@ export default function UserProfile() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedBgImage, setSelectedBgImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const token = Authstore.getToken();
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios.get(`${host}/api/auth/getselecteduser/${userid}`);
+        const response = await axios.get(`${host}/api/auth/getselecteduser/${userid}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         const apiUser = response.data.user;
         
         // Map API response to your user state
@@ -116,6 +121,7 @@ export default function UserProfile() {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: token ? `Bearer ${token}` : '',  
           }
         }
       );
@@ -184,6 +190,8 @@ export default function UserProfile() {
         {
           headers: {
             'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',  
+
           }
         }
       );

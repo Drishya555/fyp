@@ -73,11 +73,14 @@ const SingleMedicine = () => {
         toast.warning("Please log in to add items to your cart");
         return;
       }
+      const token = AuthStore.getToken();
 
       const response = await fetch(`${host}/api/cart/addtocart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : '',  
+
         },
         body: JSON.stringify({
           user: userid,

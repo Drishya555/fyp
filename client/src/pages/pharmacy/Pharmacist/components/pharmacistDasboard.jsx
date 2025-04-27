@@ -12,12 +12,14 @@ import {
   FiCalendar, FiArrowUp, FiArrowDown, FiRefreshCw
 } from "react-icons/fi";
 import { motion } from "framer-motion";
+import AuthStore from "../../../../hooks/authStore.js";
 
 const PharmacistDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState("week"); // week, month, year
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+      const token = AuthStore.getToken();
 
   useEffect(() => {
     fetchOrders();
@@ -26,7 +28,11 @@ const PharmacistDashboard = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${host}/api/orders`);
+      const response = await axios.get(`${host}/api/orders`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setOrders(response.data.orders);
       setLoading(false);
     } catch (error) {

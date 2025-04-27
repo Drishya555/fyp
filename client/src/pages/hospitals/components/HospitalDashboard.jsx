@@ -21,6 +21,8 @@ const COLORS = {
   lightBg: '#F9FAFB',
   darkBg: '#1F2937'
 };
+      const token = AuthStore.getToken();
+
 
 export default function HospitalDashboard() {
   const [appointmentsData, setAppointmentsData] = useState([]);
@@ -37,7 +39,11 @@ export default function HospitalDashboard() {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${host}/api/appointment/getappointmentbyhospital/${hospitalId}`);
+        const response = await fetch(`${host}/api/appointment/getappointmentbyhospital/${hospitalId}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         const data = await response.json();
         
         if (data.success) {
@@ -54,7 +60,11 @@ export default function HospitalDashboard() {
 
 
     const fetchhospitaldata = async () => {
-      const response = await axios.get(`${host}/api/hospital/getsinglehospital/${hospitalId}`);
+      const response = await axios.get(`${host}/api/hospital/getsinglehospital/${hospitalId}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setHospitalData(response.data.hospital)
     }
 

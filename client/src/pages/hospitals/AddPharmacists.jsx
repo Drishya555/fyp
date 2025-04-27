@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { host } from '../../host.js';
+import AuthStore from '../../hooks/authStore.js';
 
 const PharmacistRegister = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const PharmacistRegister = () => {
     licenseNo: '',
     image: null
   });
+      const token = AuthStore.getToken();
 
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,8 +63,11 @@ const PharmacistRegister = () => {
 
       const response = await axios.post(`${host}/api/pharmacy/addpharmacist/`, formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          Authorization: token ? `Bearer ${token}` : '',  
+
         }
+        
       });
 
       if (response.data.success) {

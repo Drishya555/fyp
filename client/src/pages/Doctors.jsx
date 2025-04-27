@@ -18,6 +18,7 @@ import c from '../assets/bone.png';
 import d from '../assets/tooth.png';
 import e from '../assets/neuro.png';
 import f from '../assets/brain.png';
+import AuthStore from "../hooks/authStore.js";
 
 const Doctors = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -33,6 +34,7 @@ const Doctors = () => {
     maxPrice: "",
     rating: ""
   });
+  const token = AuthStore.getToken();
   const location = useLocation();
   const [sortOption, setSortOption] = useState("recommended");
   const navigate = useNavigate();
@@ -90,7 +92,12 @@ const Doctors = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${host}/api/doctors/getalldoctors`);
+        const response = await axios.get(`${host}/api/doctors/getalldoctors`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        }
+        );
         setDoctors(response.data.doctors);
       } catch (err) {
         setError(err.message);

@@ -18,6 +18,7 @@ export default function DocAppointments() {
 
   // Get the doctor ID from auth store with null check
   const doctorId = Authstore.getUser()?.userid || null;
+      const token = Authstore.getToken();
 
   // Calendar display functions
   const monthStart = startOfMonth(currentDate);
@@ -40,7 +41,11 @@ export default function DocAppointments() {
           return;
         }
 
-        const response = await axios.get(`${host}/api/appointment/getallappointmentsbydoctor/${doctorId}`);
+        const response = await axios.get(`${host}/api/appointment/getallappointmentsbydoctor/${doctorId}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         
         // Check if response exists and has data
         if (response?.data?.success) {

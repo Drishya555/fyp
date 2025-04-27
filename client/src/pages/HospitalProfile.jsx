@@ -35,12 +35,17 @@ const HospitalProfile = () => {
     price: '',
     phone: '',
   });
+  const token = Authstore.getToken();
 
   useEffect(() => {
     const fetchHospitalData = async () => {
       try {
         const hospitalId = Authstore.getUser()?.userid || null;
-        const { data } = await axios.get(`${host}/api/hospital/getsinglehospital/${hospitalId}`);
+        const { data } = await axios.get(`${host}/api/hospital/getsinglehospital/${hospitalId}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         
         if (data.success) {
           setHospital(data.hospital);
@@ -112,7 +117,8 @@ const HospitalProfile = () => {
         formDataObj, 
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            Authorization: token ? `Bearer ${token}` : '',  
           }
         }
       );

@@ -21,11 +21,16 @@ const AddMedicalData = () => {
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [issaving, setIsSaving] = useState(false);
-  
+  const token = Authstore.getToken();  
+
   useEffect(() => {
     const getdocbyid = async () => {
       const docid = Authstore.getUser()?.userid;
-      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`)
+      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      })
       setDoctor(response.data.doctor)
     }
     getdocbyid()
@@ -41,7 +46,11 @@ const AddMedicalData = () => {
   useEffect(() => {
     const getpatientsbydocid = async () => {
       const docid = Authstore.getUser()?.userid;
-      const response = await axios.get(`${host}/api/appointment/getappointmentbydoctor/${docid}`)
+      const response = await axios.get(`${host}/api/appointment/getappointmentbydoctor/${docid}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      })
       setPatients(response.data.appointments)
       
       if (response.data.appointments.length > 0) {
@@ -107,6 +116,10 @@ const AddMedicalData = () => {
         patientId: selectedPatient.id,
         doctorId: doctor._id,
         vitals: vitalsData
+      },{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
       });
 
       setSavedMessage(`Vitals saved for ${selectedPatient.name}`);
@@ -145,7 +158,9 @@ const AddMedicalData = () => {
         patientId: selectedPatient.id,
         doctorId: doctor._id,
         timelineEvent: eventData
-      });
+      },{headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },});
   
       setSavedMessage(`Timeline event added for ${selectedPatient.name}`);
       setTimeout(() => setSavedMessage(null), 3000);

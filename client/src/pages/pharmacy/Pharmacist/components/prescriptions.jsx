@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, Clock, User, Pill, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import {host} from '../../../../host';
+import AuthStore from '../../../../hooks/authStore.js';
 const PrescriptionPharmacist = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,12 +9,17 @@ const PrescriptionPharmacist = () => {
   const [expandedPrescriptions, setExpandedPrescriptions] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+      const token = AuthStore.getToken();
 
   useEffect(() => {
     const fetchPrescriptions = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${host}/api/prescriptions`);
+        const response = await fetch(`${host}/api/prescriptions`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         const result = await response.json();
         
         if (result.success) {

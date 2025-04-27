@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 
 const DoctorProfile = () => {
+  const token = AuthStore.getToken();
   const [doctor, setDoctor] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
@@ -51,11 +52,17 @@ const DoctorProfile = () => {
     const fetchDoctorData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${host}/api/doctors/getselecteddoc/${id}`);
+        const response = await axios.get(`${host}/api/doctors/getselecteddoc/${id}`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         setDoctor(response.data.doctor);
         
         // Get reviews
-        const reviewResponse = await axios.get(`${host}/api/doctors/getthreereviews/${id}`);
+        const reviewResponse = await axios.get(`${host}/api/doctors/getthreereviews/${id}`,{  headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },});
         if (reviewResponse.data.success) {
           setReviews(reviewResponse.data.reviews);
           if (reviewResponse.data.reviews.length > 0) {
@@ -67,7 +74,11 @@ const DoctorProfile = () => {
         }
         
         // Get users for review avatars
-        const usersResponse = await axios.get(`${host}/api/auth/getall`);
+        const usersResponse = await axios.get(`${host}/api/auth/getall`,{
+          headers: {
+            Authorization: token ? `Bearer ${token}` : '',  
+          },
+        });
         setUsers(usersResponse.data.user);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -146,13 +157,23 @@ const DoctorProfile = () => {
         date: appointmentDate,
         purpose,
         time: selectedSlot.time,
-      });
+      },
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },
+    });
 
       // Update slot status
       await axios.put(`${host}/api/doctors/updatedocdetails/${id}`, {
         slotId: selectedSlot.slotId,
         status: "booked",
-      });
+      },
+    {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },
+    });
 
       // Update UI
       setSlots(slots.map(slot => 

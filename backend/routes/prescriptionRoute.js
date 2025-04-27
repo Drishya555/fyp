@@ -1,4 +1,5 @@
 import express from 'express';
+import authenticateToken from '../middlewares/authMiddleware.js';
 import {
   createPrescription,
   getAllPrescriptions,
@@ -10,6 +11,8 @@ import {
 } from '../controllers/prescriptionController.js';
 
 const router = express.Router();
+
+router.use(authenticateToken);
 
 router.post('/', createPrescription);
 router.get('/', getAllPrescriptions);

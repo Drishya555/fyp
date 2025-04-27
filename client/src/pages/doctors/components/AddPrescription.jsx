@@ -25,7 +25,8 @@ const AddPrescription = () => {
   const [doctor, setDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
- 
+  const token = Authstore.getToken();  
+
   // Form state
   const [prescriptionForm, setPrescriptionForm] = useState({
     user: '',
@@ -47,7 +48,11 @@ const AddPrescription = () => {
   useEffect(() => {
     const getdocbyid = async () => {
       const docid = Authstore.getUser()?.userid;
-      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`);
+      const response = await axios.get(`${host}/api/doctors/getselecteddoc/${docid}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setDoctor(response.data.doctor);
     }
 
@@ -59,7 +64,11 @@ const AddPrescription = () => {
   useEffect(() => {
     const getpatientsbydocid = async () => {
       const docid = Authstore.getUser()?.userid;
-      const response = await axios.get(`${host}/api/appointment/getappointmentbydoctor/${docid}`);
+      const response = await axios.get(`${host}/api/appointment/getappointmentbydoctor/${docid}`,{
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',  
+        },
+      });
       setPatients(response.data.appointments);
      
       // Set the first patient as selected by default if available
@@ -172,7 +181,9 @@ const AddPrescription = () => {
       const response = await axios.post(`${host}/api/prescriptions`, prescriptionData, {
         headers: {
           'Content-Type': 'application/json',
-        }
+          Authorization: token ? `Bearer ${token}` : '',  
+
+        },
       });
 
 

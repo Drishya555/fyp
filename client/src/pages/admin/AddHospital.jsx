@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import {host} from '../../host.js';
+import AuthStore from '../../hooks/authStore.js';
 
 const HospitalRegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -64,13 +65,14 @@ const HospitalRegistrationForm = () => {
           formDataToSend.append(key, formData[key]);
         }
       }
-  
+      const token = AuthStore.getToken();  
       const response = await axios.post(
         `${host}/api/hospital/registerhospital`, 
         formDataToSend, 
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            Authorization: token ? `Bearer ${token}` : '', 
           }
         }
       );
