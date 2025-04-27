@@ -33,6 +33,7 @@ const HospitalProfile = () => {
     bio: '',
     hospitaltype: '',
     price: '',
+    phone: '',
   });
 
   useEffect(() => {
@@ -52,6 +53,8 @@ const HospitalProfile = () => {
             bio: data.hospital.bio || '',
             hospitaltype: data.hospital.hospitaltype || '',
             price: data.hospital.price || '',
+            phone: data.hospital.phone || '',
+
           });
           setImagePreview(data.hospital.image || '');
         }
@@ -341,6 +344,14 @@ const HospitalProfile = () => {
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
+
+                    <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
                 </div>
               </div>
               
@@ -452,6 +463,15 @@ const HospitalProfile = () => {
                   Consultation Fee
                 </h3>
                 <p className="text-gray-900 font-medium">${hospital?.price || '0'}</p>
+              </div>
+
+
+              <div>
+                <h3 className="flex items-center text-sm font-medium text-gray-500 mb-1">
+                  <DollarSign size={14} className="mr-2" />
+                  Phone number
+                </h3>
+                <p className="text-gray-900 font-medium">${hospital?.phone || '0'}</p>
               </div>
               
               <div>

@@ -64,6 +64,9 @@ const hospitalSchema = new mongoose.Schema(
     resetTokenExpires: {
       type: Date,
     },
+    phone:{
+      type: String,
+    }
   },
   { timestamps: true }
 );

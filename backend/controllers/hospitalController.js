@@ -5,7 +5,7 @@ import crypto from 'crypto'
 
 export const registerHospital = async(req,res) => {
     try {
-        const {email, password, name, address, licenseNo, bio, rating, hospitaltype, price} = req.fields;
+        const {email, password, name, address, licenseNo, bio, rating, hospitaltype, price, phone} = req.fields;
         const {image} = req.files;
 
         const existingHospital = await hospitalModel.findOne({ email });
@@ -40,7 +40,7 @@ export const registerHospital = async(req,res) => {
         }
 
         const newHospital = new hospitalModel({
-            name, address, licenseNo, bio, rating, hospitaltype, image: imageurl, price,email, password: hashedPassword,resetToken
+            name, address, licenseNo, bio, rating, hospitaltype, image: imageurl, price,email, password: hashedPassword,resetToken, phone
         }).save();
 
         res.status(200).send({

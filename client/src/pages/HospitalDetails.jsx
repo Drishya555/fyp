@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {host} from '../host.js'
+import { useNavigate } from 'react-router-dom';
 // Extended sample hospital data with more details
 // const hospitalsData = [
 //   {
@@ -35,6 +36,7 @@ import {host} from '../host.js'
 
 const HospitalDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   // const hospital = hospitalsData.find(h => h.id === parseInt(id));
 
   const [hospitalData, setHospitalData] = useState(null);
@@ -133,67 +135,30 @@ const HospitalDetails = () => {
                   </div> */}
                 </div>
 
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Our Doctors</h3>
-                  {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {hospital.doctors.map((doctor, index) => (
-                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-medium text-gray-900">{doctor.name}</h4>
-                        <p className="text-sm text-gray-600">{doctor.specialty}</p>
-                        <p className="text-xs text-gray-500 mt-1">{doctor.experience} experience</p>
-                      </div>
-                    ))}
-                  </div> */}
-                </div>
+                
               </div>
 
               {/* Sidebar */}
               <div className="md:w-80 md:ml-8 mt-6 md:mt-0">
                 <div className="bg-gray-50 p-6 rounded-lg sticky top-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">More Information</h3>
                   
-                  {/* <div className="space-y-4">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Address</h4>
-                      <p className="text-gray-700">{hospitalData?.address}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Phone</h4>
-                      <p className="text-gray-700">{hospital.contact.phone}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Email</h4>
-                      <p className="text-gray-700">{hospital.contact.email}</p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Opening Hours</h4>
-                      <ul className="text-gray-700 space-y-1">
-                        <li className="flex justify-between">
-                          <span>Weekdays:</span>
-                          <span>{hospital.openingHours.weekdays}</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span>Weekends:</span>
-                          <span>{hospital.openingHours.weekends}</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span>Emergency:</span>
-                          <span>{hospital.openingHours.emergency}</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div> */}
+                
 
                   <div className="mt-6 space-y-3">
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-200">
-                      Book Appointment
+                  <button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-200"
+                      onClick={() => navigate(`/doctors?hospitalId=${hospitalData._id}`)}
+                    >
+                      View Doctors
                     </button>
-                    <button className="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 px-4 rounded-lg transition duration-200">
+                    <button
+                      onClick={() => window.location.href = `tel:${hospitalData?.phone}`}
+                      className="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 px-4 rounded-lg transition duration-200"
+                    >
                       Contact Hospital
                     </button>
+
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-gray-200">

@@ -10,10 +10,10 @@ import nodemailer from 'nodemailer';
 
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email service
+  service: 'gmail', 
   auth: {
-    user: 'mediaidapp@gmail.com',
-    pass: 'ijro tsfg jxwh ujef',
+    user: 'reelstok55@gmail.com',
+    pass: 'aiar vojp uhdl dkog',
   },
 });
 

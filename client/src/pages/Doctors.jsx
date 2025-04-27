@@ -9,6 +9,7 @@ import axios from 'axios';
 import BookAppointmentTesting from "./BookAppointmentTesting.jsx";
 import { host } from '../host.js';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // Import images
 import a from '../assets/gm.png';
@@ -32,8 +33,12 @@ const Doctors = () => {
     maxPrice: "",
     rating: ""
   });
+  const location = useLocation();
   const [sortOption, setSortOption] = useState("recommended");
   const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const hospitalId = queryParams.get('hospitalId');
+
 
   const categories = [
     { name: "General", img: a },
@@ -46,17 +51,15 @@ const Doctors = () => {
 
   
 
-  const tabs = ["About", "Schedule", "Ratings"];
+  const tabs = ["About", "Book_Appointment", "Ratings"];
   const tabContent = {
     About: (
       <div>
         <p className="text-gray-600 mb-6">{selectedDoctor?.about || "No information available."}</p>
-        <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md">
-          Book Appointment
-        </button>
+        
       </div>
     ),
-    Schedule: (
+    Book_Appointment: (
       <div>
         <h1 className="text-lg font-medium mb-4">This Week&apos;s Schedule</h1>
         {selectedDoctor ? (
@@ -100,6 +103,11 @@ const Doctors = () => {
   const applyFiltersAndSort = (doctors) => {
     let filtered = [...doctors];
 
+    if (hospitalId) {
+      filtered = filtered.filter(doctor => 
+        doctor.hospital && doctor.hospital._id === hospitalId
+      );
+    }
     // Category filter
     if (selectedCategory) {
       filtered = filtered.filter(
