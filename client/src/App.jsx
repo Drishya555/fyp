@@ -44,7 +44,7 @@ import DoctorsList from './pages/hospitals/components/DoctorsList.jsx';
 import Prescriptions from './pages/pharmacy/Pharmacist/components/prescriptions.jsx';
 import Orders from './pages/pharmacy/Pharmacist/components/orders.jsx';
 import Products from './pages/pharmacy/Pharmacist/components/products.jsx';
-import ViewDocProfile from './pages/ViewDocProfile.jsx';
+import ViewDocProfile from './pages/viewDocProfile.jsx';
 import Emergency from './pages/Emergency.jsx';
 const App = () => {
 
