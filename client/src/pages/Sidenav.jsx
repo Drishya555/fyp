@@ -4,8 +4,7 @@ import Med from './medicalRecord.jsx'
 import { useParams } from "react-router-dom";
 import EditMedicalRecord from "./editMedicalRecord.jsx";
 import UserAppointments from './UserAppointments.jsx'
-
-
+import Prescription from './userPrescription.jsx'
 
 export default function ResponsiveSidebar() {
   const [active, setActive] = useState(1);
@@ -15,6 +14,7 @@ export default function ResponsiveSidebar() {
       { id: 1, name: "Profile", icon: <User size={20} />, component: <Med id={id}/>  },
       { id: 2, name: "Edit Medical Record", icon: <Settings size={20} />, component: <EditMedicalRecord id={id}/> },
       { id: 3, name: "Appointments", icon: <Monitor size={20} />, component: <UserAppointments/> },
+      { id: 4, name: "Prescriptions", icon: <Monitor size={20} />, component: <Prescription/> },
     ];
 
   return (

@@ -1,282 +1,338 @@
-import { 
-  BarChart, Bar, LineChart, Line, PieChart, Pie, 
-  AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, ResponsiveContainer 
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie, AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { 
-  Search, Users, Calendar, ShoppingCart, 
-  User
-} from 'lucide-react';
+import { Menu, ChevronRight, Users, UserCheck, ShoppingBag, Calendar } from 'lucide-react';
 
-const AdminDashboard = () => {
+// Mock data for charts
+const userSignupData = [
+  { name: 'March', count: 3 },
+  { name: 'April', count: 27 },
 
+];
 
+const appointmentData = [
+  { name: 'Week 1', completed: 65, cancelled: 12, pending: 23 },
+  { name: 'Week 2', completed: 75, cancelled: 8, pending: 17 },
+  { name: 'Week 3', completed: 85, cancelled: 10, pending: 20 },
+  { name: 'Week 4', completed: 70, cancelled: 15, pending: 25 },
+];
 
-  // Mock data for dashboard
-  const userData = [
-    { name: 'Jan', users: 40 },
-    { name: 'Feb', users: 55 },
-    { name: 'Mar', users: 72 },
-    { name: 'Apr', users: 89 },
-    { name: 'May', users: 102 },
-    { name: 'Jun', users: 125 },
-  ];
+const medicineData = [
+  { name: 'Pain Relief', value: 35 },
+  { name: 'Antibiotics', value: 25 },
+  { name: 'Vitamins', value: 20 },
+  { name: 'Digestive', value: 15 },
+  { name: 'Others', value: 5 },
+];
 
-  const usersByRole = [
-    { name: 'Regular Users', value: 250 },
-    { name: 'Doctors', value: 80 },
-    { name: 'Pharmacists', value: 35 },
-    { name: 'Hospital Admins', value: 15 },
-  ];
+const hospitalSpecializationData = [
+  { subject: 'Cardiology', A: 90, fullMark: 100 },
+  { subject: 'Neurology', A: 75, fullMark: 100 },
+  { subject: 'Oncology', A: 80, fullMark: 100 },
+  { subject: 'Pediatrics', A: 85, fullMark: 100 },
+  { subject: 'Orthopedics', A: 70, fullMark: 100 },
+  { subject: 'Gynecology', A: 65, fullMark: 100 },
+];
 
-  const appointmentData = [
-    { name: 'Mon', appointments: 12 },
-    { name: 'Tue', appointments: 19 },
-    { name: 'Wed', appointments: 15 },
-    { name: 'Thu', appointments: 22 },
-    { name: 'Fri', appointments: 28 },
-    { name: 'Sat', appointments: 10 },
-    { name: 'Sun', appointments: 5 },
-  ];
+const revenueData = [
+  { name: 'Jan', medicine: 4000, appointments: 2400 },
+  { name: 'Feb', medicine: 3000, appointments: 1398 },
+  { name: 'Mar', medicine: 2000, appointments: 9800 },
+  { name: 'Apr', medicine: 2780, appointments: 3908 },
+  { name: 'May', medicine: 1890, appointments: 4800 },
+  { name: 'Jun', medicine: 2390, appointments: 3800 },
+  { name: 'Jul', medicine: 3490, appointments: 4300 },
+];
 
-  const ordersData = [
-    { name: 'Week 1', orders: 25 },
-    { name: 'Week 2', orders: 38 },
-    { name: 'Week 3', orders: 42 },
-    { name: 'Week 4', orders: 30 },
-  ];
+const doctorRatingData = [
+  { name: '5 Stars', value: 45 },
+  { name: '4 Stars', value: 30 },
+  { name: '3 Stars', value: 15 },
+  { name: '2 Stars', value: 7 },
+  { name: '1 Star', value: 3 },
+];
 
-  const medicineStockData = [
-    { name: 'Antibiotics', stock: 120, sold: 45 },
-    { name: 'Pain Relief', stock: 85, sold: 62 },
-    { name: 'Vitamins', stock: 200, sold: 38 },
-    { name: 'Antidepressants', stock: 75, sold: 27 },
-    { name: 'Antacids', stock: 110, sold: 53 },
-  ];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
-  const revenueData = [
-    { name: 'Jan', revenue: 12400 },
-    { name: 'Feb', revenue: 14800 },
-    { name: 'Mar', revenue: 13900 },
-    { name: 'Apr', revenue: 17200 },
-    { name: 'May', revenue: 18900 },
-    { name: 'Jun', revenue: 21500 },
-  ];
+export default function AdminDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                A
+    <div className="flex h-screen bg-gray-50">
+      
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Navigation */}
+        <div className="bg-white shadow-sm z-10">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center">
+                <button onClick={toggleSidebar} className="md:hidden">
+                  <Menu className="h-6 w-6 text-gray-500" />
+                </button>
+                <div className="hidden md:block ml-4">
+                  <h1 className="text-2xl font-semibold text-gray-800">Admin Dashboard Overview</h1>
+                </div>
               </div>
-              <span className="font-medium">Admin</span>
+              
+            </div>
+          </div>
+        </div>
+
+        {/* Dashboard Content */}
+        <div className="flex-1 overflow-auto p-4 sm:p-6 bg-gray-50">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-blue-100 rounded-full p-3">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Total Users</p>
+                  <p className="text-2xl font-semibold text-gray-900">29</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center text-sm font-medium text-green-500">
+                <span>+12.5%</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-blue-100 rounded-full p-3">
+                  <UserCheck className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Doctors</p>
+                  <p className="text-2xl font-semibold text-gray-900">5</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center text-sm font-medium text-green-500">
+                <span>+5.2%</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-blue-100 rounded-full p-3">
+                  <Calendar className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Appointments</p>
+                  <p className="text-2xl font-semibold text-gray-900">27</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center text-sm font-medium text-green-500">
+                <span>+8.1%</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-blue-100 rounded-full p-3">
+                  <ShoppingBag className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Medicine Orders</p>
+                  <p className="text-2xl font-semibold text-gray-900">3</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center text-sm font-medium text-green-500">
+                <span>+15.3%</span>
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </div>
+            </div>
+          </div>
+
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* User Signup Chart */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">User Signups</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={userSignupData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#3b82f6"
+                      fill="#93c5fd"
+                      fillOpacity={0.5}
+                      name="New Users"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Revenue Chart */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Revenue Overview</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={revenueData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="medicine"
+                      stroke="#3b82f6"
+                      activeDot={{ r: 8 }}
+                      name="Medicine Sales"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="appointments"
+                      stroke="#10b981"
+                      name="Appointment Revenue"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Appointment Status */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Appointment Status</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={appointmentData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="completed" name="Completed" fill="#3b82f6" />
+                    <Bar dataKey="cancelled" name="Cancelled" fill="#ef4444" />
+                    <Bar dataKey="pending" name="Pending" fill="#f59e0b" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Medicine Categories */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Medicine Categories</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={medicineData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {medicineData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Hospital Specializations */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Hospital Specializations</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart outerRadius={110} data={hospitalSpecializationData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="subject" />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                    <Radar
+                      name="Availability"
+                      dataKey="A"
+                      stroke="#3b82f6"
+                      fill="#93c5fd"
+                      fillOpacity={0.6}
+                    />
+                    <Tooltip />
+                    <Legend />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Doctor Ratings */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Doctor Ratings Distribution</h2>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={doctorRatingData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {doctorRatingData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <StatsCard 
-          title="Users" 
-          count="380" 
-          icon={<Users size={24} />} 
-          change="+12% this month" 
-          color="bg-blue-500"
-        />
-        <StatsCard 
-          title="Doctors" 
-          count="80" 
-          icon={<User size={24} />} 
-          change="+5% this month" 
-          color="bg-green-500"
-        />
-        <StatsCard 
-          title="Appointments" 
-          count="152" 
-          icon={<Calendar size={24} />} 
-          change="+18% this week" 
-          color="bg-purple-500"
-        />
-        <StatsCard 
-          title="Orders" 
-          count="93" 
-          icon={<ShoppingCart size={24} />} 
-          change="+7% this week" 
-          color="bg-orange-500"
-        />
-      </div>
-
-      {/* Charts Section - First Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* User Growth Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">User Growth</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={userData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="users" stroke="#0088FE" strokeWidth={2} activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* User Roles Distribution */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">User Roles Distribution</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={usersByRole}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {usersByRole.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Charts Section - Second Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Weekly Appointments */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Weekly Appointments</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={appointmentData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="appointments" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Monthly Orders */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Monthly Orders</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={ordersData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="orders" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.3} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Charts Section - Third Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Medicine Stock vs. Sold */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Medicine Stock vs. Sold</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={medicineStockData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="stock" stackId="a" fill="#8884d8" />
-                <Bar dataKey="sold" stackId="a" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Revenue Chart */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-lg font-bold mb-4">Monthly Revenue</h2>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={revenueData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-              <Legend />
-              <Area type="monotone" dataKey="revenue" stroke="#ff7300" fill="#ff7300" fillOpacity={0.3} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
     </div>
   );
-};
-
-const StatsCard = ({ title, count, icon, change, color }) => {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-gray-500 text-sm">{title}</p>
-          <h3 className="text-3xl font-bold mt-1">{count}</h3>
-          <p className="text-xs text-green-500 mt-2">{change}</p>
-        </div>
-        <div className={`${color} p-3 rounded-lg`}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default AdminDashboard;
+}

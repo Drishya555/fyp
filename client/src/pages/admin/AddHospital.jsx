@@ -43,7 +43,6 @@ const HospitalRegistrationForm = () => {
     if (file) {
       setFormData(prev => ({ ...prev, image: file }));
       
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
@@ -56,7 +55,7 @@ const HospitalRegistrationForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    setSuccess(false); // Reset success state on new submission
+    setSuccess(false); 
   
     try {
       const formDataToSend = new FormData();
@@ -77,14 +76,14 @@ const HospitalRegistrationForm = () => {
         }
       );
   
-      // Store the response data in state if needed
       const registeredHospital = response.data.hospital;
       console.log('Registered hospital:', registeredHospital);
       
       setSuccess(true);
       
-      // Reset form
       setFormData({
+        email: '',
+        password: '',
         name: '',
         address: '',
         licenseNo: '',
@@ -93,8 +92,6 @@ const HospitalRegistrationForm = () => {
         hospitaltype: '',
         image: null,
         price: '',
-        email: '',
-        password: ''
       });
       setPreviewImage(null);
   

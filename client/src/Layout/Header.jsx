@@ -29,13 +29,11 @@ export default function Header() {
   const [isServicesHovered, setIsServicesHovered] = useState(false)
   const [user, setUser] = useState(AuthStore.getUser());
 
-  // Listen for manual login/logout events and update UI
   useEffect(() => {
     const handleAuthChange = () => {
       setUser(AuthStore.getUser());
     };
 
-    // Add a custom event to listen for auth change
     window.addEventListener('authChange', handleAuthChange);
 
     return () => {
@@ -47,7 +45,6 @@ export default function Header() {
     AuthStore.removeUser();
     setUser(null);
 
-    // Dispatch event to inform other components
     window.dispatchEvent(new Event('authChange'));
   };
 
@@ -74,7 +71,6 @@ export default function Header() {
     }
   ];
 
-  // Doctor dashboard options for mobile view only
   const doctorDashboardOptions = [
     {
       name: 'Dashboard',
@@ -102,7 +98,6 @@ export default function Header() {
     }
   ];
 
-  //hospital dashboard options for phone ciew
   const hospitalDashboardOptions = [
     {
       name: 'Dashboard',
@@ -256,7 +251,6 @@ export default function Header() {
             </motion.span>
           </a>
 
-          {/* For desktop view - Doctor gets a simple link, not a dropdown */}
           {userRole === 'doctor' && (
            <a href="/doctor-dashboard" className="text-lg/6 font-regular text-gray-900">
             <motion.span
@@ -298,9 +292,7 @@ export default function Header() {
           </a>)}
         </PopoverGroup>
 
-        {/* Updated icons section with better spacing and no cart counter */}
         <div className="hidden lg:flex items-center ml-8 gap-8">
-          {/* Cart Icon without counter */}
           <a href="/cart" className="relative flex items-center justify-center group">
             <motion.div
               whileHover={{ scale: 1.1 }}
@@ -311,7 +303,6 @@ export default function Header() {
             </motion.div>
           </a>
 
-          {/* Profile Icon */}
           {user && (
             <div className="relative group">
               <motion.div
@@ -346,7 +337,6 @@ export default function Header() {
             </div>
           )}
 
-          {/* Login/Logout Button with additional margin */}
           <a href="/login" className="ml-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -361,7 +351,6 @@ export default function Header() {
 
       </nav>
 
-      {/* Mobile Menu with Framer Motion */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <Dialog
@@ -403,7 +392,6 @@ export default function Header() {
               </div>
               <div className="mt-6 flow-root">
                 <div className="-my-6 divide-y divide-gray-500/10">
-                  {/* User profile info in mobile menu */}
                   {user && (
                     <div className="py-6">
                       <div className="flex items-center gap-3 px-3 mb-4">
@@ -460,7 +448,6 @@ export default function Header() {
                       Company
                     </a>
                     
-                    {/* Doctor dashboard dropdown for mobile view only */}
                     {userRole === 'doctor' && (
                       <Disclosure as="div" className="-mx-3">
                         <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
@@ -527,7 +514,6 @@ export default function Header() {
                       </Disclosure>
                     )}
 
-                    {/* Added cart link to mobile menu without counter */}
                     <a
                       href="/cart"
                       className="-mx-3 flex items-center justify-between rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
@@ -536,7 +522,6 @@ export default function Header() {
                       <ShoppingBagIcon className="h-5 w-5" />
                     </a>
                     
-                    {/* Other role dashboards remain as single links */}
                     {userRole === 'admin' && (
                       <a
                         href="/admin"
@@ -551,7 +536,6 @@ export default function Header() {
                    
                   </div>
                   
-                  {/* Login/Logout button in mobile */}
                   <div className="py-6">
                     <a
                       href="/login"

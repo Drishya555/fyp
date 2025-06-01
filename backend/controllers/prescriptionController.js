@@ -8,7 +8,6 @@ export const createPrescription = async (req, res) => {
   try {
     const { user, appointment, doctor, prescription, medication } = req.body;
 
-    // Validate required fields
     if (!user || !doctor || !prescription || !medication) {
       return res.status(400).json({ 
         success: false, 
@@ -16,7 +15,6 @@ export const createPrescription = async (req, res) => {
       });
     }
 
-    // Check if user exists
     const userExists = await User.findById(user);
     if (!userExists) {
       return res.status(404).json({ 
@@ -25,7 +23,6 @@ export const createPrescription = async (req, res) => {
       });
     }
 
-    // Check if doctor exists
     const doctorExists = await Doctor.findById(doctor);
     if (!doctorExists) {
       return res.status(404).json({ 
@@ -34,7 +31,6 @@ export const createPrescription = async (req, res) => {
       });
     }
 
-    // Check if appointment exists if provided
     if (appointment) {
       const appointmentExists = await Appointment.findById(appointment);
       if (!appointmentExists) {
@@ -45,7 +41,6 @@ export const createPrescription = async (req, res) => {
       }
     }
 
-    // Create new prescription
     const newPrescription = new Prescription({
       user,
       appointment: appointment || null,
@@ -108,7 +103,7 @@ export const getPrescriptionsByUserId = async (req, res) => {
     res.status(200).json({
       success: true,
       count: prescriptions.length,
-      prescriptions: prescriptions
+      data: prescriptions
     });
 
   } catch (error) {

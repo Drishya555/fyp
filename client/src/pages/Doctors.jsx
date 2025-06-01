@@ -28,6 +28,10 @@ const Doctors = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+
+
+
   const [filters, setFilters] = useState({
     experience: "",
     minPrice: "",
@@ -107,76 +111,93 @@ const Doctors = () => {
     fetchData();
   }, []);
 
+  
+
+
   const applyFiltersAndSort = (doctors) => {
-    let filtered = [...doctors];
+  let filtered = [...doctors];
 
-    if (hospitalId) {
-      filtered = filtered.filter(doctor => 
-        doctor.hospital && doctor.hospital._id === hospitalId
-      );
-    }
-    // Category filter
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        doctor => doctor?.specialization?.specialization === selectedCategory
-      );
-    }
+  // Hospital filter (unchanged)
+  if (hospitalId) {
+    filtered = filtered.filter(doctor => 
+      doctor.hospital && doctor.hospital._id === hospitalId
+    );
+  }
 
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(doctor =>
-        doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doctor?.specialization?.specialization.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  // Updated Specialization filter (handle empty array case)
+  if (selectedCategory) {
+    filtered = filtered.filter(doctor => {
+      // If specialization is an array (even if empty)
+      if (Array.isArray(doctor.specialization)) {
+        return doctor.specialization.some(spec => 
+          spec?.specialization === selectedCategory
+        );
+      }
+      // If specialization is an object (old format)
+      else if (doctor.specialization?.specialization) {
+        return doctor.specialization.specialization === selectedCategory;
+      }
+      return false;
+    });
+  }
 
-    // Experience filter
-    if (filters.experience) {
-      filtered = filtered.filter(doctor => 
-        doctor.experience >= parseInt(filters.experience)
-      );
-    }
+  // Updated Search filter (check name & specialization)
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(doctor => {
+      const nameMatch = doctor.name.toLowerCase().includes(query);
+      
+      let specMatch = false;
+      if (Array.isArray(doctor.specialization)) {
+        specMatch = doctor.specialization.some(spec => 
+          spec?.specialization?.toLowerCase().includes(query)
+        );
+      }
+      else if (doctor.specialization?.specialization) {
+        specMatch = doctor.specialization.specialization.toLowerCase().includes(query);
+      }
+      
+      return nameMatch || specMatch;
+    });
+  }
 
-    // Price range filter
-    if (filters.minPrice) {
-      filtered = filtered.filter(doctor => 
-        doctor.hourlyPrice >= parseInt(filters.minPrice)
-      );
-    }
-    if (filters.maxPrice) {
-      filtered = filtered.filter(doctor => 
-        doctor.hourlyPrice <= parseInt(filters.maxPrice)
-      );
-    }
+  // Rest of filters (unchanged)
+  if (filters.experience) {
+    filtered = filtered.filter(doctor => 
+      doctor.experience >= parseInt(filters.experience)
+    );
+  }
+  if (filters.minPrice) {
+    filtered = filtered.filter(doctor => 
+      doctor.hourlyPrice >= parseInt(filters.minPrice)
+    );
+  }
+  if (filters.maxPrice) {
+    filtered = filtered.filter(doctor => 
+      doctor.hourlyPrice <= parseInt(filters.maxPrice)
+    );
+  }
+  if (filters.rating) {
+    filtered = filtered.filter(doctor => 
+      Math.floor(doctor.rating) >= parseInt(filters.rating)
+    );
+  }
 
-    // Rating filter
-    if (filters.rating) {
-      filtered = filtered.filter(doctor => 
-        Math.floor(doctor.rating) >= parseInt(filters.rating)
-      );
-    }
+  // Sorting (unchanged)
+  switch (sortOption) {
+    case "price-low": filtered.sort((a, b) => a.hourlyPrice - b.hourlyPrice); break;
+    case "price-high": filtered.sort((a, b) => b.hourlyPrice - a.hourlyPrice); break;
+    case "experience": filtered.sort((a, b) => b.experience - a.experience); break;
+    case "rating": filtered.sort((a, b) => b.rating - a.rating); break;
+    default: break; // Recommended (no sorting)
+  }
 
-    // Sorting
-    switch (sortOption) {
-      case "price-low":
-        filtered.sort((a, b) => a.hourlyPrice - b.hourlyPrice);
-        break;
-      case "price-high":
-        filtered.sort((a, b) => b.hourlyPrice - a.hourlyPrice);
-        break;
-      case "experience":
-        filtered.sort((a, b) => b.experience - a.experience);
-        break;
-      case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      default:
-        // Recommended (default sorting)
-        break;
-    }
+  return filtered;
+};
 
-    return filtered;
-  };
+
+
+
 
   const filteredDoctors = applyFiltersAndSort(doctors);
 
@@ -223,7 +244,7 @@ const Doctors = () => {
                     placeholder="Search doctors by name or specialty..."
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target?.value)}
                   />
                 </div>
                 <div className="flex gap-2">
@@ -390,8 +411,12 @@ const Doctors = () => {
                       ></div>
                       <div className="p-4">
                         <h3 className="font-semibold text-gray-800">{doctor?.name || "Unknown Doctor"}</h3>
-                        <p className="text-sm text-gray-500">{doctor?.specialization?.specialization || "Specialist"}</p>
-                        <div className="mt-3 flex items-center">
+                      <p className="text-sm text-gray-500">
+                        {doctor.specializations && doctor.specializations.length > 0 
+                          ? doctor.specializations.map(spec => spec.specialization).join(', ')
+                          : "Specialist"}
+                      </p>                  
+                    <div className="mt-3 flex items-center">
                           <div className="flex items-center mr-2">
                             {[...Array(5)].map((_, i) => (
                               <CiStar 
@@ -418,91 +443,93 @@ const Doctors = () => {
           </div>
 
           {/* Right Sidebar */}
-          <div className="w-full lg:w-1/3 bg-white rounded-xl shadow-sm p-6 sticky top-6 h-fit">
-            {selectedDoctor ? (
-              <>
-                {/* Doctor Profile */}
-                <div className="relative">
-                  <img
-                    src={selectedDoctor.image || "https://via.placeholder.com/400x300?text=Doctor+Image"}
-                    alt={selectedDoctor.name}
-                    className="w-full h-56 object-cover rounded-xl"
-                  />
-                  <div className="absolute bottom-3 right-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Rs.{selectedDoctor.hourlyPrice}/-
+          <div className="w-full lg:w-1/3">
+        <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
+          {selectedDoctor ? (
+            <>
+              {/* Doctor Profile */}
+              <div className="relative">
+                <img
+                  src={selectedDoctor.image || "https://via.placeholder.com/400x300?text=Doctor+Image"}
+                  alt={selectedDoctor.name}
+                  className="w-full h-56 object-cover rounded-xl"
+                />
+                <div className="absolute bottom-3 right-3 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  Rs.{selectedDoctor.hourlyPrice}/-
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <h2 className="text-xl font-bold text-gray-800">{selectedDoctor.name}</h2>
+                <p className="text-gray-500">{selectedDoctor?.specialization?.specialization || "Specialist"}</p>
+              </div>
+
+              {/* Stats */}
+              <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-xl">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <PiPersonSimpleWalk className="text-purple-600 mr-1" size={20} />
+                    <span className="font-bold">{selectedDoctor.experience || "0"}</span>
                   </div>
+                  <p className="text-xs text-gray-500">Years</p>
                 </div>
                 
-                <div className="mt-4">
-                  <h2 className="text-xl font-bold text-gray-800">{selectedDoctor.name}</h2>
-                  <p className="text-gray-500">{selectedDoctor?.specialization?.specialization || "Specialist"}</p>
+                <div className="h-10 w-px bg-gray-300"></div>
+                
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <MdPeopleOutline className="text-green-500 mr-1" size={20} />
+                    <span className="font-bold">{selectedDoctor.totalPatients || "0"}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">Patients</p>
                 </div>
-
-                {/* Stats */}
-                <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-xl">
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <PiPersonSimpleWalk className="text-purple-600 mr-1" size={20} />
-                      <span className="font-bold">{selectedDoctor.experience || "0"}</span>
-                    </div>
-                    <p className="text-xs text-gray-500">Years</p>
+                
+                <div className="h-10 w-px bg-gray-300"></div>
+                
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <CiStar className="text-yellow-500 mr-1" size={20} />
+                    <span className="font-bold">{selectedDoctor.rating || "0"}</span>
                   </div>
-                  
-                  <div className="h-10 w-px bg-gray-300"></div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <MdPeopleOutline className="text-green-500 mr-1" size={20} />
-                      <span className="font-bold">{selectedDoctor.totalPatients || "0"}</span>
-                    </div>
-                    <p className="text-xs text-gray-500">Patients</p>
-                  </div>
-                  
-                  <div className="h-10 w-px bg-gray-300"></div>
-                  
-                  <div className="text-center">
-                    <div className="flex items-center justify-center mb-1">
-                      <CiStar className="text-yellow-500 mr-1" size={20} />
-                      <span className="font-bold">{selectedDoctor.rating || "0"}</span>
-                    </div>
-                    <p className="text-xs text-gray-500">Rating</p>
-                  </div>
+                  <p className="text-xs text-gray-500">Rating</p>
                 </div>
-
-                {/* Tabs */}
-                <div className="mt-6">
-                  <div className="flex border-b border-gray-200">
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-3 text-sm font-medium transition-all duration-200
-                          ${activeTab === tab 
-                            ? "border-b-2 border-blue-500 text-blue-600" 
-                            : "text-gray-500 hover:text-blue-500"}`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="py-4">
-                    {tabContent[activeTab]}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                  <FaRegUser className="w-10 h-10 text-blue-500" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-800 mb-2">No Doctor Selected</h3>
-                <p className="text-gray-500 max-w-xs">
-                  Select a doctor from the list to view their profile and schedule appointments.
-                </p>
               </div>
-            )}
-          </div>
+
+              {/* Tabs */}
+              <div className="mt-6">
+                <div className="flex border-b border-gray-200">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`flex-1 py-3 text-sm font-medium transition-all duration-200
+                        ${activeTab === tab 
+                          ? "border-b-2 border-blue-500 text-blue-600" 
+                          : "text-gray-500 hover:text-blue-500"}`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+                <div className="py-4">
+                  {tabContent[activeTab]}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <FaRegUser className="w-10 h-10 text-blue-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">No Doctor Selected</h3>
+              <p className="text-gray-500 max-w-xs">
+                Select a doctor from the list to view their profile and schedule appointments.
+              </p>
+            </div>
+          )}
         </div>
+      </div>
+    </div>
       </div>
     </div>
   );

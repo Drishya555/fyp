@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { host } from '../../host.js';
@@ -14,7 +14,10 @@ const DoctorRegister = () => {
     phone: '',
     licenseNo: '',
     image: null,
+    specializations: [] 
   });
+
+  const [availableSpecializations, setAvailableSpecializations] = useState([]); 
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,6 +30,19 @@ const DoctorRegister = () => {
       [name]: value
     });
   };
+
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const response = await axios.get(`${host}/api/doctors/getallspecialization`);
+        setAvailableSpecializations(response.data.specialization);
+      } catch (err) {
+        console.error("Failed to fetch specializations:", err);
+      }
+    };
+    fetchSpecializations();
+  }, []);
+
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -46,42 +62,52 @@ const DoctorRegister = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('password', formData.password);
-      formDataToSend.append('phone', formData.phone);
-      formDataToSend.append('licenseNo', formData.licenseNo);
-      if (formData.image) {
-        formDataToSend.append('image', formData.image);
-      }
-      formDataToSend.append('hospital', hospitalid);
-
-
-      const response = await axios.post(`${host}/api/doctors/registerdoctor`, formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: token ? `Bearer ${token}` : '',  
-
-        }
-      });
-
-      if (response.data.success) {
-        navigate('/hospital-dashboard', { state: { registrationSuccess: true } });
-      }
-    } catch (err) {
-      setLoading(false);
-      if (err.response) {
-        setError(err.response.data.message || 'Registration failed');
-      } else {
-        setError('Network error. Please try again.');
-      }
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('password', formData.password);
+    formDataToSend.append('phone', formData.phone);
+    formDataToSend.append('licenseNo', formData.licenseNo);
+    if (formData.image) {
+      formDataToSend.append('image', formData.image);
     }
+    formDataToSend.append('hospital', hospitalid);
+    
+    // Ensure specializations is properly stringified
+    formDataToSend.append('specializations', JSON.stringify(formData.specializations));
+
+    const response = await axios.post(`${host}/api/doctors/registerdoctor`, formDataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: token ? `Bearer ${token}` : '',  
+      }
+    });
+
+    if (response.data.success) {
+      navigate('/hospital-dashboard', { state: { registrationSuccess: true } });
+    }
+  } catch (err) {
+    setLoading(false);
+    if (err.response) {
+      setError(err.response.data.message || 'Registration failed');
+    } else {
+      setError('Network error. Please try again.');
+    }
+  }
+};
+
+
+  const handleSpecializationChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+    setFormData({
+      ...formData,
+      specializations: selectedOptions
+    });
   };
 
   return (
@@ -182,6 +208,62 @@ const DoctorRegister = () => {
                 />
               </div>
             </div>
+
+            <div className="mb-4">
+  <label htmlFor="specializations" className="block text-sm font-medium text-gray-700 mb-1">
+    Specializations
+  </label>
+  
+  {/* Selected items display */}
+  {formData.specializations.length > 0 && (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {formData.specializations.map(specId => {
+        const spec = availableSpecializations.find(s => s._id === specId);
+        return (
+          <span 
+            key={specId}
+            className="inline-block bg-gray-100 rounded px-2 py-1 text-xs text-gray-800"
+          >
+            {spec?.specialization || ''}
+          </span>
+        );
+      })}
+    </div>
+  )}
+
+        {/* Custom dropdown */}
+        <div className="relative">
+          <select
+            id="specializations"
+            name="specializations"
+            multiple
+            value={formData.specializations}
+            onChange={handleSpecializationChange}
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white pr-8 appearance-none"
+            size={4}
+          >
+            {availableSpecializations.map((spec) => (
+              <option 
+                key={spec._id} 
+                value={spec._id}
+                className="py-1 px-2 hover:bg-blue-50"
+              >
+                {spec.specialization}
+              </option>
+            ))}
+          </select>
+          
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+        
+        <p className="mt-1 text-xs text-gray-500">
+          Hold Ctrl/Cmd to select multiple options
+        </p>
+      </div>
 
             <div>
               <label htmlFor="licenseNo" className="block text-sm font-medium text-gray-700">

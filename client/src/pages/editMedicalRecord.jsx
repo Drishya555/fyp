@@ -49,21 +49,15 @@ const UpdateMedicalData = () => {
       try {
         setIsLoading(true);
         const patientId = Authstore.getUser()?.userid;
-        const doctorId = Authstore.getUser()?.userid;
-
-        // Get medical record for the current user
-        const recordResponse = await axios.get(`${host}/api/medical-records/${patientId}/${doctorId}`,
-          {
-            headers: {
-              Authorization: token ? `Bearer ${token}` : '',  
-            },
-          }
-        );
+        
+        const recordResponse = await axios.get(`${host}/api/medical-records/${patientId}`, {
+          headers: { Authorization: token ? `Bearer ${token}` : '' }
+        });
         
         if (recordResponse.data) {
           setMedicalRecord(recordResponse.data);
           
-          // Initialize vitals from medical record
+          // Initialize vitals
           if (recordResponse.data.vitals) {
             setVitals({
               heartRate: recordResponse.data.vitals.heartRate || '',
@@ -76,25 +70,24 @@ const UpdateMedicalData = () => {
             });
           }
           
-          // Initialize allergies from medical record
-          if (recordResponse.data.allergies && recordResponse.data.allergies.length > 0) {
-            // If allergies are stored as strings, convert to objects
-            if (typeof recordResponse.data.allergies[0] === 'string') {
-              const allergyObjects = recordResponse.data.allergies.map(name => ({
-                name,
-                reaction: '',
-                severity: 'mild',
-                notes: ''
-              }));
-              setAllergies(allergyObjects);
-            } else {
-              // If already objects, use as-is
-              setAllergies(recordResponse.data.allergies);
-            }
+          // Initialize allergies
+          if (recordResponse.data.allergies) {
+            // Ensure allergies are always treated as objects
+            const formattedAllergies = recordResponse.data.allergies.map(item => {
+              if (typeof item === 'string') {
+                return { name: item, reaction: '', severity: 'mild', notes: '' };
+              }
+              return item;
+            });
+            setAllergies(formattedAllergies);
           }
         }
       } catch (error) {
-        console.error('Error fetching medical record:', error);
+        console.error('Error fetching medical record:', {
+          message: error.message,
+          response: error.response?.data,
+          request: error.request,
+        });
         setSavedMessage('Failed to load medical record');
         setTimeout(() => setSavedMessage(null), 3000);
       } finally {
@@ -122,21 +115,20 @@ const UpdateMedicalData = () => {
         date: vitals.date
       };
 
-      await axios.post(`${host}/api/medical-records`, {
+      const response = await axios.post(`${host}/api/medical-records`, {
         patientId,
         doctorId,
         vitals: vitalsData
-      },{
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',  
-        },
+      }, {
+        headers: { Authorization: token ? `Bearer ${token}` : '' }
       });
 
+      setMedicalRecord(response.data);
       setSavedMessage('Vitals data updated successfully');
       setTimeout(() => setSavedMessage(null), 3000);
     } catch (error) {
       console.error('Error updating vitals:', error);
-      setSavedMessage('Failed to update vitals');
+      setSavedMessage(error.response?.data?.message || 'Failed to update vitals');
       setTimeout(() => setSavedMessage(null), 3000);
     }
   };
@@ -164,11 +156,10 @@ const UpdateMedicalData = () => {
       setAllergy({ name: '', reaction: '', severity: 'mild', notes: '' });
       setEditingAllergyIndex(null);
       
-      // Save to backend
       await saveAllergies(updatedAllergies);
     } catch (error) {
       console.error('Error adding allergy:', error);
-      setSavedMessage('Failed to save allergy');
+      setSavedMessage(error.response?.data?.message || 'Failed to save allergy');
       setTimeout(() => setSavedMessage(null), 3000);
     }
   };
@@ -178,21 +169,25 @@ const UpdateMedicalData = () => {
       const patientId = Authstore.getUser()?.userid;
       const doctorId = Authstore.getUser()?.userid;
       
-      await axios.post(`${host}/api/medical-records`, {
+      const response = await axios.post(`${host}/api/medical-records`, {
         patientId,
         doctorId,
         allergies: allergiesToSave
-      },{
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',  
-        },
+      }, {
+        headers: { Authorization: token ? `Bearer ${token}` : '' }
       });
 
+      setMedicalRecord(response.data);
       setSavedMessage('Allergies updated successfully');
       setTimeout(() => setSavedMessage(null), 3000);
+      return response.data;
     } catch (error) {
-      console.error('Error saving allergies:', error);
-      setSavedMessage('Failed to update allergies');
+      console.error('Error saving allergies:', {
+        message: error.message,
+        response: error.response?.data,
+        request: error.request,
+      });
+      setSavedMessage(error.response?.data?.message || 'Failed to update allergies');
       setTimeout(() => setSavedMessage(null), 3000);
       throw error;
     }
@@ -204,10 +199,11 @@ const UpdateMedicalData = () => {
       updatedAllergies.splice(index, 1);
       setAllergies(updatedAllergies);
       
-      // Save to backend
       await saveAllergies(updatedAllergies);
     } catch (error) {
       console.error('Error removing allergy:', error);
+      setSavedMessage(error.response?.data?.message || 'Failed to remove allergy');
+      setTimeout(() => setSavedMessage(null), 3000);
     }
   };
 
@@ -226,7 +222,6 @@ const UpdateMedicalData = () => {
       const patientId = Authstore.getUser()?.userid;
       const doctorId = Authstore.getUser()?.userid;
       
-      // Prepare vitals data
       const vitalsData = {
         heartRate: Number(vitals.heartRate),
         bloodPressure: {
@@ -239,23 +234,21 @@ const UpdateMedicalData = () => {
         date: vitals.date
       };
 
-      // Update both vitals and allergies in one call
-      await axios.post(`${host}/api/medical-records`, {
+      const response = await axios.post(`${host}/api/medical-records`, {
         patientId,
         doctorId,
         vitals: vitalsData,
         allergies: allergies
-      },{
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',  
-        },
+      }, {
+        headers: { Authorization: token ? `Bearer ${token}` : '' }
       });
 
+      setMedicalRecord(response.data);
       setSavedMessage('Medical data updated successfully');
       setTimeout(() => setSavedMessage(null), 3000);
     } catch (error) {
       console.error('Error updating all data:', error);
-      setSavedMessage('Failed to update data');
+      setSavedMessage(error.response?.data?.message || 'Failed to update data');
       setTimeout(() => setSavedMessage(null), 3000);
     }
   };
@@ -270,6 +263,7 @@ const UpdateMedicalData = () => {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 font-sans text-gray-900 antialiased">

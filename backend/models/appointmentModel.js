@@ -6,7 +6,7 @@ const appointmentSchema = new mongoose.Schema(
       type: mongoose.ObjectId,
       ref: "User"
     },
-    doctor  : {
+    doctor: {
       type: mongoose.ObjectId,
       ref: "Doctor",
     },
@@ -16,12 +16,16 @@ const appointmentSchema = new mongoose.Schema(
     purpose: {
       type: String,
     },
-    time:{
-        type: String,
+    time: {
+      type: String,
     },
     status: {
       type: String,
       default: "Pending"
+    },
+    notes: {  
+      type: String,
+      default: "",  
     },
   },
   { timestamps: true }

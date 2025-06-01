@@ -317,9 +317,7 @@ const HospitalStore = () => {
                       src={hospital.image || "https://via.placeholder.com/300x200?text=No+Image"}
                       alt={hospital.name}
                       className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
-                      }}
+                      
                     />
                   </div>
                   <div className="p-4">

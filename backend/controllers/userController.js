@@ -17,32 +17,66 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+
 export const registerController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user already exists (including unverified ones)
     const existingUser = await userModel.findOne({ email });
+    
     if (existingUser) {
-      // If user exists but isn't verified, you might want to resend OTP
-      if (!existingUser.verified) {
+      if (existingUser.verified) {
         return res.status(409).send({
           success: false,
-          message: "Email already registered but not verified. Resending OTP...",
-          userId: existingUser._id, // Return existing user ID for OTP verification
+          message: "Email is already taken and verified",
         });
       }
-      return res.status(409).send({
-        success: false,
-        message: "Email is already taken and verified",
+      
+      const otp = crypto.randomInt(100000, 999999).toString();
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000); 
+      const hashedPassword = await hashPassword(password);
+
+      existingUser.name = name;
+      existingUser.password = hashedPassword;
+      existingUser.otp = otp;
+      existingUser.otpExpires = otpExpires;
+      
+      // Send OTP email
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Verify Your Email Address',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Email Verification</h2>
+            <p>Hello ${name},</p>
+            <p>Thank you for registering with us. Please use the following OTP to verify your email address:</p>
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">
+              <h1 style="margin: 0; color: #2563eb; letter-spacing: 5px;">${otp}</h1>
+            </div>
+            <p>This OTP will expire in 15 minutes.</p>
+            <p>If you didn't request this, please ignore this email.</p>
+            <p>Best regards,<br/>The MediAid Team</p>
+          </div>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      await existingUser.save();
+
+      return res.status(200).send({
+        success: true,
+        message: "Email previously registered but not verified. New OTP sent.",
+        userId: existingUser._id,
       });
     }
 
+    // If no existing user, create new one
     const hashedPassword = await hashPassword(password);
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 minutes
 
-    // Create but don't save yet
     const user = new userModel({
       name,
       email,
@@ -72,10 +106,7 @@ export const registerController = async (req, res) => {
       `,
     };
 
-    // Try to send email first
     await transporter.sendMail(mailOptions);
-    
-    // Only save user if email was sent successfully
     await user.save();
 
     res.status(201).send({
@@ -92,6 +123,8 @@ export const registerController = async (req, res) => {
     });
   }
 };
+
+
 
 export const verifyOtpController = async (req, res) => {
   try {
@@ -226,13 +259,11 @@ export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if the email exists in either user or doctor collection
     const user = await userModel.findOne({ email });
     const doctor = await docmodel.findOne({ email });
     const pharmacy = await pharmacistModel.findOne({ email });
     const hospital = await hospitalModel.findOne({ email });
 
-    // If neither user nor doctor exists
     if (!user && !doctor && !pharmacy && !hospital) {
       return res.status(404).send({
         success: false,
@@ -240,10 +271,8 @@ export const loginController = async (req, res) => {
       });
     }
 
-    // Determine if the login is for a user or a doctor
     const account = user || doctor || pharmacy || hospital;
 
-    // Compare passwords
     const match = await comparePassword(password, account.password);
     if (!match) {
       return res.status(400).send({
@@ -252,12 +281,10 @@ export const loginController = async (req, res) => {
       });
     }
 
-    // Generate JWT token
     const token = await JWT.sign({ _id: account._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // Send response based on account type
     const responseData = {
       success: true,
       message: "Login successful",
@@ -266,8 +293,8 @@ export const loginController = async (req, res) => {
         name: account.name,
         email: account.email,
         address: account.address || "",
-        role: account.role || (user ? "user" : "doctor"), // Set role based on account type
-        ...(doctor && { licenseNo: doctor.licenseNo, image: doctor.image }), // Include doctor-specific fields
+        role: account.role,
+        ...(doctor && { licenseNo: doctor.licenseNo, image: doctor.image }), 
         token: token
       },
       token,
@@ -374,7 +401,6 @@ export const editUserController = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    // Find the user by ID
     const user = await userModel.findById(id);
     if (!user) {
       return res.status(404).send({
@@ -383,7 +409,6 @@ export const editUserController = async (req, res) => {
       });
     }
 
-    // Validate enum fields if they're being updated
     if (updates.sex && !["Male", "Female", "Other"].includes(updates.sex)) {
       return res.status(400).send({
         success: false,
@@ -398,7 +423,6 @@ export const editUserController = async (req, res) => {
       });
     }
 
-    // Validate age if being updated
     if (updates.age && (isNaN(updates.age) || updates.age < 0 || updates.age > 120)) {
       return res.status(400).send({
         success: false,
@@ -406,7 +430,6 @@ export const editUserController = async (req, res) => {
       });
     }
 
-    // Don't allow updating email if it's already taken by another user
     if (updates.email && updates.email !== user.email) {
       const emailExists = await userModel.findOne({ email: updates.email });
       if (emailExists) {
@@ -417,22 +440,19 @@ export const editUserController = async (req, res) => {
       }
     }
 
-    // Don't allow changing role through this endpoint (role changes should be admin-only)
     if (updates.role) {
       delete updates.role;
     }
 
-    // Don't allow direct password updates (use separate password reset endpoint)
     if (updates.password) {
       delete updates.password;
     }
 
-    // Update the user
     const updatedUser = await userModel.findByIdAndUpdate(
       id,
       updates,
       { new: true, runValidators: true }
-    ).select("-password"); // Exclude password from the returned user data
+    ).select("-password"); 
 
     res.status(200).send({
       success: true,
@@ -454,7 +474,6 @@ export const changePasswordController = async (req, res) => {
   try {
     const { currentPassword, newPassword, userId } = req.body;
 
-    // Find user
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -463,7 +482,6 @@ export const changePasswordController = async (req, res) => {
       });
     }
 
-    // Verify current password
     const isMatch = await comparePassword(currentPassword, user.password);
     if (!isMatch) {
       return res.status(401).json({
@@ -472,11 +490,9 @@ export const changePasswordController = async (req, res) => {
       });
     }
 
-    // Hash new password
     const hashedPassword = await hashPassword(newPassword);
 
-    // Update password
-    user.password = hashedPassword;
+   user.password = hashedPassword;
     await user.save();
 
     res.status(200).json({
@@ -499,7 +515,6 @@ export const deleteAccountController = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    // Verify the requesting user is the same as the user being deleted
     if (req.user._id.toString() !== userId) {
       return res.status(403).json({
         success: false,
@@ -507,7 +522,6 @@ export const deleteAccountController = async (req, res) => {
       });
     }
 
-    // Find and delete user
     const deletedUser = await userModel.findByIdAndDelete(userId);
     if (!deletedUser) {
       return res.status(404).json({
@@ -535,7 +549,6 @@ export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Check if user exists
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -544,19 +557,15 @@ export const forgotPasswordController = async (req, res) => {
       });
     }
 
-    // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    // Save token to user
     user.resetToken = resetToken;
     user.resetTokenExpires = resetTokenExpires;
     await user.save();
 
-    // Create reset link
     const resetLink = `http://localhost:5173/resetpw/${resetToken}`;
 
-    // Send email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -598,7 +607,6 @@ export const resetPasswordController = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
 
-    // Find user by token and check expiration
     const user = await userModel.findOne({
       resetToken: token,
       resetTokenExpires: { $gt: Date.now() },
@@ -611,10 +619,8 @@ export const resetPasswordController = async (req, res) => {
       });
     }
 
-    // Hash new password
     const hashedPassword = await hashPassword(newPassword);
 
-    // Update password and clear token
     user.password = hashedPassword;
     user.resetToken = undefined;
     user.resetTokenExpires = undefined;
@@ -636,7 +642,6 @@ export const resetPasswordController = async (req, res) => {
 
 
 
-// Add this to your userController.js
 export const verifyResetTokenController = async (req, res) => {
   try {
     const { token } = req.body;

@@ -229,13 +229,11 @@ export const updateMedicineController = async (req, res) => {
 
       let imageUrl = medicine.medicineimg;
       if (medicineimg) {
-          // Delete old image from Cloudinary if exists
           if (medicine.medicineimg) {
               const publicId = medicine.medicineimg.split('/').pop().split('.')[0];
               await cloudinary.uploader.destroy(`mediaid/${publicId}`);
           }
           
-          // Upload new image
           const result = await cloudinary.uploader.upload(medicineimg.path, {
               folder: "mediaid",
           });

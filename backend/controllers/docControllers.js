@@ -5,6 +5,7 @@ import docmodel from '../models/doctorModel.js'
 import {comparePassword, hashPassword} from '../helpers/authHelpers.js'
 import crypto from 'crypto';
 import JWT from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 export const getAllDoctors = async (req, res) => {
     try {
@@ -184,20 +185,41 @@ export const getDoctorbyId = async(req,res) =>{
 }
 
 
-export const registerDocController = async(req,res) =>{
-    try {
-        const {name, email, password, phone,licenseNo, hospital} = req.fields;
-        const {image} = req.files;
+export const registerDocController = async (req, res) => {
+  try {
+    const { name, email, password, phone, licenseNo, hospital, specializations } = req.fields;
+    const { image } = req.files;
 
-        let imageurl;
+    console.log("Received specializations:", specializations);
+    console.log("Type of specializations:", typeof specializations);
 
-         if (image) {
-              const result = await cloudinary.uploader.upload(image.path, {
-                folder: "mediaid",
-              });
-              imageurl = result.secure_url;
-            }
+    if (!name || !email || !password || !phone || !licenseNo || !hospital) {
+      return res.status(400).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Handle specializations properly
+    let specializationsArray = [];
+    if (specializations) {
+      try {
+        // Parse the string to get an array of IDs
+        specializationsArray = JSON.parse(specializations);
+        console.log("Parsed specializationsArray:", specializationsArray);
         
+        if (!Array.isArray(specializationsArray)) {
+          throw new Error("Specializations must be an array");
+        }
+      } catch (parseError) {
+        console.error("Error parsing specializations:", parseError);
+        return res.status(400).send({
+          success: false,
+          message: "Invalid specializations format",
+          error: parseError.message,
+        });
+      }
+    }
 
     const existingUser = await docmodel.findOne({ email });
     if (existingUser) {
@@ -206,36 +228,58 @@ export const registerDocController = async(req,res) =>{
         message: "Email is already taken",
       });
     }
-    const hashedPassword = await hashPassword(password);
 
+    // Upload image to Cloudinary if exists
+    let imageurl;
+    if (image) {
+      const result = await cloudinary.uploader.upload(image.path, {
+        folder: "mediaid",
+      });
+      imageurl = result.secure_url;
+    }
+
+    // Hash password
+    const hashedPassword = await hashPassword(password);
     const resetToken = crypto.randomBytes(32).toString("hex");
 
+    // Convert the specialization IDs to valid MongoDB ObjectIds
+    const specialization = specializationsArray.map(specId => {
+      return {
+        type: new mongoose.Types.ObjectId(specId.trim()),  // Ensure it's a proper ObjectId
+        percentage: 100
+      };
+    });
+
+    console.log("Final specialization structure:", specialization);
+
+    // Create new doctor
     const user = await new docmodel({
-        name,
-        email,
-        password: hashedPassword,
-        resetToken,
-        phone:phone,
-        licenseNo:licenseNo,
-        image:imageurl,
-        hospital
+      name,
+      email,
+      password: hashedPassword,
+      resetToken,
+      phone,
+      licenseNo,
+      image: imageurl,
+      hospital,
+      specialization  // Use the properly formatted array
     }).save();
 
     res.status(201).send({
-        success: true,
-        message: "Doctor registered successfully",
-        user,
-      });
-    } catch (error) {
-        console.log(error);
+      success: true,
+      message: "Doctor registered successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).send({
       success: false,
       message: "Error in registration",
-      error,
+      error: error.message,
     });
-    }
+  }
+};
 
-}
 
 export const loginDocController = async (req, res) => {
   try {

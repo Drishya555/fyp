@@ -1,11 +1,13 @@
+import Authstore from '../hooks/authStore.js';
 
 const Footer = () => {
+    const userid = Authstore.getUser()?.userid
+
   return (
     <>
       <footer className="bg-gray-900 text-gray-300 pt-16 pb-8 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {/* Logo and Description */}
             <div>
               <h2 className="text-2xl font-bold text-white mb-4">MediAid</h2>
               <p className="mb-6 leading-relaxed">
@@ -23,37 +25,50 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Quick Links */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
               <ul className="space-y-3">
-                {['Home', 'About Us', 'Services', 'Doctors', 'Hospitals'].map((link) => (
-                  <li key={link}>
-                    <a href="#" className="hover:text-white transition-colors">{link}</a>
+                {[
+                  { name: 'Home', path: '/' },
+                  { name: 'About Us', path: '/company' },
+                  { name: 'Pharmacy', path: '/pharmacy' },
+                  { name: 'Doctors', path: '/doctors' },
+                  { name: 'Hospitals', path: '/hospitals' }
+                ].map((link) => (
+                  <li key={link.name}>
+                    <a href={link.path} className="hover:text-white transition-colors">
+                      {link.name}
+                    </a>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Services */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">Services</h3>
               <ul className="space-y-3">
-                {['Appointment Booking', 'Medical Records', 'AI Diagnostics', 'Emergency Services', 'Health Tips'].map((service) => (
-                  <li key={service}>
-                    <a href="#" className="hover:text-white transition-colors">{service}</a>
+                {[
+                  { name: 'Appointment Booking', path: '/doctors' },
+                  { name: 'Medical Records', path: `/medical-record/${userid}` },
+                  { name: 'AI Diagnostics', path: '/ai-diagnostics' },
+                  { name: 'Emergency Services', path: '/emergency-services' },
+                  { name: 'Prescriptions', path: `/medical-record/${userid}` }
+                ].map((service) => (
+                  <li key={service.name}>
+                    <a href={service.path} className="hover:text-white transition-colors">
+                      {service.name}
+                    </a>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Contact */}
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">Contact Us</h3>
               <address className="not-italic space-y-3">
                 <p>Kathmandu, Nepal</p>
-                <p>Email: info@mediaid.com</p>
-                <p>Phone: +977 9841234567</p>
+                <p>Email: mediaidapp@gmail.com</p>
+                <p>Phone: +977 9761647200</p>
                 <p>Support: 24/7 Available</p>
               </address>
             </div>

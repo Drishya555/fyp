@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { host } from '../../host';
 import './pharmamedia.css';
 
-// Importing icons from lucide-react as a replacement for AiFillStar
 import { Star, ShoppingCart, Search, ChevronRight, TrendingUp, Heart } from "lucide-react";
 
 const Pharmacy = () => {
@@ -30,9 +29,8 @@ const Pharmacy = () => {
     };
 
     fetchData();
-  }, []); // Runs once when component mounts
+  }, []); 
 
-  // Filter medicines based on active category and search term
   const filteredMedicines = medicines.filter(product => {
     const matchesCategory = activeCategory === 'All' || 
       (product?.category?.categoryName === activeCategory);

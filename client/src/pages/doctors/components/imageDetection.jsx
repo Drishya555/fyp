@@ -1,276 +1,218 @@
-import { useState, useEffect } from "react";
+/* eslint-disable react/no-unescaped-entities */
+import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
 
 const ImageUploader = () => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [completed, setCompleted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [detectionType, setDetectionType] = useState(null); // 'pneumonia' or 'braintumor' or 'breastcancer'
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     onDrop: (acceptedFiles) => {
-      setLoading(true);
-      setCompleted(false);
       setImage(acceptedFiles[0]);
-      setProgress(0);
-      setPaused(false);
+      setResult(null);
+      setError(null);
     },
   });
 
-  useEffect(() => {
-    if (loading && !paused) {
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setLoading(false);
-            setCompleted(true);
-            return 100;
-          }
-          return prev + 1;
-        });
-      }, 50);
+  const analyzeImage = async () => {
+    if (!image || !detectionType) return;
+    
+    try {
+      setLoading(true);
+      
+      const formData = new FormData();
+      formData.append('image', image);
+      
+      let endpoint = '';
+      if (detectionType === 'pneumonia') {
+        endpoint = 'http://127.0.0.1:8000/api/pneumonia/';
+      } else if (detectionType === 'braintumor') {
+        endpoint = 'http://127.0.0.1:8000/api/braintumor/';
+      } else if (detectionType === 'breastcancer') {
+        endpoint = 'http://127.0.0.1:8000/api/breastcancer/';
+      }
 
-      return () => clearInterval(interval);
+      console.log("Sending request to:", endpoint);
+      console.log("Image being sent:", image);
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        // Explicitly NOT setting Content-Type header
+      });
+      
+      const data = await response.json();
+      console.log("API response:", data);
+      
+      // Handle validation errors (400 status code with error message)
+      if (!response.ok) {
+        if (data && data.error) {
+          setError(data.error);
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setResult(data);
+    } catch (err) {
+      console.error('Error analyzing image:', err);
+      setError(err.message || "Failed to process image");
+    } finally {
+      setLoading(false);
     }
-  }, [loading, paused]);
+  };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
- 
+  const handleDetectionClick = (type) => {
+    setDetectionType(type);
+    setIsModalOpen(true);
+  };
 
-
-  
+  const resetDetection = () => {
+    setImage(null);
+    setResult(null);
+    setError(null);
+    setIsModalOpen(false);
+  };
 
   return (
-
     <>
-    <div className="relative min-h-[40vh] bg-gray-100 flex items-center justify-start">
-  {/* Background Image */}
-  <div className="absolute inset-0 z-0">
-    <img
-      src="https://images.pexels.com/photos/1692693/pexels-photo-1692693.jpeg?cs=srgb&dl=pexels-tomfisk-1692693.jpg&fm=jpg"
-      alt="Roofing Service"
-      className="w-full h-full object-cover"
-    />
-  </div>
+      {/* Pneumonia Section */}
+      <div className="w-full p-6">
+        <div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
+          {/* Left Section */}
+          <div className="flex-1 space-y-8">
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              Detecting Pneumonia
+              <br /> Transforming Diagnoses with
+              <br />
+              <span className="text-blue-500">Advanced AI Image Detection</span>
+            </h1>
 
-  {/* Content (Left-aligned) */}
-  <div className="relative z-10 max-w-7xl pl-8 sm:pl-16 lg:pl-32">
-    <div className="mt-12 mb-12">
-      <p className="text-white text-sm uppercase mb-4">MediAid&apos;s Special</p>
-      <h2 className="text-white text-5xl md:text-7xl font-bold leading-tight">
-        Disease Detection® <br /> Powered By AI
-      </h2>
-      <p className="text-white mt-6 max-w-xl">
-      Eline utilizes advanced AI image detection technology to accurately identify and analyze visual content, enhancing efficiency and precision in various applications.
-      </p>
-      <button className="mt-8 px-6 py-3 rounded-full bg-white text-gray-900 hover:bg-gray-200 transition-all">
-        Get Started
-      </button>
-    </div>
-  </div>
-</div>
+            <p className="text-lg text-gray-600">
+              From early detection to accurate diagnoses, Mediaid's pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better respiratory health.
+            </p>
 
-<div className="w-full p-6">
-      <div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
-        {/* Left Section */}
-        <div className="flex-1 space-y-8">
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-            Detecting Pneumonia
-            <br /> Transforming Diagnoses with
-            <br />
-            <span className="text-blue-500">Advanced AI Image Detection</span>
-          </h1>
+            <div className="flex gap-4">
+              <button
+                className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition"
+                onClick={() => handleDetectionClick('pneumonia')}
+              >
+                Detect Pneumonia
+              </button>
+            </div>
+          </div>
 
-          <p className="text-lg text-gray-600">
-            From early detection to accurate diagnoses, Mediaid&apos;s pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better respiratory health.
-          </p>
-
-          <div className="flex gap-4">
-            <button
-              className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Detect Pneumonia
-            </button>
+          {/* Right Section */}
+          <div className="flex-1 relative">
+            <img
+              src="https://www.chenmed.com/sites/default/files/2024-06/Patient-Centered%20Care%20Strategies%20for%20Building%20Strong%20Doctor-Patient%20Relationships%20.jpg"
+              alt="Smiling Patient"
+              className="w-full rounded-xl"
+            />
           </div>
         </div>
-
-        {/* Right Section */}
-        <div className="flex-1 relative">
-          <img
-            src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Smiling Patient"
-            className="w-full rounded-xl"
-          />
-        </div>
       </div>
 
+      {/* Brain Tumor Section */}
+      <div className="w-full p-6">
+        <div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
+          {/* Left Section */}
+          <div className="flex-1 space-y-8">
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              Detecting Brain Tumor
+              <br /> Transforming Diagnoses with
+              <br />
+              <span className="text-blue-500">Advanced AI Image Detection</span>
+            </h1>
 
-
-
-
-
-<div className="w-full p-6">
-<div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
-      {/* Left Section */}
-      <div className="flex-1 space-y-8">
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-          <span className="inline-flex items-center">
-          </span>
-          Detecting Brain Tumor
- <br /> Transforming Diagnoses with
- <br />
-          <span className="text-blue-500">Advanced AI Image Detection
-
-</span>
-        </h1>
-
-        <p className="text-lg text-gray-600">
-        From early detection to accurate diagnoses, Mediaid&apos;s pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise,\
-         timely, and life-saving insights for better respiratory health.
-        </p>
-
-        <div className="flex gap-4">
-          <button className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition">Detect Brain Tumor</button>
-          
-        </div>
-      </div>
-
-      {/* Right Section */}
-      <div className="flex-1 relative">
-        <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Smiling Patient" className="w-full rounded-xl" />
-      </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-<div className="w-full p-6">
-<div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
-      {/* Left Section */}
-      <div className="flex-1 space-y-8">
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-          <span className="inline-flex items-center">
-          </span>
-          Detecting Breast Cancer
- <br /> Transforming Diagnoses with
- <br />
-          <span className="text-blue-500">Advanced AI Image Detection
-
-</span>
-        </h1>
-
-        <p className="text-lg text-gray-600">
-        From early detection to accurate diagnoses, Mediaid&apos;s pneumonia detection technology leverages cutting-edge AI and advanced imaging to deliver precise,\
-         timely, and life-saving insights for better respiratory health.
-        </p>
-
-        <div className="flex gap-4">
-          <button className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition">Detect Breast Cancer</button>
-          
-        </div>
-      </div>
-
-      {/* Right Section */}
-      <div className="flex-1 relative">
-        <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Smiling Patient" className="w-full rounded-xl" />
-      </div>
-    </div>
-</div>
-
-
-
-
-
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      <div className="bg-white p-8 rounded-3xl shadow-xl w-[500px]">
-        <div
-          {...getRootProps()}
-          className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-blue-500 transition"
-        >
-          <input {...getInputProps()} />
-          {!image ? (
-            <p className="text-gray-500">
-              <span className="font-semibold">Drop your image here</span>, or{' '}
-              <span className="text-blue-500 underline">browse</span>
-              <br /> Supports: JPG, PNG
+            <p className="text-lg text-gray-600">
+              From early detection to accurate diagnoses, Mediaid's brain tumor detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better neurological health.
             </p>
-          ) : (
-            <p className="text-gray-700">{image.name}</p>
-          )}
+
+            <div className="flex gap-4">
+              <button
+                className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition"
+                onClick={() => handleDetectionClick('braintumor')}
+              >
+                Detect Brain Tumor
+              </button>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex-1 relative">
+            <img
+              src="https://gspatients.com/wp-content/uploads/2023/03/Doctor-and-patient.jpg"
+              alt="Smiling Patient"
+              className="w-full rounded-xl"
+            />
+          </div>
         </div>
-
-        {loading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mt-6"
-          >
-            <p className="text-blue-600 font-medium mb-2">Uploading...</p>
-            <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-              <motion.div   
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.2 }}
-                className="h-full bg-blue-500 rounded-full"
-              />
-            </div>
-            <div className="flex items-center mt-4 space-x-4">
-              <button
-                onClick={() => setPaused((prev) => !prev)}
-                className="px-3 py-1 bg-blue-500 text-white rounded-lg"
-              >
-                {paused ? 'Resume' : 'Pause'}
-              </button>
-              <button
-                onClick={() => {
-                  setLoading(false);
-                  setImage(null);
-                }}
-                className="px-3 py-1 bg-red-500 text-white rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {completed && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="mt-6 p-4 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-lg shadow-md"
-          >
-            Upload Completed Successfully!
-          </motion.div>
-        )}
       </div>
-    </div>
 
-    {isModalOpen && (
+      {/* Breast Cancer Section */}
+      <div className="w-full p-6">
+        <div className="min-h-auto bg-white text-black p-4 md:p-12 flex flex-col md:flex-row gap-8">
+          {/* Left Section */}
+          <div className="flex-1 space-y-8">
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+              Detecting Breast Cancer
+              <br /> Transforming Diagnoses with
+              <br />
+              <span className="text-blue-500">Advanced AI Image Detection</span>
+            </h1>
+
+            <p className="text-lg text-gray-600">
+              From early detection to accurate diagnoses, Mediaid's breast cancer detection technology leverages cutting-edge AI and advanced imaging to deliver precise, timely, and life-saving insights for better women's health.
+            </p>
+
+            <div className="flex gap-4">
+              <button
+                className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition"
+                onClick={() => handleDetectionClick('breastcancer')}
+              >
+                Detect Breast Cancer
+              </button>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex-1 relative">
+            <img
+              src="https://vidhilegalpolicy.in/wp-content/uploads/2023/04/iStock-1418999473.jpg"
+              alt="Smiling Patient"
+              className="w-full rounded-xl"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Detection Modal */}
+      {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative bg-white p-8 rounded-3xl shadow-xl w-[500px]">
+          <div className="relative bg-white p-8 rounded-3xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-4 right-4 text-black text-xl"
-              onClick={() => setIsModalOpen(false)}
+              onClick={resetDetection}
             >
               &times;
             </button>
 
+            <h2 className="text-2xl font-bold mb-6">
+              {detectionType === 'pneumonia' && 'Pneumonia Detection'}
+              {detectionType === 'braintumor' && 'Brain Tumor Detection'}
+              {detectionType === 'breastcancer' && 'Breast Cancer Detection'}
+            </h2>
+
             <div
               {...getRootProps()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-blue-500 transition"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-blue-500 transition mb-6"
             >
               <input {...getInputProps()} />
               {!image ? (
@@ -292,6 +234,28 @@ const ImageUploader = () => {
                   alt="Uploaded"
                   className="w-full rounded-lg shadow-lg"
                 />
+                {detectionType === 'pneumonia' && (
+                  <div className="mt-3 p-2 bg-blue-50 text-sm text-blue-700 rounded">
+                    <p className="font-semibold">Expected: Lung X-ray Image</p>
+                  </div>
+                )}
+                {detectionType === 'braintumor' && (
+                  <div className="mt-3 p-2 bg-blue-50 text-sm text-blue-700 rounded">
+                    <p className="font-semibold">Expected: Brain MRI Scan</p>
+                  </div>
+                )}
+                {detectionType === 'breastcancer' && (
+                  <div className="mt-3 p-2 bg-blue-50 text-sm text-blue-700 rounded">
+                    <p className="font-semibold">Expected: Mammogram Image</p>
+                  </div>
+                )}
+                <button
+                  onClick={analyzeImage}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white w-full rounded-lg hover:bg-blue-600 transition"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Analyze Image"}
+                </button>
               </div>
             )}
 
@@ -300,51 +264,98 @@ const ImageUploader = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="mt-6"
+                className="mt-6 p-4 bg-blue-50 rounded-lg text-center"
               >
-                <p className="text-blue-600 font-medium mb-2">Uploading...</p>
-                <div className="relative w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.2 }}
-                    className="h-full bg-blue-500 rounded-full"
-                  />
-                </div>
-                <div className="flex items-center mt-4 space-x-4">
-                  <button
-                    onClick={() => setPaused((prev) => !prev)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded-lg"
-                  >
-                    {paused ? 'Resume' : 'Pause'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setLoading(false);
-                      setImage(null);
-                    }}
-                    className="px-3 py-1 bg-red-500 text-white rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <p className="text-blue-600 font-medium">Analyzing image...</p>
               </motion.div>
             )}
 
-            {completed && (
+            {result && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-6 p-6 bg-gray-50 rounded-lg"
+              >
+                <h3 className="text-xl font-bold mb-4">Detection Results</h3>
+                <div className="space-y-3">
+                  {Object.entries(result).map(([key, value]) => (
+                    <div key={key} className="flex justify-between">
+                      <span className="font-medium capitalize">{key.replace('_', ' ')}:</span>
+                      <span className="font-semibold">
+                        {typeof value === 'number' ? value.toFixed(2) : value.toString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={resetDetection}
+                  className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition w-full"
+                >
+                  Analyze Another Image
+                </button>
+              </motion.div>
+            )}
+
+            {error && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="mt-6 p-4 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-lg shadow-md"
+                className="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg"
               >
-                Upload Completed Successfully!
+                <p className="font-medium">
+                  {error.includes("Invalid image type") ? (
+                    <>
+                      <span className="font-bold block mb-2">Invalid Image Type</span>
+                      {detectionType === 'pneumonia' && "Please upload a lung X-ray image."}
+                      {detectionType === 'braintumor' && "Please upload a brain MRI image."}
+                      {detectionType === 'breastcancer' && "Please upload a mammogram image."}
+                    </>
+                  ) : (
+                    <>Error: {error}</>
+                  )}
+                </p>
+                <div className="mt-2 text-sm text-red-600">
+                  {error.includes("Invalid image type") && (
+                    <ul className="list-disc pl-5">
+                      {detectionType === 'pneumonia' && (
+                        <>
+                          <li>Ensure the image is a proper chest X-ray</li>
+                          <li>Image should be in grayscale format</li>
+                        </>
+                      )}
+                      {detectionType === 'braintumor' && (
+                        <>
+                          <li>Ensure the image is a proper brain MRI scan</li>
+                          <li>Image should be in grayscale format</li>
+                        </>
+                      )}
+                    </ul>
+                  )}
+                </div>
+                <div className="flex mt-4 gap-2">
+                  <button
+                    onClick={() => setError(null)}
+                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                  >
+                    Dismiss
+                  </button>
+                  <button
+                    onClick={() => {
+                      setError(null);
+                      setImage(null);
+                    }}
+                    className="px-3 py-1 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Upload New Image
+                  </button>
+                </div>
               </motion.div>
             )}
           </div>
         </div>
       )}
-      </div>
     </>
   );
 };

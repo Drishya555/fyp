@@ -25,11 +25,18 @@ const doctorSchema = new mongoose.Schema(
     phone: {
       type: String
     },
-    specialization: [{
-      type: mongoose.ObjectId,
-      ref: "Specialization",
-      percentage: Number
-    }],
+    specialization: [
+      {
+        type: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Specialization"
+        },
+        percentage: {
+          type: Number,
+          default: 100
+        }
+      }
+    ],
     licenseNo: {
       type: String,
     },

@@ -7,8 +7,17 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import { useRef } from 'react';
+import { Cross  } from "lucide-react";
+
 
 const Homepage = () => {
+    const featuresRef = useRef(null);
+
+     const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const appointments = [
     { title: "Heart Condition After Surgery", status: "OPD", color: "bg-blue-500", doctor: "Dr. Deepali Adhikari", time: "12:30-13:30", day: "Monday" },
     { title: "Annual Physical Checkup", status: "Checkup", color: "bg-blue-600", doctor: "Dr. Rajesh Sharma", time: "09:00-10:00", day: "Tuesday" },
@@ -17,10 +26,29 @@ const Homepage = () => {
   ];
 
   const reviews = [
-    { name: "Sarah Johnson", date: "11/10/2023", rating: 5, text: "MediAid transformed how I manage my family's healthcare. Booking appointments is now effortless and the reminders are a lifesaver!", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { name: "Michael Chen", date: "05/11/2023", rating: 5, text: "As someone with chronic conditions, the seamless integration with my doctors has been game-changing. The AI suggestions are surprisingly accurate.", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-    { name: "Priya Kapoor", date: "22/09/2023", rating: 4, text: "Love the interface and how all my medical records are in one place. Would give 5 stars if they added more specialty hospitals.", avatar: "https://randomuser.me/api/portraits/women/63.jpg" }
-  ];
+  {
+    name: "Jon Snow",
+    date: "10/12/2023",
+    rating: 5,
+    text: "I may know nothing, but I do know MediAid keeps everything in order from reminders to appointments. Even the Night’s Watch could’ve used this.",
+    avatar: "https://ftw.usatoday.com/wp-content/uploads/sites/90/2019/04/ad51644215b57ef0cfea49acab180dbff2da45b775f7e9c63d4cd3402c3ed867-e1555335664836.jpg?w=1000&h=600&crop=1"
+  },
+  {
+    name: "Robb Stark",
+    date: "02/11/2023",
+    rating: 4,
+    text: "Managing my army's health would’ve been easier with MediAid. It’s fast, reliable, and the interface is cleaner than Winterfell in summer.",
+    avatar: "https://static.hbo.com/content/dam/hbodata/series/game-of-thrones/character/s5/robert-stark-1920.jpg?w=1200https://static.hbo.com/content/dam/hbodata/series/game-of-thrones/character/s5/robert-stark-1920.jpg?w=1200"
+  },
+  {
+    name: "Jaime Lannister",
+    date: "18/10/2023",
+    rating: 5,
+    text: "Even a Lannister can appreciate efficiency. The AI in MediAid is as sharp as my sword—and it doesn’t judge.",
+    avatar: "https://hellogiggles.com/wp-content/uploads/sites/7/2017/06/18/jaime.jpg?quality=82&strip=1&resize=640%2C360"
+  }
+];
+
 
   const stats = [
     { value: "80+", label: "Approved Hospitals" },
@@ -32,21 +60,21 @@ const Homepage = () => {
   const features = [
     {
       title: "AI-Powered Diagnostics",
-      description: "Our advanced AI analyzes your symptoms and medical history to provide preliminary assessments before your doctor's visit.",
+      description: "Our advanced AI analyzes the images of the scan of diseases for doctors just to confirm the diagnosis, making healthcare faster and more accurate.",
       icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     },
     {
       title: "Instant Appointment Booking",
-      description: "Book appointments with top specialists in just a few taps, with real-time availability and instant confirmation.",
+      description: "Book appointments with top specialists in just a few taps.",
       icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     },
     {
       title: "Secure Health Records",
-      description: "All your medical records stored securely in one place, accessible only to you and your authorized doctors.",
+      description: "All your medical records stored securely in one place, accessible only to you.",
       icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
@@ -61,6 +89,8 @@ const Homepage = () => {
   ];
 
   return (
+    <>
+    
     <div className="overflow-hidden">
       {/* Hero Section */}
       <div className="w-[98%] h-[500px] lg:h-[70vh] xl:h-[85vh] ml-[1%] relative">
@@ -129,17 +159,20 @@ const Homepage = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 1.5 }}
           >
+            <a href="/hospitals">
             <motion.button
               className="w-auto px-6 py-3 bg-white/10 backdrop-blur-md rounded-lg text-base sm:text-lg transition-[0.3s] hover:bg-white/20 hover:scale-105 flex gap-1 items-center border border-white/20"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Get in Touch <ChevronRightIcon className="size-4 sm:size-5" />
+              Get Started <ChevronRightIcon className="size-4 sm:size-5" />
             </motion.button>
+            </a>
             <motion.button
               className="w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg text-base sm:text-lg transition-[0.3s] hover:opacity-90 hover:scale-105 flex gap-1 items-center shadow-lg"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={scrollToFeatures} // Add this onClick handler
             >
               Our Services <ChevronRightIcon className="size-4 sm:size-5" />
             </motion.button>
@@ -241,10 +274,12 @@ const Homepage = () => {
               Book appointments, track medical history, and receive personalized care recommendations — all in one place. Our AI-powered platform learns your health patterns to provide smarter care.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <a href="doctors" className="hidden sm:block">
               <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:opacity-90 transition-all text-lg font-medium flex items-center gap-2">
                 Book Appointment
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
+              </a>
               <button className="px-8 py-4 bg-white text-gray-800 border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition-all text-lg font-medium flex items-center gap-2">
                 Learn More
               </button>
@@ -295,7 +330,7 @@ const Homepage = () => {
 
       {/* Features Slider */}
       <div className="w-full py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6" ref={featuresRef}>
           <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}
@@ -354,9 +389,7 @@ const Homepage = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
                       <p className="text-gray-600 mb-6 flex-grow">{feature.description}</p>
-                      <button className="mt-auto w-full py-3 bg-blue-50 text-blue-600 rounded-lg font-medium hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
-                        Learn more <ChevronRightIcon className="h-4 w-4" />
-                      </button>
+                     
                     </motion.div>
                   </div>
                 </SwiperSlide>
@@ -412,9 +445,7 @@ const Homepage = () => {
                   </div>
                 ))}
               </div>
-              <button className="mt-6 px-6 py-2 bg-white/20 rounded-lg text-sm font-medium hover:bg-white/30 transition-all">
-                Read All Reviews
-              </button>
+             
             </div>
           </motion.div>
 
@@ -454,56 +485,24 @@ const Homepage = () => {
                 <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                   <ChatBubbleBottomCenterTextIcon className="h-5 w-5 text-blue-600" />
                 </div>
+                
               </motion.div>
             ))}
           </div>
+          
         </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="w-full bg-gradient-to-r from-blue-600 to-blue-400 py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2 
-            className="text-3xl md:text-5xl font-bold text-white mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Ready to transform your healthcare experience?
-          </motion.h2>
-          <motion.p 
-            className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            Join thousands of happy users managing their health with MediAid. Download the app today!
-          </motion.p>
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <button className="px-8 py-4 bg-white text-blue-600 rounded-lg shadow-lg hover:bg-gray-100 transition-all font-bold flex items-center justify-center gap-2">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-              App Store
-            </button>
-            <button className="px-8 py-4 bg-gray-900 text-white rounded-lg shadow-lg hover:bg-gray-800 transition-all font-bold flex items-center justify-center gap-2">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 20.5v-17c0-.59.34-1.11.84-1.35L13.69 12l-9.85 9.85c-.5-.25-.84-.76-.84-1.35zM14 21l5.16-5.16c.38-.38.59-.88.59-1.42V9.58c0-.54-.21-1.04-.59-1.42L14 3v18zm-4 0V3L3.54 2.12c-.88-.38-1.54.33-1.54 1.23v17.3c0 .9.66 1.61 1.54 1.23L10 21z"/>
-              </svg>
-              Google Play
-            </button>
-          </motion.div>
-        </div>
-      </div>
+      </div>  
+         <a href="/emergency">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-8 right-8 bg-red-600 text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-colors z-20"
+      >
+        <Cross  size={24} />
+      </motion.button>
+      </a> 
     </div>
+    </>
   );
 };
 

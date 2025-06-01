@@ -11,6 +11,8 @@ const transporter = nodemailer.createTransport({
     pass: 'ijro tsfg jxwh ujef',
   },
 });
+
+
 const createAppointmentEmail = (recipientName, appointmentDetails, isDoctor) => {
   const role = isDoctor ? 'a patient' : 'your doctor';
   return `
@@ -35,7 +37,6 @@ export const createappointment = async (req, res) => {
   try {
     const { user, doctor, date, purpose, time } = req.body;
 
-    // 1. Create the appointment
     const newappointment = await new appointmentModel({
       user,
       doctor,
@@ -44,7 +45,6 @@ export const createappointment = async (req, res) => {
       time
     }).save();
 
-    // 2. Fetch doctor and patient details
     const [doctorData, patientData] = await Promise.all([
       Doctor.findById(doctor).select('email name'),
       User.findById(user).select('email name')
@@ -57,7 +57,6 @@ export const createappointment = async (req, res) => {
       });
     }
 
-    // 3. Prepare appointment details for emails
     const appointmentDetails = {
       date,
       time,
@@ -66,7 +65,6 @@ export const createappointment = async (req, res) => {
       doctorName: doctorData.name
     };
 
-    // 4. Send emails to both parties
     const sendEmailPromises = [
       transporter.sendMail({
         from: process.env.EMAIL_USERNAME,
@@ -82,17 +80,14 @@ export const createappointment = async (req, res) => {
       })
     ];
 
-    // Execute email sending in parallel (but don't await to not block response)
     Promise.all(sendEmailPromises)
       .then(results => {
         console.log('Emails sent successfully:', results.map(r => r.response));
       })
       .catch(error => {
         console.error('Error sending emails:', error);
-        // Consider logging this to an error tracking service
       });
 
-    // 5. Respond to client
     res.status(201).send({
       success: true,
       message: "Appointment created successfully",
@@ -358,6 +353,163 @@ export const getappointmentbyHospital = async (req, res) => {
       success: false,
       message: "Error occurred while fetching appointments by hospital",
       error: error.message,
+    });
+  }
+};
+
+export const handleAppointmentNotes = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const { notes } = req.body; 
+    const doctorId = req.user._id; 
+
+    const appointment = await appointmentModel.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    if (appointment.doctor.toString() !== doctorId.toString()) {
+      return res.status(403).json({ error: "Unauthorized: Not your appointment" });
+    }
+
+    appointment.notes = notes;
+    await appointment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Notes updated successfully",
+      appointment,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};
+
+export const rescheduleAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newDate, newTime, slotId, day } = req.body;
+
+    // Validate input
+    if (!newDate || !newTime || !slotId || !day) {
+      return res.status(400).send({
+        success: false,
+        message: "All fields are required for rescheduling",
+      });
+    }
+
+    // Check if new date is valid
+    const appointmentDate = new Date(newDate);
+    if (appointmentDate < new Date()) {
+      return res.status(400).send({
+        success: false,
+        message: "Cannot reschedule to a past date",
+      });
+    }
+
+    // Find the existing appointment
+    const existingAppointment = await appointmentModel.findById(id)
+      .populate('user', 'name email')
+      .populate('doctor', 'name email');
+
+    if (!existingAppointment) {
+      return res.status(404).send({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    // Get doctor's current schedule
+    const doctor = await Doctor.findById(existingAppointment.doctor._id);
+    if (!doctor) {
+      return res.status(404).send({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    // Verify slot availability
+    const targetSlot = doctor.freeslots.find(slot => 
+      slot._id.toString() === slotId && 
+      slot.day.toLowerCase() === day.toLowerCase() &&
+      slot.time === newTime &&
+      slot.status === 'available'
+    );
+
+    if (!targetSlot) {
+      return res.status(400).send({
+        success: false,
+        message: "Selected slot is not available",
+      });
+    }
+
+    // Free up previously booked slot if exists
+    if (existingAppointment.slotId) {
+      await Doctor.findByIdAndUpdate(
+        existingAppointment.doctor._id,
+        { $set: { "freeslots.$[elem].status": "available" } },
+        { 
+          arrayFilters: [{ "elem._id": existingAppointment.slotId }],
+          new: true 
+        }
+      );
+    }
+
+    // Book the new slot
+    await Doctor.findByIdAndUpdate(
+      existingAppointment.doctor._id,
+      { $set: { "freeslots.$[elem].status": "booked" } },
+      { 
+        arrayFilters: [{ "elem._id": slotId }],
+        new: true 
+      }
+    );
+
+    // Update appointment
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      id,
+      {
+        date: newDate,
+        time: newTime,
+        slotId: slotId,
+        status: "Rescheduled",
+        previousDate: existingAppointment.date,
+        previousTime: existingAppointment.time,
+      },
+      { new: true }
+    ).populate('user', 'name email').populate('doctor', 'name email');
+
+    // Send notification emails
+    const mailOptions = {
+      from: process.env.EMAIL_USERNAME,
+      to: [updatedAppointment.user.email, updatedAppointment.doctor.email],
+      subject: `Appointment Rescheduled - ${updatedAppointment.doctor.name}`,
+      html: `
+        <div>
+          <h2>Appointment Rescheduled</h2>
+          <p>Previous: ${new Date(existingAppointment.date).toDateString()} at ${existingAppointment.time}</p>
+          <p>New: ${new Date(newDate).toDateString()} at ${newTime}</p>
+        </div>
+      `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) console.error('Email error:', error);
+      else console.log('Email sent:', info.response);
+    });
+
+    res.status(200).send({
+      success: true,
+      message: "Appointment rescheduled successfully",
+      appointment: updatedAppointment
+    });
+
+  } catch (error) {
+    console.error('Reschedule error:', error);
+    res.status(500).send({
+      success: false,
+      message: "Error rescheduling appointment",
+      error: error.message
     });
   }
 };

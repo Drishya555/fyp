@@ -14,7 +14,7 @@ import Dashboardsidebar from './pages/doctors/Dashboardsidebar.jsx'
 import Table from './pages/doctors/components/tablecomponent.jsx';
 import AddSchedule from './pages/doctors/AddSchedule.jsx';
 import BookAppointmentTesting from './pages/BookAppointmentTesting.jsx'
-import Adminpage from './pages/admin/Adminpage.jsx';
+import Adminpage from './pages/admin/adminnav.jsx';
 import AddHospital from './pages/admin/AddHospital.jsx';
 import DoctorDetails from './pages/DoctorDetails.jsx';
 import HospitalDashboard from './pages/hospitals/HospitalSidebar.jsx'
@@ -44,6 +44,8 @@ import DoctorsList from './pages/hospitals/components/DoctorsList.jsx';
 import Prescriptions from './pages/pharmacy/Pharmacist/components/prescriptions.jsx';
 import Orders from './pages/pharmacy/Pharmacist/components/orders.jsx';
 import Products from './pages/pharmacy/Pharmacist/components/products.jsx';
+import ViewDocProfile from './pages/ViewDocProfile.jsx';
+import Emergency from './pages/Emergency.jsx';
 const App = () => {
 
   const userrole = Authstore.getUser()?.role || null;
@@ -74,6 +76,8 @@ const App = () => {
       <Route path="/forgotpw" element={<ForgotPasswordPage />} />
       <Route path="/resetpw/:token" element={<ResetPasswordPage />} />
       <Route path='/payment-success' element={<PaymentSuccess/>}></Route>
+      <Route path='/viewdoctor/:id' element={<ViewDocProfile/>}></Route>
+      <Route path='/emergency' element={<Emergency/>}></Route>
 
       {/*hospital view */}
       {userrole === 'hospital' && (
@@ -83,6 +87,7 @@ const App = () => {
       <Route path='/hospital-dashboard' element={<HospitalDashboard/>}></Route>
       <Route path='/hospital-appointments' element={<HospitalAppointments/>}></Route>
       <Route path='/doctors-list' element={<DoctorsList/>}></Route>
+      <Route path='/hospitalprofile' element={<HospitalProfile/>}></Route>
 
       </>
       )}
@@ -105,10 +110,12 @@ const App = () => {
 
 
       {/*  admin routes */}
+      {userrole === 'admin' && (
+      <>
       <Route path='/admin' element={<Adminpage/>}></Route>
       <Route path='/addhospital' element={<AddHospital/>}></Route>
-      <Route path='/hospitalprofile' element={<HospitalProfile/>}></Route>
-
+      </>
+      )}
 
       {/* Pharmacist View */}
       {userrole === 'pharmacist' && (

@@ -4,7 +4,6 @@ export const createOrUpdateMedicalRecord = async (req, res) => {
   try {
     const { patientId, doctorId, vitals, timelineEvent, allergies } = req.body;
     
-    // Validate required fields
     if (!patientId || !doctorId) {
       return res.status(400).json({ 
         success: false, 
@@ -12,14 +11,12 @@ export const createOrUpdateMedicalRecord = async (req, res) => {
       });
     }
 
-    // Check if medical record exists for this patient-doctor pair
     let medicalRecord = await MedicalRecord.findOne({ 
       patient: patientId, 
       doctor: doctorId 
     });
 
     if (!medicalRecord) {
-      // Create new medical record if none exists
       medicalRecord = new MedicalRecord({
         patient: patientId,
         doctor: doctorId,
@@ -28,24 +25,26 @@ export const createOrUpdateMedicalRecord = async (req, res) => {
         allergies: allergies || []
       });
     } else {
-      // Update existing record
       if (vitals) {
-        // Update vitals (overwrites previous vitals)
         medicalRecord.vitals = vitals;
       }
       
       if (timelineEvent) {
-        // Add new timeline event to the beginning of the array
         medicalRecord.timeline.unshift(timelineEvent);
       }
 
-      if (allergies) {
-        // Update allergies (replace existing array)
-        medicalRecord.allergies = allergies;
+      if (allergies && Array.isArray(allergies)) {
+        allergies.forEach(newAllergy => {
+          const exists = medicalRecord.allergies.some(
+            a => a.name === newAllergy.name
+          );
+          if (!exists) {
+            medicalRecord.allergies.push(newAllergy);
+          }
+        });
       }
     }
 
-    // Save the record
     await medicalRecord.save();
 
     return res.status(200).json({
@@ -63,7 +62,6 @@ export const createOrUpdateMedicalRecord = async (req, res) => {
     });
   }
 };
-
 // Controller to get medical records by patient only
 export const getMedicalRecord = async (req, res) => {
   try {
@@ -98,13 +96,11 @@ export const getMedicalRecord = async (req, res) => {
 
 
 
-// controllers/medicalRecordController.js
 export const updatePatientVitals = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you have authentication middleware
+    const userId = req.user.id; 
     const { vitals } = req.body;
 
-    // Validate vitals data
     if (!vitals || typeof vitals !== 'object') {
       return res.status(400).json({
         success: false,
@@ -112,7 +108,6 @@ export const updatePatientVitals = async (req, res) => {
       });
     }
 
-    // Find all medical records for this patient (could be with different doctors)
     const medicalRecords = await MedicalRecord.find({ patient: userId });
 
     if (!medicalRecords || medicalRecords.length === 0) {
@@ -122,7 +117,6 @@ export const updatePatientVitals = async (req, res) => {
       });
     }
 
-    // Update vitals in all records (or you could choose to update just one)
     const updatePromises = medicalRecords.map(record => {
       record.vitals = vitals;
       return record.save();

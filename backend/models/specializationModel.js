@@ -5,6 +5,7 @@ const specializationSchema = new mongoose.Schema(
     specialization: {
       type: String,
       required: true,
+      unique: true
     }
   },
   { timestamps: true }

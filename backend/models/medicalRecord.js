@@ -36,11 +36,19 @@ const medicalRecordSchema = new mongoose.Schema({
     duration: String,
     notes: String
   }],
-    allergies:[
-      {
-        type: String,
-      },
-    ]
+    allergies: [{
+  name: {
+    type: String,
+    required: true
+  },
+  reaction: String,
+  severity: {
+    type: String,
+    enum: ["mild", "moderate", "severe", "life-threatening"],
+    default: "mild"
+  },
+  notes: String
+}]
 }, { timestamps: true });
 
 export default mongoose.model("MedicalRecord", medicalRecordSchema);

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import AuthStore from "../hooks/authStore";
 import { host } from "../host.js";
+import { toast } from "react-hot-toast";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -48,7 +49,6 @@ const Cart = () => {
   }, []);
 
   const handleQuantityChange = async (productId, type) => {
-    // Update locally first for responsive UI
     setCart((prevCart) =>
       prevCart.map((cartItem) => ({
         ...cartItem,
@@ -65,65 +65,78 @@ const Cart = () => {
       }))
     );
     
-    // Then update on the server (implementation would depend on your API)
     try {
       const userid = AuthStore.getUser()?.userid || null;
       if (!userid) return;
       
-      // This is a placeholder for the actual API call
-      // await axios.put(`${host}/api/cart/updatequantity`, {
-      //   userid,
-      //   productId,
-      //   quantity: type === "increase" ? currentQuantity + 1 : Math.max(1, currentQuantity - 1)
-      // });
+      
     } catch (err) {
       console.error("Error updating quantity:", err);
-      // Revert local state if server update fails
       // eslint-disable-next-line no-undef
       fetchData();
     }
   };
 
-  const handleRemoveItem = async (productId) => {
-    setRemovingItem(productId);
+  const handleRemoveItem = async (cartItemId, quantityToRemove = null) => {
+  setRemovingItem(cartItemId);
+  
+  try {
+    const userid = AuthStore.getUser()?.userid;
+    if (!userid) {
+      toast.error("Please log in to manage your cart");
+      return;
+    }
+
+    const toastId = toast.loading(quantityToRemove 
+      ? "Updating quantity..." 
+      : "Removing item from cart...");
+
+    const response = await axios.post(`${host}/api/cart/removecart`, {
+      user: userid,
+      cartItemId,
+      quantity: quantityToRemove
+    }, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },
+    });
+
+    if (response.data.cart === null) {
+      setCart([]);
+      toast.success("Cart is now empty", { id: toastId });
+    } else {
+      setCart([response.data.cart]);
+      toast.success(
+        quantityToRemove 
+          ? `Quantity updated successfully` 
+          : "Item removed from cart",
+        { id: toastId }
+      );
+    }
     
-    // Simulate delay for animation
-    setTimeout(async () => {
-      try {
-        const userid = AuthStore.getUser()?.userid || null;
-        if (!userid) return;
-        
-        // This is a placeholder for the actual API call
-        // await axios.delete(`${host}/api/cart/removeitem`, {
-        //   data: { userid, productId }
-        // });
-        
-        // Update local state
-        setCart((prevCart) =>
-          prevCart.map((cartItem) => ({
-            ...cartItem,
-            products: cartItem.products.filter((item) => item._id !== productId),
-          })).filter(cartItem => cartItem.products.length > 0)
-        );
-      } catch (err) {
-        console.error("Error removing item:", err);
-      } finally {
-        setRemovingItem(null);
+  } catch (err) {
+    console.error("Cart update error:", err);
+    toast.error(
+      err.response?.data?.message || "Error updating cart",
+      {
+        duration: 4000,
+        position: 'top-center',
       }
-    }, 300);
-  };
+    );
+  } finally {
+    setRemovingItem(null);
+  }
+};
 
   const applyCoupon = () => {
     if (couponCode.trim() === "") return;
     
-    // Simulate coupon application
     setCouponApplied(true);
     setTimeout(() => {
       setShowCouponInput(false);
     }, 1500);
   };
 
-  // Handle checkout and payment initialization
   const handleCheckout = async () => {
     try {
       const userId = AuthStore.getUser()?.userid;
@@ -138,26 +151,23 @@ const Cart = () => {
         return;
       }
   
-      // Prepare order items in the correct format
       const orderItems = cart.flatMap(cartItem => 
         cartItem.products.map(product => ({
-          product: product.product?._id, // Just send the product ID
+          product: product.product?._id, 
           quantity: product.quantity,
           price: product.product?.discountprice || product.product?.price
-        })).filter(item => item.product) // Filter out any invalid items
+        })).filter(item => item.product)
       );
   
-      // Store cart data in sessionStorage
       sessionStorage.setItem('cartData', JSON.stringify(orderItems));
       setProcessingPayment(true);
   
-      // Create the order first
       const orderResponse = await axios.post(`${host}/api/orders/`, {
         userId,
-        items: orderItems, // Send as 'items' to match your model
+        items: orderItems, 
         totalAmount: totalAmount,
         paymentMethod: "khalti",
-        shippingAddress: null // You can add address selection later
+        shippingAddress: null,
       },
     {
       headers: {
@@ -171,13 +181,12 @@ const Cart = () => {
   
       const orderId = orderResponse.data.order._id;
   
-      // Then initialize payment
       const paymentResponse = await axios.post(`${host}/api/payment/initialize-khali`, {
         userId,
         orderId,
         totalPrice: totalAmount,
         website_url: window.location.origin,
-        orderItems: orderItems, // Send items for payment record
+        orderItems: orderItems, 
       },
     {
       headers: {
@@ -203,7 +212,6 @@ const Cart = () => {
   };
 
   
-  // Cart calculations
   const subtotal = cart.reduce((total, cartItem) => {
     return (
       total +
@@ -226,11 +234,10 @@ const Cart = () => {
   
   const savings = originalPrice - subtotal;
   const deliveryCharge = subtotal >= 599 ? 0 : 100;
-  const tax = Math.round(subtotal * 0.05); // 5% tax
-  const discount = couponApplied ? Math.round(subtotal * 0.1) : 0; // 10% discount if coupon applied
+  const tax = Math.round(subtotal * 0.05); 
+  const discount = couponApplied ? Math.round(subtotal * 0.1) : 0; 
   const totalAmount = subtotal + deliveryCharge + tax - discount;
   
-  // Total items count
   const itemCount = cart.reduce((count, cartItem) => {
     return (
       count +
@@ -238,7 +245,6 @@ const Cart = () => {
     );
   }, 0);
 
-  // Empty cart state
   if (!loading && (!cart.length || cart.every(item => !item.products || !item.products.length))) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-16 bg-gray-50">
@@ -329,20 +335,25 @@ const Cart = () => {
                                 {item.product?.category?.categoryName || "Medicine"}
                               </p>
                               
-                              {/* Action Buttons */}
                               <div className="flex items-center space-x-4">
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center text-sm font-medium text-red-500 hover:text-red-700"
-                                  onClick={() => handleRemoveItem(item._id)}
-                                >
-                                  <MdDeleteOutline size={18} className="mr-1" />
-                                  Remove
-                                </button>
-                                <Link to={`/pharmacy/${item.product?.slug}`} className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
-                                  View Details
-                                </Link>
-                              </div>
+                              <button
+                                type="button"
+                                className="inline-flex items-center text-sm font-medium text-red-500 hover:text-red-700"
+                                onClick={() => handleRemoveItem(item._id)}
+                              >
+                                <MdDeleteOutline size={18} className="mr-1" />
+                                Remove
+                              </button>
+
+                             
+
+                              <Link 
+                                to={`/pharmacy/${item.product?.slug}`} 
+                                className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-800"
+                              >
+                                View Details
+                              </Link>
+                            </div>
                             </div>
 
                             {/* Price and Quantity */}

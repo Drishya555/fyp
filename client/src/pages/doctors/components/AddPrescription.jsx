@@ -71,7 +71,6 @@ const AddPrescription = () => {
       });
       setPatients(response.data.appointments);
      
-      // Set the first patient as selected by default if available
       if (response.data.appointments.length > 0) {
         const firstPatient = {
           id: response.data.appointments[0].user._id,

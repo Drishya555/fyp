@@ -15,7 +15,6 @@ import medicalRecordRoutes from './routes/medicalrecordroute.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 
-
 const app = express();
 
 dotenv.config();
@@ -37,6 +36,7 @@ app.use('/api/prescriptions', prescriptionRoutes);
 app.use("/api/medical-records", medicalRecordRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes);
+
 
 const PORT = process.env.PORT || 8000; //cloud provides port or else 8000 in localserver 
 

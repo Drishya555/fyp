@@ -11,7 +11,6 @@ router.post('/forgotpw');
 router.put("/updateimg/:id", formidable(), authenticateToken, updateImage); 
 router.get('/getselecteduser/:id', authenticateToken, getSelectedUser); 
 router.get('/getall', authenticateToken, getall); 
-
 router.put('/edituser/:id', authenticateToken, editUserController); 
 router.post('/verify-otp', verifyOtpController);  
 router.post('/resend-otp', resendOtpController); 

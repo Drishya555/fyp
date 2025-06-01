@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import {
@@ -8,7 +9,8 @@ import {
   Pill,
   Activity,
   Download,
-  FileText
+  FileText,
+  AlertTriangle 
 } from 'lucide-react';
 import Authstore from '../hooks/authStore.js';
 import { host } from '../host.js';
@@ -22,6 +24,7 @@ const MedicalRecord = ({ id }) => {
   const [medicines, setMedicines] = useState([]);
   const [nextAppointment, setNextAppointment] = useState(null);
   const token = Authstore.getToken();
+  const [allergies, setAllergies] = useState([]);
 
   useEffect(() => {
     const getuser = async () => {
@@ -42,14 +45,12 @@ const MedicalRecord = ({ id }) => {
         },
       });
       
-      // Sort appointments by date
       const sortedAppointments = response.data?.appointments?.sort((a, b) => 
         new Date(a.date) - new Date(b.date)
-      ); // Now properly closed
+      );
       
       setAppointments(sortedAppointments || []);
       
-      // Find next appointment (first future appointment)
       const now = new Date();
       const upcoming = sortedAppointments?.find(appt => new Date(appt.date) >= now);
       setNextAppointment(upcoming || null);
@@ -74,14 +75,21 @@ const MedicalRecord = ({ id }) => {
     };
 
     const getmedicalrecord = async () => {
-      const userid = Authstore.getUser()?.userid || null;
-      const response = await axios.get(`${host}/api/medical-records/${userid}`,{
-        headers: {
-          Authorization: token ? `Bearer ${token}` : '',  
-        },
-      });
-      setMedicalRecord(response.data?.medicalRecord);
-    };
+    const userid = Authstore.getUser()?.userid || null;
+    const response = await axios.get(`${host}/api/medical-records/${userid}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',  
+      },
+    });
+    setMedicalRecord(response.data?.medicalRecord);
+    
+    if (response.data?.medicalRecord?.allergies) {
+      const formattedAllergies = response.data.medicalRecord.allergies.map(item => 
+        typeof item === 'string' ? { name: item } : item
+      );
+      setAllergies(formattedAllergies);
+    }
+  };
 
     getuser();
     getuserappointments();
@@ -113,7 +121,7 @@ const MedicalRecord = ({ id }) => {
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
               <div className="flex items-center">
                 <Heart className="h-6 w-6 text-blue-600 mr-2" />
-                <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack {id}</h1>
+                <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">HealthTrack</h1>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-3">
@@ -202,7 +210,6 @@ const MedicalRecord = ({ id }) => {
               <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Patient Profile</h3>
-                  <button className="text-blue-600 text-sm font-medium hover:text-blue-700">Edit</button>
                 </div>
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="relative">
@@ -223,7 +230,7 @@ const MedicalRecord = ({ id }) => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-lg p-3">
                       <p className="text-xs text-gray-500">Age</p>
-                      <p className="text-sm font-medium">55 years</p>
+                      <p className="text-sm font-medium">{user?.age}</p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
                       <p className="text-xs text-gray-500">Gender</p>
@@ -240,18 +247,26 @@ const MedicalRecord = ({ id }) => {
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Allergies</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {['Metformin', 'Aspirin', 'Strawberry'].map((allergy) => (
-                        <span
-                          key={allergy}
-                          className="px-3 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-full"
-                        >
-                          {allergy}
-                        </span>
-                      ))}
-                    </div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Allergies</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {allergies.map((allergyItem) => (
+                      <div 
+                        key={allergyItem.name}
+                        className="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 text-xs font-medium rounded-full"
+                      >
+                        <span>{allergyItem.name}</span>
+                        {allergyItem.severity && (
+                          <span className="text-[0.6rem] opacity-75">
+                            ({allergyItem.severity})
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                    {allergies.length === 0 && (
+                      <span className="text-gray-500 text-sm">No allergies recorded</span>
+                    )}
                   </div>
+                </div>
 
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Contact Information</h4>
@@ -262,11 +277,11 @@ const MedicalRecord = ({ id }) => {
                       </p>
                       <p className="text-sm text-gray-700 flex items-center">
                         <span className="font-medium w-20">Phone:</span>
-                        <span className="text-gray-600">555-723-4567</span>
+                        <span className="text-gray-600">{user?.phone}</span>
                       </p>
                       <p className="text-sm text-gray-700 flex items-center">
-                        <span className="font-medium w-20">Emergency:</span>
-                        <span className="text-gray-600">555-987-6543 (Sarah)</span>
+                        <span className="font-medium w-20">Address:</span>
+                        <span className="text-gray-600">{user?.address}</span>
                       </p>
                     </div>
                   </div>
@@ -279,18 +294,21 @@ const MedicalRecord = ({ id }) => {
                 <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                   <div className="grid grid-cols-1 gap-3">
+                    <a href="/doctors">
                     <button className="flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
                       <Calendar size={20} className="mr-3" />
                       Schedule Appointment
                     </button>
-                   
+                   </a>
+                   <a href='/hospitals'>
                     <button className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                       <Download size={20} className="mr-3" />
-                      Download Records
+                      View Hospitals
                     </button>
+                    </a>
                     <button className="flex items-center justify-center w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                       <FileText size={20} className="mr-3" />
-                      View Test Results
+                      Check Prescriptions
                     </button>
                   </div>
                 </div>
@@ -330,15 +348,6 @@ const MedicalRecord = ({ id }) => {
                         No current medications
                       </div>
                     )}
-
-                    <button
-                      className="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium"
-                      onClick={() => {
-                        console.log('Add medication button clicked');
-                      }}
-                    >
-                      + Add Medication
-                    </button>
                   </div>
                 </div>
               </div>
@@ -378,10 +387,14 @@ const MedicalRecord = ({ id }) => {
                           <button className="flex-1 px-3 py-1 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
                             Reschedule
                           </button>
-                          <button className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                            {appointment.status === 'Pending' ? 'Confirm' : 'View'}
-                          </button>
+                          <a
+                            href={`/viewdoctor/${appointment.doctor?._id}`}
+                            className="flex-1 text-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                          >
+                            View
+                          </a>
                         </div>
+
                       </div>
                     );
                   })}

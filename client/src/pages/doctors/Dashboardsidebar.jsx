@@ -5,7 +5,9 @@ import DocAppointments from "./components/docAppointments";
 import ImgDetection from "./components/imageDetection";
 import AddMedicalData from "./components/AddMedicalRecord";
 import AddPrescription from "./components/AddPrescription";
+import AddNote from "./components/AddNote";
 import AddSchedule from "./AddSchedule.jsx";
+import ViewPrescriptions from "./components/ViewPrescriptions.jsx";
 const menuItems = [
   { id: 1, name: "Dashboard", icon: <LayoutDashboard size={20} />, component: <DocPage /> },
   { id: 2, name: "Appointments", icon: <CalendarClock size={20} />, component: <DocAppointments /> },
@@ -13,6 +15,9 @@ const menuItems = [
   { id: 4, name: "Ai Disease Detection", icon: <BrainCircuit size={20} />, component: <ImgDetection /> },
   { id: 5, name: "Prescription", icon: <ClipboardList size={20} />, component: <AddPrescription /> },
   { id: 6, name: "Change Schedule", icon: <ClipboardList size={20} />, component: <AddSchedule /> },
+  { id: 7, name: "Appointment Note", icon: <ClipboardList size={20} />, component: <AddNote /> },
+  { id: 8, name: "View Prescriptions", icon: <ClipboardList size={20} />, component: <ViewPrescriptions /> },
+
 ];
 
 
